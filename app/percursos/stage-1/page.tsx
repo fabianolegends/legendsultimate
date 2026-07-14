@@ -46,17 +46,11 @@ export default function StageOne() {
           </div>
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Canela → São Francisco de Paula</em></div>
-            <div className="chartScale"><span>1.050 m</span><span>900 m</span><span>750 m</span><span>600 m</span></div>
-            <svg className="elevationChart" viewBox="0 0 1000 340" role="img" aria-label="Perfil de elevação da Stage 1">
-              <defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c67a3b" stopOpacity=".5"/><stop offset="100%" stopColor="#c67a3b" stopOpacity="0"/></linearGradient></defs>
-              <g className="chartGrid"><line x1="0" y1="45" x2="1000" y2="45"/><line x1="0" y1="130" x2="1000" y2="130"/><line x1="0" y1="215" x2="1000" y2="215"/><line x1="0" y1="300" x2="1000" y2="300"/></g>
-              <path className="chartArea" d="M0 150 L35 170 L65 240 L95 265 L125 190 L155 225 L180 130 L215 120 L250 175 L285 210 L315 295 L350 190 L390 125 L430 105 L465 85 L505 110 L545 75 L580 115 L615 78 L650 80 L690 48 L730 32 L765 80 L795 42 L830 95 L870 110 L900 210 L930 190 L960 132 L1000 120 L1000 300 L0 300 Z"/>
-              <path className="chartLine" d="M0 150 L35 170 L65 240 L95 265 L125 190 L155 225 L180 130 L215 120 L250 175 L285 210 L315 295 L350 190 L390 125 L430 105 L465 85 L505 110 L545 75 L580 115 L615 78 L650 80 L690 48 L730 32 L765 80 L795 42 L830 95 L870 110 L900 210 L930 190 L960 132 L1000 120"/>
-            </svg>
-            <div className="chartKm"><span>0 km</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span><span>111 km</span></div>
-            <div className="chartHighlights"><div><span>↑</span><strong>1.420 m</strong><p>Subida</p></div><div><span>↓</span><strong>1.350 m</strong><p>Descida</p></div><div><span>△</span><strong>990 m</strong><p>Ponto mais alto</p></div><div><span>▽</span><strong>640 m</strong><p>Ponto mais baixo</p></div></div>
+            <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1 extraído do Komoot" />
+            <p className="technicalSource">Perfil técnico oficial · Komoot</p>
           </div>
         </div>
+        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Canela → São Francisco de Paula · 111 km</p></div><img src="/stage-1-map-exact.jpg" alt="Mapa oficial do percurso da Stage 1 no Komoot" /><a href="https://www.komoot.com/pt-br/tour/3089098231" target="_blank" rel="noreferrer">Explorar mapa no Komoot ↗</a></div>
       </section>
 
       <section className="stageData">
