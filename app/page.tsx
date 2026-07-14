@@ -9,7 +9,7 @@ const stages = [
   { n: "01", city: "Canela", line: "Canela → São Francisco de Paula", desc: "111 km de travessia, 1.420 m de ascensão e 78% de terreno não pavimentado.", href: "/percursos/stage-1" },
   { n: "02", city: "São Francisco de Paula", line: "São Francisco de Paula → Gramado", desc: "89,1 km, 1.520 m de ascensão e uma chegada decisiva pelas montanhas da Serra.", href: "/percursos/stage-2" },
   { n: "03", city: "Gramado", line: "Gramado → Nova Petrópolis", desc: "99,7 km, 1.530 m de ascensão e uma travessia que desce ao vale antes da escalada final.", href: "/percursos/stage-3" },
-  { n: "04", city: "Nova Petrópolis", line: "A chegada da lenda", desc: "O último capítulo: colônias, montanhas e a celebração de quem escolheu ir além." },
+  { n: "04", city: "Nova Petrópolis", line: "Nova Petrópolis → Gramado", desc: "70 km, 1.530 m de ascensão e o capítulo final pelos caminhos da Serra Gaúcha.", href: "/percursos/stage-4" },
 ];
 
 function Logo({ className = "" }: { className?: string }) {

@@ -28,3 +28,4 @@
 @media(max-width:600px){.routeMapPanel{padding:18px;margin-top:20px}.mapPanelHead{display:block}.mapPanelHead>p{margin-top:12px;font-size:10px}.exactProfile{margin-top:26px}.performancePanel{overflow:hidden}}
 .exactProfile{background:#0d100e;filter:invert(1) hue-rotate(180deg) brightness(.94) contrast(1.08) saturate(.9);mix-blend-mode:screen}
 .stage3Hero{background-image:linear-gradient(90deg,rgba(5,7,6,.98) 0%,rgba(5,7,6,.82) 35%,rgba(5,7,6,.18) 70%),linear-gradient(0deg,rgba(5,7,6,.96) 0%,transparent 55%),url('/stage-3-gramado.jpg');background-position:center}.stage3Surface{grid-template-columns:79fr 18fr 3fr}
+.stage4Hero{background-image:linear-gradient(90deg,rgba(5,7,6,.98) 0%,rgba(5,7,6,.82) 35%,rgba(5,7,6,.15) 72%),linear-gradient(0deg,rgba(5,7,6,.96) 0%,transparent 55%),url('/stage-4-nova-petropolis.jpg');background-position:center}.stage4Surface{grid-template-columns:47fr 41fr 12fr}
