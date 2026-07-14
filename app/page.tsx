@@ -1,0 +1,86 @@
+const metrics = [
+  ["04", "dias de prova"],
+  ["370", "quilômetros"],
+  ["6.000", "metros de ascensão"],
+  ["75%", "estradas de terra"],
+];
+
+const stages = [
+  { n: "01", city: "Canela", line: "O portal da aventura", desc: "A largada entre vales, cânions e estradas rurais que anunciam a dimensão do desafio." },
+  { n: "02", city: "São Francisco de Paula", line: "Campos de altitude", desc: "Araucárias, terreno bruto e horizontes abertos no coração dos Campos de Cima da Serra." },
+  { n: "03", city: "Gramado", line: "Precisão e resistência", desc: "Uma etapa de leitura de terreno, estratégia e constância por caminhos pouco conhecidos." },
+  { n: "04", city: "Nova Petrópolis", line: "A chegada da lenda", desc: "O último capítulo: colônias, montanhas e a celebração de quem escolheu ir além." },
+];
+
+function Logo({ className = "" }: { className?: string }) {
+  return <img className={`officialLogo ${className}`} src="/legends-logo-official.png" alt="Legends Bike Race" />;
+}
+
+export default function Home() {
+  return (
+    <main>
+      <section className="hero" id="inicio">
+        <nav className="nav shell" aria-label="Navegação principal">
+          <a className="brand" href="#inicio" aria-label="Legends Bike Race — início"><Logo /></a>
+          <div className="navLinks">
+            <a href="#prova">A prova</a><a href="#percurso">Percurso</a><a href="#destinos">Destinos</a><a href="#experiencia">Experiência</a>
+          </div>
+          <a className="navCta" href="#inscricao">Quero participar</a>
+        </nav>
+
+        <div className="heroContent shell">
+          <p className="eyebrow">Serra Gaúcha · Brasil</p>
+          <h1>Onde a estrada<br />termina, a lenda<br />começa.</h1>
+          <p className="lead">Quatro dias. Quatro destinos.<br />Uma jornada para quem escolhe ir além.</p>
+          <div className="heroActions">
+            <a className="button" href="#inscricao">Viva a lenda <span>→</span></a>
+            <a className="textLink" href="#prova">Descubra a prova ↓</a>
+          </div>
+        </div>
+
+        <div className="heroBottom shell">
+          <div className="metrics">{metrics.map(([value,label]) => <div className="metric" key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
+          <p className="cities">Canela <i>·</i> São Francisco de Paula <i>·</i> Gramado <i>·</i> Nova Petrópolis</p>
+        </div>
+      </section>
+
+      <section className="manifesto section shell" id="prova">
+        <div className="sectionLabel"><span>01</span> A prova</div>
+        <div className="manifestoCopy">
+          <p className="eyebrow">Mais que uma competição</p>
+          <h2>Uma travessia por dentro da <em>Serra.</em> E por dentro de você.</h2>
+          <div className="twoCols">
+            <p>A Legends Ultimate é uma stage race de gravel criada para transformar distância em experiência. São quatro dias conectando alguns dos destinos mais emblemáticos da Serra Gaúcha.</p>
+            <p>Autonavegação, estradas de terra e altimetria exigente formam uma jornada premium para atletas que valorizam o caminho tanto quanto a chegada.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="route section" id="percurso">
+        <div className="shell">
+          <div className="routeHead"><div className="sectionLabel light"><span>02</span> O percurso</div><p>Quatro etapas. Uma história contínua.</p></div>
+          <div className="stageGrid">{stages.map(stage => <article className="stage" key={stage.n}><span className="stageN">{stage.n}</span><div><p>{stage.line}</p><h3>{stage.city}</h3><p className="stageDesc">{stage.desc}</p></div><span className="stageArrow">↗</span></article>)}</div>
+        </div>
+      </section>
+
+      <section className="destinations section shell" id="destinos">
+        <div className="sectionLabel"><span>03</span> O território</div>
+        <div className="destinationIntro"><h2>Quatro destinos.<br /><em>Uma única Serra.</em></h2><p>Da arquitetura às paisagens rurais, cada cidade entrega um capítulo próprio. Juntas, revelam uma região feita para o gravel.</p></div>
+        <div className="destinationNames"><span>CANELA</span><span>SÃO FRANCISCO<br />DE PAULA</span><span>GRAMADO</span><span>NOVA<br />PETRÓPOLIS</span></div>
+      </section>
+
+      <section className="experience section" id="experiencia">
+        <div className="shell experienceGrid">
+          <div><div className="sectionLabel light"><span>04</span> A experiência</div><h2>Seu corpo cruza a Serra.<br /><em>Sua história fica.</em></h2></div>
+          <div className="features"><div><span>01</span><h3>Autonavegação</h3><p>Liberdade, leitura de percurso e conexão real com o território.</p></div><div><span>02</span><h3>Estrutura premium</h3><p>Cuidado e excelência antes, durante e depois de cada etapa.</p></div><div><span>03</span><h3>Turismo esportivo</h3><p>Esporte, gastronomia, cultura e hospitalidade em uma só jornada.</p></div></div>
+        </div>
+      </section>
+
+      <section className="finalCta" id="inscricao">
+        <div className="shell"><Logo className="ctaLogo" /><p className="eyebrow">A estrada está chamando</p><h2>A próxima lenda<br />pode ser a sua.</h2><p>Cadastre seu interesse e receba as novidades da primeira edição.</p><a className="button" href="mailto:contato@threerace.com.br?subject=Tenho interesse na Legends Ultimate">Quero viver a Legends <span>→</span></a></div>
+      </section>
+
+      <footer className="footer shell"><Logo className="footerLogo" /><p>Uma experiência Threerace Sports</p><p>Serra Gaúcha · Brasil</p></footer>
+    </main>
+  );
+}
