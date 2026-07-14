@@ -7,7 +7,7 @@ const metrics = [
 
 const stages = [
   { n: "01", city: "Canela", line: "Canela → São Francisco de Paula", desc: "111 km de travessia, 1.420 m de ascensão e 78% de terreno não pavimentado.", href: "/percursos/stage-1" },
-  { n: "02", city: "São Francisco de Paula", line: "Campos de altitude", desc: "Araucárias, terreno bruto e horizontes abertos no coração dos Campos de Cima da Serra." },
+  { n: "02", city: "São Francisco de Paula", line: "São Francisco de Paula → Gramado", desc: "89,1 km, 1.520 m de ascensão e uma chegada decisiva pelas montanhas da Serra.", href: "/percursos/stage-2" },
   { n: "03", city: "Gramado", line: "Precisão e resistência", desc: "Uma etapa de leitura de terreno, estratégia e constância por caminhos pouco conhecidos." },
   { n: "04", city: "Nova Petrópolis", line: "A chegada da lenda", desc: "O último capítulo: colônias, montanhas e a celebração de quem escolheu ir além." },
 ];
