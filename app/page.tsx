@@ -6,7 +6,7 @@ const metrics = [
 ];
 
 const stages = [
-  { n: "01", city: "Canela", line: "O portal da aventura", desc: "A largada entre vales, cânions e estradas rurais que anunciam a dimensão do desafio." },
+  { n: "01", city: "Canela", line: "Canela → São Francisco de Paula", desc: "111 km de travessia, 1.420 m de ascensão e 78% de terreno não pavimentado.", href: "/percursos/stage-1" },
   { n: "02", city: "São Francisco de Paula", line: "Campos de altitude", desc: "Araucárias, terreno bruto e horizontes abertos no coração dos Campos de Cima da Serra." },
   { n: "03", city: "Gramado", line: "Precisão e resistência", desc: "Uma etapa de leitura de terreno, estratégia e constância por caminhos pouco conhecidos." },
   { n: "04", city: "Nova Petrópolis", line: "A chegada da lenda", desc: "O último capítulo: colônias, montanhas e a celebração de quem escolheu ir além." },
@@ -59,7 +59,7 @@ export default function Home() {
       <section className="route section" id="percurso">
         <div className="shell">
           <div className="routeHead"><div className="sectionLabel light"><span>02</span> O percurso</div><p>Quatro etapas. Uma história contínua.</p></div>
-          <div className="stageGrid">{stages.map(stage => <article className="stage" key={stage.n}><span className="stageN">{stage.n}</span><div><p>{stage.line}</p><h3>{stage.city}</h3><p className="stageDesc">{stage.desc}</p></div><span className="stageArrow">↗</span></article>)}</div>
+          <div className="stageGrid">{stages.map(stage => stage.href ? <a className="stage stageLink" href={stage.href} key={stage.n} aria-label={`Ver detalhes da etapa ${stage.n}: ${stage.city}`}><span className="stageN">{stage.n}</span><div><p>{stage.line}</p><h3>{stage.city}</h3><p className="stageDesc">{stage.desc}</p><span className="stageAction">Ver percurso</span></div><span className="stageArrow">↗</span></a> : <article className="stage" key={stage.n}><span className="stageN">{stage.n}</span><div><p>{stage.line}</p><h3>{stage.city}</h3><p className="stageDesc">{stage.desc}</p><span className="stageAction mutedAction">Detalhes em breve</span></div><span className="stageArrow">↗</span></article>)}</div>
         </div>
       </section>
 
