@@ -112,20 +112,23 @@ export default function Home() {
 
           .manifestoFeatureImage {
             width: calc(100vw - 40px);
-            height: 330px;
+            height: auto;
             margin-left: calc(50% - 50vw + 20px);
-            overflow: hidden;
+            overflow: visible;
             background: transparent;
           }
 
           .manifestoFeatureImage img {
-            width: 132%;
-            max-width: none;
-            height: 100%;
-            object-fit: cover;
-            object-position: 50% 56%;
-            transform: translateX(-12%);
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            transform: none;
             mix-blend-mode: multiply;
+            clip-path: inset(6% 0 0 0);
+            margin-top: -6%;
           }
 
           .manifestoFeatureCopy {
