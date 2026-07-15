@@ -77,3 +77,8 @@
 
 /* Preview: section 01 framed within one desktop viewport */
 @media(min-width:1001px) and (min-height:760px){.manifesto.section{min-height:100svh;padding-top:64px;padding-bottom:54px}.manifestoCopy>.eyebrow{margin-top:0}.manifestoCopy h2{font-size:clamp(54px,4.55vw,72px);margin:14px 0}.manifesto .twoCols{padding-top:20px;gap:64px}.manifesto .twoCols p{margin:0;font-size:15px;line-height:1.65}.manifestoFeature{margin-top:36px}.manifestoFeatureImage,.manifestoFeatureCopy{height:350px}.manifestoFeatureCopy{padding:34px 46px}.manifestoFeatureCopy h3{font-size:clamp(28px,1.8vw,34px)}}
+
+/* Route silhouettes in the homepage stage cards */
+.stageRouteGraphic{height:190px;margin:14px 0 8px;display:flex;align-items:center;justify-content:center;overflow:hidden;pointer-events:none}.stageRouteGraphic img{display:block;width:88%;height:88%;object-fit:contain;opacity:.48;filter:sepia(1) saturate(1.7) hue-rotate(340deg) brightness(.9)}.stageInfo{margin-top:auto}.stageInfo h3{margin:0 0 18px}.stageStats{margin:0 0 26px!important;color:#a5aaa1!important;font:500 14px/1.5 Manrope,Arial,sans-serif!important;text-transform:none!important;letter-spacing:0!important}.stage:hover .stageRouteGraphic img{opacity:.72}.stageLink .stageAction{margin-top:0}
+@media(max-width:1000px){.stageRouteGraphic{height:180px}.stageRouteGraphic img{width:82%;height:82%}}
+@media(max-width:640px){.stageRouteGraphic{height:150px;margin-top:8px}.stageInfo h3{font-size:36px}}

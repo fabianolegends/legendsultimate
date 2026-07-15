@@ -6,10 +6,10 @@ const metrics = [
 ];
 
 const stages = [
-  { n: "STAGE 01", city: "Canela", line: "Canela → São Francisco de Paula", desc: "111 km de travessia, 1.420 m de ascensão e 78% de terreno não pavimentado.", href: "/percursos/stage-1" },
-  { n: "STAGE 02", city: "São Francisco de Paula", line: "São Francisco de Paula → Gramado", desc: "89,1 km, 1.520 m de ascensão e uma chegada decisiva pelas montanhas da Serra.", href: "/percursos/stage-2" },
-  { n: "STAGE 03", city: "Gramado", line: "Gramado → Nova Petrópolis", desc: "99,7 km, 1.530 m de ascensão e uma travessia que desce ao vale antes da escalada final.", href: "/percursos/stage-3" },
-  { n: "STAGE 04", city: "Nova Petrópolis", line: "Nova Petrópolis → Gramado", desc: "70 km, 1.530 m de ascensão e o capítulo final pelos caminhos da Serra Gaúcha.", href: "/percursos/stage-4" },
+  { n: "STAGE 01", city: "Canela", stats: "111 km · 1.420 m de ascensão", route: "/stage-route-1.png", href: "/percursos/stage-1" },
+  { n: "STAGE 02", city: "São Francisco de Paula", stats: "89,1 km · 1.520 m de ascensão", route: "/stage-route-2.png", href: "/percursos/stage-2" },
+  { n: "STAGE 03", city: "Gramado", stats: "99,7 km · 1.530 m de ascensão", route: "/stage-route-3.png", href: "/percursos/stage-3" },
+  { n: "STAGE 04", city: "Nova Petrópolis", stats: "70 km · 1.530 m de ascensão", route: "/stage-route-4.png", href: "/percursos/stage-4" },
 ];
 
 function Logo({ className = "" }: { className?: string }) {
@@ -72,7 +72,7 @@ export default function Home() {
       <section className="route section" id="percurso">
         <div className="shell">
           <div className="routeHead"><div className="sectionLabel light"><span>02</span> O percurso</div><p>Quatro etapas. Uma história contínua.</p></div>
-          <div className="stageGrid">{stages.map(stage => stage.href ? <a className="stage stageLink" href={stage.href} key={stage.n} aria-label={`Ver detalhes da etapa ${stage.n}: ${stage.city}`}><span className="stageN">{stage.n}</span><div><p>{stage.line}</p><h3>{stage.city}</h3><p className="stageDesc">{stage.desc}</p><span className="stageAction">Ver percurso</span></div><span className="stageArrow">↗</span></a> : <article className="stage" key={stage.n}><span className="stageN">{stage.n}</span><div><p>{stage.line}</p><h3>{stage.city}</h3><p className="stageDesc">{stage.desc}</p><span className="stageAction mutedAction">Detalhes em breve</span></div><span className="stageArrow">↗</span></article>)}</div>
+          <div className="stageGrid">{stages.map(stage => <a className="stage stageLink" href={stage.href} key={stage.n} aria-label={`Ver detalhes da etapa ${stage.n}: ${stage.city}`}><span className="stageN">{stage.n}</span><div className="stageRouteGraphic" aria-hidden="true"><img src={stage.route} alt="" /></div><div className="stageInfo"><h3>{stage.city}</h3><p className="stageStats">{stage.stats}</p><span className="stageAction">Ver percurso</span></div><span className="stageArrow">↗</span></a>)}</div>
         </div>
       </section>
 
