@@ -58,7 +58,7 @@ export default function Home() {
               <img src="/manifesto-guid-bike.webp" alt="Orientações de navegação autossuficiente para os atletas" />
             </div>
             <div className="manifestoFeatureCopy">
-              <h3>Antes de aceitar o<br />desafio, entenda a jornada.</h3>
+              <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
               <i aria-hidden="true" />
               <p>Conheça a navegação, a classificação por pontos, as categorias e as quatro etapas.</p>
               <a href="/a-prova">Entenda como funciona <span>→</span></a>
