@@ -55,7 +55,7 @@ export default function StageOne() {
 
       <section className="stageData">
         <div className="shell stageDataGrid">
-          <div><p className="detailEyebrow">Características</p><dl className="dataList"><div><dt>Largada</dt><dd>Canela</dd></div><div><dt>Chegada</dt><dd>São Francisco de Paula</dd></div><div><dt>Ponto mais alto</dt><dd>990 m</dd></div><div><dt>Ponto mais baixo</dt><dd>640 m</dd></div><div><dt>Tempo-limite</dt><dd>A definir</dd></div><div><dt>Estimativa Komoot</dt><dd>9h22</dd></div></dl></div>
+          <div><p className="detailEyebrow">Características</p><dl className="dataList"><div><dt>Largada</dt><dd>Canela</dd></div><div><dt>Chegada</dt><dd>São Francisco de Paula</dd></div><div><dt>Ponto mais alto</dt><dd>990 m</dd></div><div><dt>Ponto mais baixo</dt><dd>640 m</dd></div><div><dt>Tempo-limite</dt><dd>10 horas</dd></div></dl></div>
           <div><p className="detailEyebrow">Superfícies</p><dl className="dataList">{surfaces.map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><a className="button detailButton" href="https://www.komoot.com/pt-br/tour/3089098231" target="_blank" rel="noreferrer">Ver percurso no Komoot <span>↗</span></a></div>
         </div>
       </section>

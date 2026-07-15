@@ -147,11 +147,7 @@ export default function StageThree() {
               </div>
               <div>
                 <dt>Tempo-limite</dt>
-                <dd>A definir</dd>
-              </div>
-              <div>
-                <dt>Estimativa Komoot</dt>
-                <dd>8h25</dd>
+                <dd>10 horas</dd>
               </div>
             </dl>
           </div>

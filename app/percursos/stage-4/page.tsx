@@ -63,8 +63,7 @@ export default function StageFour() {
               <div><dt>Chegada</dt><dd>Gramado</dd></div>
               <div><dt>Ponto mais alto</dt><dd>850 m</dd></div>
               <div><dt>Ponto mais baixo</dt><dd>500 m</dd></div>
-              <div><dt>Tempo-limite</dt><dd>A definir</dd></div>
-              <div><dt>Estimativa Komoot</dt><dd>5h42</dd></div>
+              <div><dt>Tempo-limite</dt><dd>6 horas</dd></div>
             </dl>
           </div>
           <div>

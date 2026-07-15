@@ -126,11 +126,7 @@ export default function StageTwo() {
               </div>
               <div>
                 <dt>Tempo-limite</dt>
-                <dd>A definir</dd>
-              </div>
-              <div>
-                <dt>Estimativa Komoot</dt>
-                <dd>7h36</dd>
+                <dd>9 horas</dd>
               </div>
             </dl>
           </div>
