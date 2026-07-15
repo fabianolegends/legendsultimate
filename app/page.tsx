@@ -71,21 +71,39 @@ export default function Home() {
 
         @media (max-width: 640px) {
           .hero {
-            min-height: auto;
+            min-height: 100svh;
+            display: grid;
+            grid-template-rows: 82px minmax(0, 1fr) auto;
           }
 
           .heroContent {
-            flex: 0 0 auto;
-            padding-top: 72px;
-            padding-bottom: 72px;
+            display: flex;
+            align-items: center;
+            min-height: 0;
+            flex: none;
+            padding-top: 30px;
+            padding-bottom: 24px;
           }
 
           .heroBottom {
-            padding-bottom: 34px;
+            padding-bottom: 28px;
           }
 
           .heroDockActions {
             margin-top: 0;
+            width: 100%;
+            gap: 22px;
+          }
+
+          .heroDockActions .button {
+            width: min(78%, 320px);
+            min-width: 0;
+            padding: 14px 20px;
+            gap: 22px;
+          }
+
+          .heroDockActions .textLink {
+            width: max-content;
           }
         }
       `}</style>
