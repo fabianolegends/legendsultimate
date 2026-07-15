@@ -74,3 +74,6 @@
 .heroDockActions{display:flex;align-items:flex-end;gap:46px;margin:0}.heroDockActions .button{margin:0}.heroDockActions .textLink{margin-bottom:18px}
 @media(max-width:1000px){.heroLockup{column-gap:11px}.heroGladiator{height:198px}}
 @media(max-width:640px){.heroLockup{column-gap:7px}.heroLockup>.eyebrow{margin-bottom:14px}.heroGladiator{height:120px}.heroLockup>h1{font-size:46px}.heroBottom{display:block}.heroBottom .metrics,.heroBottom .cities{display:none}.heroDockActions{align-items:flex-start;gap:20px;flex-direction:column}.heroDockActions .textLink{margin-bottom:0}}
+
+/* Preview: section 01 framed within one desktop viewport */
+@media(min-width:1001px) and (min-height:760px){.manifesto.section{min-height:100svh;padding-top:64px;padding-bottom:54px}.manifestoCopy>.eyebrow{margin-top:0}.manifestoCopy h2{font-size:clamp(54px,4.55vw,72px);margin:14px 0}.manifesto .twoCols{padding-top:20px;gap:64px}.manifesto .twoCols p{margin:0;font-size:15px;line-height:1.65}.manifestoFeature{margin-top:36px}.manifestoFeatureImage,.manifestoFeatureCopy{height:350px}.manifestoFeatureCopy{padding:34px 46px}.manifestoFeatureCopy h3{font-size:clamp(28px,1.8vw,34px)}}
