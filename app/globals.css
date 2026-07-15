@@ -62,6 +62,6 @@
 @media(max-width:640px){.manifestoFeatureImage{aspect-ratio:2.1/1}}
 
 /* Approved compact alignment for the homepage explainer */
-@media(min-width:1001px){.manifestoFeature{margin-top:113px;align-items:stretch}.manifestoFeatureImage,.manifestoFeatureCopy{height:440px;min-height:0}.manifestoFeatureImage{aspect-ratio:auto}.manifestoFeatureCopy{padding:42px 52px}.manifestoFeatureCopy h3{font-size:clamp(30px,2vw,38px);line-height:.96;white-space:nowrap}.manifestoFeatureCopy>i{margin:20px 0}.manifestoFeatureCopy>p{margin-bottom:24px;line-height:1.55}.manifestoFeatureCopy>a{padding-block:18px}}
+@media(min-width:1001px){.manifestoFeature{margin-top:76px;align-items:stretch}.manifestoFeatureImage,.manifestoFeatureCopy{height:440px;min-height:0}.manifestoFeatureImage{aspect-ratio:auto}.manifestoFeatureCopy{padding:42px 52px}.manifestoFeatureCopy h3{font-size:clamp(30px,2vw,38px);line-height:.96;white-space:nowrap}.manifestoFeatureCopy>i{margin:20px 0}.manifestoFeatureCopy>p{margin-bottom:24px;line-height:1.55}.manifestoFeatureCopy>a{padding-block:18px}}
 @media(max-width:1000px){.manifestoFeature{margin-top:70px}.manifestoFeatureCopy h3{white-space:normal}}
 @media(max-width:640px){.manifestoFeature{margin-top:55px}}
