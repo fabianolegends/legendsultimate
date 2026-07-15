@@ -105,6 +105,35 @@ export default function Home() {
           .heroDockActions .textLink {
             width: max-content;
           }
+
+          .manifestoFeature {
+            overflow: visible;
+          }
+
+          .manifestoFeatureImage {
+            width: calc(100vw - 40px);
+            height: 330px;
+            margin-left: calc(50% - 50vw + 20px);
+            overflow: hidden;
+            background: transparent;
+          }
+
+          .manifestoFeatureImage img {
+            width: 132%;
+            max-width: none;
+            height: 100%;
+            object-fit: cover;
+            object-position: 50% 56%;
+            transform: translateX(-12%);
+            mix-blend-mode: multiply;
+          }
+
+          .manifestoFeatureCopy {
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            padding-left: 28px;
+            padding-right: 28px;
+          }
         }
       `}</style>
 
