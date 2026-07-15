@@ -19,9 +19,13 @@ const menuItems = [
   {
     number: "02",
     title: "Como funciona",
-    summary: "Da entrega do kit à consagração final, conheça a rotina de cada etapa.",
+    summary: "Quatro etapas consecutivas, autonavegação por GPS, classificação diária e pontos acumulados para definir os campeões.",
     detail: [
-      "Briefing, largada, percurso por autonavegação, chegada, recuperação e preparação: a experiência foi desenhada para que os quatro dias formem uma única jornada.",
+      "A Legends Ultimate é disputada em quatro etapas consecutivas. Em cada dia, o atleta enfrenta um novo percurso, com distância, altimetria e características próprias. As etapas fazem parte de uma única travessia, mas possuem largadas, chegadas e classificações independentes.",
+      "Antes de cada etapa, a organização disponibiliza o arquivo GPX oficial e apresenta as informações técnicas do percurso, incluindo pontos de controle, locais de apoio, trechos de atenção e tempo-limite. A navegação é realizada pelo próprio atleta por meio de ciclocomputador ou dispositivo GPS compatível.",
+      "Durante o percurso, cada participante deverá administrar seu ritmo, alimentação, hidratação e condições mecânicas da bicicleta. A organização contará com estrutura de segurança, pontos de controle e assistência prevista para o evento, mas o atleta deverá possuir autonomia para realizar reparos básicos e continuar a prova dentro do tempo estabelecido.",
+      "Ao cruzar a linha de chegada, o tempo da etapa é registrado e os dez primeiros colocados de cada categoria recebem pontos para a classificação geral. Depois da chegada, começa a preparação para o dia seguinte: recuperação física, alimentação, revisão da bicicleta e definição da estratégia para o próximo percurso.",
+      "Para permanecer na disputa pelo título geral, o atleta deverá concluir as quatro etapas dentro dos respectivos tempos-limite. Ao final da Stage 04, a soma dos pontos conquistados ao longo da competição determinará os campeões de cada categoria.",
     ],
     href: "#como-funciona",
     link: "Veja a jornada diária",
