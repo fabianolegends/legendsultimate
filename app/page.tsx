@@ -12,6 +12,13 @@ const stages = [
   { n: "STAGE 04", city: "Nova Petrópolis", stats: "70 km · 1.530 m de ascensão", route: "/stage-route-4.png", href: "/percursos/stage-4" },
 ];
 
+const destinations = [
+  { name: "CANELA", icon: "/city-icon-canela.png", href: "https://canela.com.br/" },
+  { name: "SÃO FRANCISCO\nDE PAULA", icon: "/city-icon-sao-francisco.png", href: "https://www.saofranciscodepaula.rs.gov.br/portal/turismo" },
+  { name: "GRAMADO", icon: "/city-icon-gramado.png", href: "https://www.gramadoinesquecivel.tur.br/" },
+  { name: "NOVA\nPETRÓPOLIS", icon: "/city-icon-nova-petropolis.png", href: "https://turismo.novapetropolis.rs.gov.br/" },
+];
+
 function Logo({ className = "" }: { className?: string }) {
   return <img className={`officialLogo ${className}`} src="/legends-logo-official.png" alt="Legends Bike Race" />;
 }
@@ -78,8 +85,8 @@ export default function Home() {
 
       <section className="destinations section shell" id="destinos">
         <div className="sectionLabel"><span>03</span> O território</div>
-        <div className="destinationIntro"><h2>Quatro destinos.<br /><em>Uma única Serra.</em></h2><p>Da arquitetura às paisagens rurais, cada cidade entrega um capítulo próprio. Juntas, revelam uma região feita para o gravel.</p></div>
-        <div className="destinationNames"><span>CANELA</span><span>SÃO FRANCISCO<br />DE PAULA</span><span>GRAMADO</span><span>NOVA<br />PETRÓPOLIS</span></div>
+        <div className="destinationIntro"><h2>Quatro destinos.<br /><em>Uma única Serra.</em></h2><div className="destinationCopy"><p>Da arquitetura às paisagens rurais, cada cidade entrega um capítulo próprio. Juntas, revelam uma região feita para o gravel.</p><a className="destinationCta" href="#cidades">Conheça as cidades do percurso <span>→</span></a></div></div>
+        <div className="destinationNames" id="cidades">{destinations.map(destination => <a href={destination.href} target="_blank" rel="noreferrer" key={destination.name} aria-label={`Conheça ${destination.name.replace("\n", " ")}`}><span className="cityIcon"><img src={destination.icon} alt="" aria-hidden="true" /></span><strong>{destination.name.split("\n").map((line, index) => <span key={line}>{line}{index === 0 && destination.name.includes("\n") ? <br /> : null}</span>)}</strong><i aria-hidden="true">↗</i></a>)}</div>
       </section>
 
       <section className="experience section" id="experiencia">
