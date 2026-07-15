@@ -53,6 +53,7 @@ export default function Home() {
             <p>A Legends Ultimate é uma stage race de gravel criada para transformar distância em experiência. São quatro dias conectando alguns dos destinos mais emblemáticos da Serra Gaúcha.</p>
             <p>Autonavegação, estradas de terra e altimetria exigente formam uma jornada premium para atletas que valorizam o caminho tanto quanto a chegada.</p>
           </div>
+          <a className="manifestoLink" href="/a-prova">Entenda como funciona <span>→</span></a>
         </div>
       </section>
 
