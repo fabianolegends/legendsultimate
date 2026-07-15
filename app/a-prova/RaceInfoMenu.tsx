@@ -46,16 +46,6 @@ const menuItems = [
   },
   {
     number: "04",
-    title: "Classificação por pontos",
-    summary: "O tempo ordena cada etapa; os pontos definem os campeões da geral.",
-    detail: [
-      "As etapas têm pesos diferentes conforme distância, altimetria e dificuldade. A regularidade é decisiva e quem vencer as quatro etapas encerra a prova com 400 pontos.",
-    ],
-    href: "#classificacao",
-    link: "Consulte a pontuação",
-  },
-  {
-    number: "05",
     title: "Categorias e regras",
     summary: "Faixas etárias, tempos-limite, penalizações e critérios de desempate.",
     detail: [
@@ -63,6 +53,16 @@ const menuItems = [
     ],
     href: "#categorias-regras",
     link: "Leia as regras",
+  },
+  {
+    number: "05",
+    title: "Classificação por pontos",
+    summary: "O tempo ordena cada etapa; os pontos definem os campeões da geral.",
+    detail: [
+      "As etapas têm pesos diferentes conforme distância, altimetria e dificuldade. A regularidade é decisiva e quem vencer as quatro etapas encerra a prova com 400 pontos.",
+    ],
+    href: "#classificacao",
+    link: "Consulte a pontuação",
   },
   {
     number: "06",
