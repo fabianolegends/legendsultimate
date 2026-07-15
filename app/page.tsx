@@ -38,6 +38,7 @@ export default function Home() {
             align-items: center;
             min-height: 0;
             padding-top: 0;
+            padding-bottom: 80px;
           }
 
           .heroLockup {
