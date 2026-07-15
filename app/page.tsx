@@ -29,12 +29,17 @@ export default function Home() {
         </nav>
 
         <div className="heroContent shell">
-          <p className="eyebrow">Serra Gaúcha · Brasil</p>
-          <h1>Onde a estrada<br />termina, a lenda<br />começa.</h1>
-          <p className="lead">Quatro dias. Quatro destinos.<br />Uma jornada para quem escolhe ir além.</p>
-          <div className="heroActions">
-            <a className="button" href="#inscricao">Viva a lenda <span>→</span></a>
-            <a className="textLink" href="#prova">Descubra a prova ↓</a>
+          <div className="heroLockup">
+            <p className="eyebrow">Serra Gaúcha · Brasil</p>
+            <img className="heroGladiator" src="/hero-gladiator-official.png" alt="" aria-hidden="true" />
+            <h1>Onde a estrada<br />termina, a lenda<br />começa.</h1>
+            <div className="heroSupporting">
+              <p className="lead">Quatro dias. Quatro destinos.<br />Uma jornada para quem escolhe ir além.</p>
+              <div className="heroActions">
+                <a className="button" href="#inscricao">Viva a lenda <span>→</span></a>
+                <a className="textLink" href="#prova">Descubra a prova ↓</a>
+              </div>
+            </div>
           </div>
         </div>
 
