@@ -33,9 +33,13 @@ const menuItems = [
   {
     number: "03",
     title: "Autonavegação",
-    summary: "Arquivo GPX, GPS, checkpoints e autonomia fazem parte do desafio.",
+    summary: "O atleta recebe o arquivo GPX oficial e segue o percurso com seu próprio dispositivo GPS, sendo responsável pela navegação, bateria e correção de eventuais desvios.",
     detail: [
-      "O atleta recebe o arquivo oficial de cada etapa e deve estar preparado para navegar, administrar alimentação e hidratação e realizar reparos básicos durante o percurso.",
+      "Na Legends Ultimate, o percurso não será indicado por sinalização contínua. Cada atleta deverá seguir o trajeto oficial utilizando um ciclocomputador, relógio ou dispositivo GPS compatível com arquivos GPX.",
+      "Antes de cada etapa, a organização disponibilizará o arquivo oficial do percurso. O atleta deverá carregá-lo previamente em seu equipamento, conferir se a rota está funcionando corretamente e iniciar a navegação antes da largada. No briefing técnico também serão apresentados os principais pontos de atenção, locais de apoio e eventuais trechos que exijam maior cuidado.",
+      "Durante a prova, o próprio participante será responsável por acompanhar a rota, identificar mudanças de direção e perceber eventuais desvios. Caso saia do percurso, deverá retornar ao ponto em que abandonou o traçado oficial antes de continuar. Atalhos ou caminhos diferentes do arquivo disponibilizado poderão resultar em penalização ou desclassificação.",
+      "A autonavegação faz parte do desafio da Legends. Além da capacidade física, o atleta deverá manter atenção ao percurso, administrar a bateria do equipamento e estar preparado para resolver situações básicas sem depender de marcação permanente ao longo da estrada.",
+      "Recomenda-se utilizar um dispositivo com boa autonomia, iniciar cada etapa com a bateria completamente carregada e levar uma alternativa de segurança, como o arquivo salvo no celular ou uma fonte de energia portátil.",
     ],
     href: "#autonavegacao",
     link: "Conheça a navegação",
