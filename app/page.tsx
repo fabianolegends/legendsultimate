@@ -68,6 +68,26 @@ export default function Home() {
             z-index: 3;
           }
         }
+
+        @media (max-width: 640px) {
+          .hero {
+            min-height: auto;
+          }
+
+          .heroContent {
+            flex: 0 0 auto;
+            padding-top: 72px;
+            padding-bottom: 72px;
+          }
+
+          .heroBottom {
+            padding-bottom: 34px;
+          }
+
+          .heroDockActions {
+            margin-top: 0;
+          }
+        }
       `}</style>
 
       <section className="hero" id="inicio">
