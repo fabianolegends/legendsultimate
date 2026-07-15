@@ -47,9 +47,21 @@ const menuItems = [
   {
     number: "04",
     title: "Categorias e regras",
-    summary: "Faixas etárias, tempos-limite, penalizações e critérios de desempate.",
+    summary: "Categorias por faixa etária, participação mínima no feminino e regras essenciais para permanecer na classificação geral.",
     detail: [
-      "Open, Master e Senior têm classificações masculina e feminina. Para disputar o título geral, é necessário concluir todas as etapas dentro dos respectivos tempos-limite.",
+      "A Legends Ultimate contará com categorias definidas por gênero e faixa etária. A categoria de cada participante será determinada conforme sua idade e os critérios estabelecidos no regulamento oficial do evento.",
+      "§ Categorias masculinas",
+      "• Open: 18 a 35 anos",
+      "• Master: 36 a 49 anos",
+      "• Senior: 50 anos ou mais",
+      "§ Categorias femininas",
+      "• Feminina A: 18 a 40 anos",
+      "• Feminina B: 41 anos ou mais",
+      "Para que a divisão feminina seja mantida, será necessário um mínimo de cinco atletas inscritas em cada categoria. Caso esse número não seja atingido, todas as participantes serão reunidas em uma única categoria feminina.",
+      "Para permanecer na disputa pela classificação geral, o atleta deverá largar e concluir as quatro etapas dentro dos respectivos tempos-limite, seguir integralmente o percurso oficial e passar por todos os pontos de controle estabelecidos pela organização.",
+      "O uso de capacete será obrigatório durante toda a prova. Cada participante deverá portar o equipamento necessário para autonavegação, identificação oficial, hidratação, alimentação e realização de reparos mecânicos básicos.",
+      "Desvios do percurso deverão ser corrigidos com o retorno ao ponto em que o atleta deixou o traçado oficial. Atalhos, ausência em pontos de controle, auxílio externo em locais não autorizados, conduta antidesportiva ou descumprimento das orientações de segurança poderão resultar em advertência, penalização de tempo, perda de pontos ou desclassificação.",
+      "As regras detalhadas, os tempos-limite, os equipamentos obrigatórios e os procedimentos de fiscalização serão apresentados no regulamento oficial e reforçados durante os briefings técnicos do evento.",
     ],
     href: "#categorias-regras",
     link: "Leia as regras",
@@ -117,18 +129,48 @@ export default function RaceInfoMenu() {
                     padding: "8px clamp(8px, 4vw, 50px) 30px 8px",
                   }}
                 >
-                  {item.detail.map((paragraph) => (
-                    <p
-                      key={paragraph}
-                      style={{
-                        width: "100%",
-                        maxWidth: "none",
-                        margin: "0 0 18px",
-                      }}
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
+                  {item.detail.map((paragraph) => {
+                    const isSectionLabel = paragraph.startsWith("§ ");
+                    const isBullet = paragraph.startsWith("• ");
+                    const text = isSectionLabel || isBullet ? paragraph.slice(2) : paragraph;
+
+                    return (
+                      <p
+                        key={paragraph}
+                        style={{
+                          width: "100%",
+                          maxWidth: "none",
+                          margin: isSectionLabel ? "26px 0 12px" : isBullet ? "0 0 10px" : "0 0 18px",
+                          ...(isSectionLabel
+                            ? {
+                                color: "#c67a3b",
+                                fontFamily: "'Barlow Condensed', sans-serif",
+                                fontSize: "16px",
+                                fontWeight: 700,
+                                letterSpacing: ".14em",
+                                textTransform: "uppercase" as const,
+                              }
+                            : {}),
+                          ...(isBullet
+                            ? {
+                                display: "flex",
+                                alignItems: "baseline",
+                                gap: "12px",
+                                color: "#e1e2dc",
+                                fontWeight: 600,
+                              }
+                            : {}),
+                        }}
+                      >
+                        {isBullet && (
+                          <span aria-hidden="true" style={{ color: "#c67a3b", fontSize: "20px", lineHeight: 1 }}>
+                            •
+                          </span>
+                        )}
+                        {text}
+                      </p>
+                    );
+                  })}
                   <a href={item.href}>{item.link} <span aria-hidden="true">→</span></a>
                 </div>
               </div>
