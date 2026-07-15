@@ -26,6 +26,35 @@ function Logo({ className = "" }: { className?: string }) {
 export default function Home() {
   return (
     <main>
+      <style>{`
+        .heroLockup {
+          transform: scale(.7);
+          transform-origin: left center;
+        }
+
+        @media (min-width: 641px) {
+          .heroContent {
+            display: flex;
+            align-items: center;
+            min-height: 0;
+            padding-top: 0;
+          }
+
+          .heroDockActions {
+            position: absolute;
+            left: 0;
+            bottom: 100%;
+            z-index: 3;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .heroLockup {
+            transform-origin: left top;
+          }
+        }
+      `}</style>
+
       <section className="hero" id="inicio">
         <nav className="nav shell" aria-label="Navegação principal">
           <a className="brand" href="#inicio" aria-label="Legends Bike Race — início"><Logo /></a>
@@ -36,10 +65,10 @@ export default function Home() {
         </nav>
 
         <div className="heroContent shell">
-          <div className="heroLockup" style={{ transform: "scale(0.7)", transformOrigin: "left top" }}>
+          <div className="heroLockup">
             <p className="eyebrow">Serra Gaúcha · Brasil</p>
             <img className="heroGladiator" src="/hero-gladiator-official.png" alt="" aria-hidden="true" />
-            <h1>Onde a estrada<br />termina, a lenda<br />começa.</h1>
+            <h1>Onde o asfalto<br />termina, a lenda<br />começa.</h1>
           </div>
         </div>
 
