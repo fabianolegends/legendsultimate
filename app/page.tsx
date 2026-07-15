@@ -27,12 +27,12 @@ export default function Home() {
   return (
     <main>
       <style>{`
-        .heroLockup {
-          transform: scale(.7);
-          transform-origin: left center;
-        }
-
         @media (min-width: 641px) {
+          .hero {
+            display: grid;
+            grid-template-rows: 104px minmax(0, 1fr) auto;
+          }
+
           .heroContent {
             display: flex;
             align-items: center;
@@ -40,17 +40,31 @@ export default function Home() {
             padding-top: 0;
           }
 
+          .heroLockup {
+            width: min(100%, 651px);
+            column-gap: 10px;
+            transform: none;
+          }
+
+          .heroLockup > .eyebrow {
+            margin-bottom: 13px;
+            font-size: 14px;
+          }
+
+          .heroGladiator {
+            height: clamp(125px, 13.16vw, 216px);
+          }
+
+          .heroLockup > h1 {
+            max-width: 532px;
+            font-size: clamp(48px, 5.04vw, 83px);
+          }
+
           .heroDockActions {
             position: absolute;
             left: 0;
             bottom: 100%;
             z-index: 3;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .heroLockup {
-            transform-origin: left top;
           }
         }
       `}</style>
