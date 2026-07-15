@@ -67,11 +67,11 @@
 @media(max-width:640px){.manifestoFeature{margin-top:55px}}
 
 /* Homepage hero: official gladiator and headline lockup */
-.heroLockup{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:28px;width:min(100%,930px)}
+.heroLockup{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:14px;width:min(100%,930px)}
 .heroLockup>.eyebrow{grid-column:2;grid-row:1;margin:0 0 18px}
 .heroGladiator{grid-column:1;grid-row:2;align-self:center;display:block;width:auto;height:clamp(178px,18.8vw,308px);object-fit:contain}
 .heroLockup>h1{grid-column:2;grid-row:2;margin:0}
 .heroSupporting{grid-column:2;grid-row:3}
 .heroSupporting .lead{margin:24px 0 0}
-@media(max-width:1000px){.heroLockup{column-gap:22px}.heroGladiator{height:198px}}
-@media(max-width:640px){.heroLockup{column-gap:14px}.heroLockup>.eyebrow{margin-bottom:14px}.heroGladiator{height:120px}.heroLockup>h1{font-size:46px}.heroSupporting .lead{margin-top:20px}}
+@media(max-width:1000px){.heroLockup{column-gap:11px}.heroGladiator{height:198px}}
+@media(max-width:640px){.heroLockup{column-gap:7px}.heroLockup>.eyebrow{margin-bottom:14px}.heroGladiator{height:120px}.heroLockup>h1{font-size:46px}.heroSupporting .lead{margin-top:20px}}
