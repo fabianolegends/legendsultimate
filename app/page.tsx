@@ -36,7 +36,7 @@ export default function Home() {
         </nav>
 
         <div className="heroContent shell">
-          <div className="heroLockup">
+          <div className="heroLockup" style={{ transform: "scale(0.7)", transformOrigin: "left top" }}>
             <p className="eyebrow">Serra Gaúcha · Brasil</p>
             <img className="heroGladiator" src="/hero-gladiator-official.png" alt="" aria-hidden="true" />
             <h1>Onde a estrada<br />termina, a lenda<br />começa.</h1>
