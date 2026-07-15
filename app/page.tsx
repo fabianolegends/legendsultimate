@@ -127,9 +127,9 @@ export default function Home() {
 
           .manifestoFeatureImage {
             width: calc(100vw - 40px);
-            height: auto;
+            height: 360px;
             margin-left: calc(50% - 50vw + 20px);
-            overflow: visible;
+            overflow: hidden;
             background: transparent;
           }
 
@@ -140,15 +140,20 @@ export default function Home() {
             height: auto;
             object-fit: contain;
             object-position: center;
-            transform: none;
             filter: url(#removeGuidonBackground);
-            clip-path: none;
-            margin-top: 0;
+            clip-path: inset(11% 0 0 0);
+            transform: translateY(-11%);
+            margin: 0;
           }
 
           .manifestoFeatureCopy {
+            position: relative;
+            left: 50%;
             width: 100vw;
-            margin-left: calc(50% - 50vw);
+            max-width: none;
+            margin-left: 0;
+            transform: translateX(-50%);
+            box-sizing: border-box;
             padding-left: 28px;
             padding-right: 28px;
           }
