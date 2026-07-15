@@ -26,6 +26,21 @@ function Logo({ className = "" }: { className?: string }) {
 export default function Home() {
   return (
     <main>
+      <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: "absolute" }}>
+        <filter id="removeGuidonBackground" colorInterpolationFilters="sRGB">
+          <feColorMatrix
+            type="matrix"
+            values="1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    -0.2126 -0.7152 -0.0722 0 1"
+          />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="5" intercept="-0.72" />
+          </feComponentTransfer>
+        </filter>
+      </svg>
+
       <style>{`
         @media (min-width: 641px) {
           .hero {
@@ -126,9 +141,9 @@ export default function Home() {
             object-fit: contain;
             object-position: center;
             transform: none;
-            mix-blend-mode: multiply;
-            clip-path: inset(6% 0 0 0);
-            margin-top: -6%;
+            filter: url(#removeGuidonBackground);
+            clip-path: none;
+            margin-top: 0;
           }
 
           .manifestoFeatureCopy {
