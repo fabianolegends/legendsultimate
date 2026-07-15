@@ -12,6 +12,19 @@ const journey = [
   ["04", "A consagração", "Quem completa a travessia vive a chegada final em Gramado e passa a fazer parte da história da Legends."],
 ];
 
+const stagePoints = [
+  ["1º", "115", "100", "120", "65"],
+  ["2º", "98", "85", "102", "55"],
+  ["3º", "83", "72", "86", "47"],
+  ["4º", "70", "61", "73", "40"],
+  ["5º", "60", "52", "62", "34"],
+  ["6º", "51", "44", "53", "29"],
+  ["7º", "43", "37", "44", "24"],
+  ["8º", "36", "31", "37", "20"],
+  ["9º", "30", "26", "31", "17"],
+  ["10º", "25", "22", "26", "14"],
+];
+
 export default function AboutRace() {
   return (
     <main className="aboutRacePage">
@@ -45,19 +58,19 @@ export default function AboutRace() {
       </section>
 
       <section className="aboutGallery shell" aria-label="Experiência Legends">
-        <a className="galleryMain" href="https://www.instagram.com/legends.race/p/DGa0nXcxZvL/" target="_blank" rel="noreferrer">
-          <img src="/about-instagram-2.jpg" alt="Atletas Legends celebrando a conclusão da prova" />
-          <span>Superação compartilhada · Ver no Instagram ↗</span>
-        </a>
+        <div className="galleryMain">
+          <img src="/about-gravel-modern-wide.webp" alt="Ciclistas de gravel percorrendo as estradas da Serra Gaúcha" />
+          <span>Quatro dias. Um território inesquecível.</span>
+        </div>
         <div className="galleryStatement">
           <p className="detailEyebrow">Mais que quilômetros</p>
           <h2>O desafio termina.<br /><em>A história permanece.</em></h2>
           <p>Cada chegada reúne esforço, território e pessoas. É essa experiência que transforma participantes em Legends.</p>
         </div>
-        <a className="galleryPortrait" href="https://www.instagram.com/legends.race/p/DGa0nXcxZvL/" target="_blank" rel="noreferrer">
-          <img src="/about-instagram-3.jpg" alt="Atleta Legends com medalha e troféu após completar o desafio" />
-          <span>Quem aceita o desafio escreve a própria lenda ↗</span>
-        </a>
+        <div className="galleryPortrait">
+          <img src="/about-gravel-modern-portrait.webp" alt="Grupo de ciclistas em uma etapa de gravel na Serra Gaúcha" />
+          <span>Quem aceita o desafio escreve a própria lenda.</span>
+        </div>
       </section>
 
       <section className="aboutNavigation shell">
@@ -76,6 +89,66 @@ export default function AboutRace() {
           <div className="journeyHead"><p className="detailEyebrow">Como funciona</p><h2>Um dia de cada vez.<br /><em>Uma história contínua.</em></h2></div>
           <div className="journeyGrid">
             {journey.map(([number, title, text]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="classificationSection">
+        <div className="shell">
+          <div className="classificationIntro">
+            <p className="detailEyebrow">Classificação geral</p>
+            <div>
+              <h2>O tempo define a etapa.<br /><em>Os pontos fazem o campeão.</em></h2>
+              <p>A classificação geral será definida pela soma dos pontos conquistados — e não pela soma dos tempos. Cada etapa recebe um peso proporcional à distância, à altimetria, à dificuldade e ao tempo-limite. A soma dos pesos equivale a 4,00; quem vencer as quatro etapas termina com exatamente 400 pontos.</p>
+            </div>
+          </div>
+
+          <div className="stageWeights">
+            <article><span>Stage 01</span><strong>1,15</strong><p>Etapa longa e exigente.</p></article>
+            <article><span>Stage 02</span><strong>1,00</strong><p>Dificuldade intermediária.</p></article>
+            <article><span>Stage 03</span><strong>1,20</strong><p>Maior importância técnica e física.</p></article>
+            <article><span>Stage 04</span><strong>0,65</strong><p>Etapa mais curta, com limite de 6 horas.</p></article>
+          </div>
+
+          <div className="pointsTableWrap">
+            <div className="pointsTableHead"><p className="detailEyebrow">Pontuação por etapa</p><span>Os dez primeiros de cada categoria pontuam</span></div>
+            <table className="pointsTable">
+              <thead><tr><th>Colocação</th><th>Stage 01</th><th>Stage 02</th><th>Stage 03</th><th>Stage 04</th></tr></thead>
+              <tbody>{stagePoints.map(([place, ...points]) => <tr key={place}><th>{place}</th>{points.map((point, index) => <td key={index}>{point}</td>)}</tr>)}</tbody>
+            </table>
+          </div>
+
+          <div className="classificationBottom">
+            <div className="categoryBlock">
+              <p className="detailEyebrow">Categorias</p>
+              <div className="categoryCards">
+                <article><strong>Open</strong><span>18–35 anos</span></article>
+                <article><strong>Master</strong><span>36–49 anos</span></article>
+                <article><strong>Senior</strong><span>50 anos ou mais</span></article>
+              </div>
+              <p className="categoryNote">Classificações masculina e feminina separadas nas três faixas.</p>
+            </div>
+            <div className="rulesBlock">
+              <p className="detailEyebrow">Regras da geral</p>
+              <ul>
+                <li>Será campeão quem acumular o maior número de pontos após as quatro etapas.</li>
+                <li>Para integrar a classificação geral final, o atleta deverá completar todas as etapas dentro dos respectivos tempos-limite.</li>
+                <li>Quem não concluir uma etapa não pontua nela e deixa a disputa pelo título geral, mas pode continuar nas premiações individuais das etapas.</li>
+                <li>O tempo define a ordem de chegada de cada etapa, mas não é somado para decidir o campeão geral.</li>
+                <li>Penalizações poderão resultar em perda de pontos ou desclassificação.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="tieBreak">
+            <p className="detailEyebrow">Critérios de desempate</p>
+            <ol>
+              <li><span>01</span>Melhor colocação na Stage 04</li>
+              <li><span>02</span>Maior número de vitórias em etapas</li>
+              <li><span>03</span>Maior número de segundos lugares</li>
+              <li><span>04</span>Maior número de terceiros lugares</li>
+              <li><span>05</span>Menor tempo registrado na Stage 04</li>
+            </ol>
           </div>
         </div>
       </section>
