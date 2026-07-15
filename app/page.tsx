@@ -33,16 +33,14 @@ export default function Home() {
             <p className="eyebrow">Serra Gaúcha · Brasil</p>
             <img className="heroGladiator" src="/hero-gladiator-official.png" alt="" aria-hidden="true" />
             <h1>Onde a estrada<br />termina, a lenda<br />começa.</h1>
-            <div className="heroSupporting">
-              <div className="heroActions">
-                <a className="button" href="#inscricao">Viva a lenda <span>→</span></a>
-                <a className="textLink" href="#prova">Descubra a prova ↓</a>
-              </div>
-            </div>
           </div>
         </div>
 
         <div className="heroBottom shell">
+          <div className="heroDockActions">
+            <a className="button" href="#inscricao">Viva a lenda <span>→</span></a>
+            <a className="textLink" href="#prova">Descubra a prova ↓</a>
+          </div>
           <div className="metrics">{metrics.map(([value,label]) => <div className="metric" key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
           <p className="cities">Canela <i>·</i> São Francisco de Paula <i>·</i> Gramado <i>·</i> Nova Petrópolis</p>
         </div>

@@ -71,7 +71,6 @@
 .heroLockup>.eyebrow{grid-column:2;grid-row:1;margin:0 0 18px}
 .heroGladiator{grid-column:1;grid-row:2;align-self:center;display:block;width:auto;height:clamp(178px,18.8vw,308px);object-fit:contain}
 .heroLockup>h1{grid-column:2;grid-row:2;margin:0}
-.heroSupporting{grid-column:2;grid-row:3}
-.heroSupporting .lead{margin:24px 0 0}
+.heroDockActions{display:flex;align-items:flex-end;gap:46px;margin:0}.heroDockActions .button{margin:0}.heroDockActions .textLink{margin-bottom:18px}
 @media(max-width:1000px){.heroLockup{column-gap:11px}.heroGladiator{height:198px}}
-@media(max-width:640px){.heroLockup{column-gap:7px}.heroLockup>.eyebrow{margin-bottom:14px}.heroGladiator{height:120px}.heroLockup>h1{font-size:46px}.heroSupporting .lead{margin-top:20px}}
+@media(max-width:640px){.heroLockup{column-gap:7px}.heroLockup>.eyebrow{margin-bottom:14px}.heroGladiator{height:120px}.heroLockup>h1{font-size:46px}.heroBottom{display:block}.heroBottom .metrics,.heroBottom .cities{display:none}.heroDockActions{align-items:flex-start;gap:20px;flex-direction:column}.heroDockActions .textLink{margin-bottom:0}}
