@@ -55,7 +55,7 @@ export default function Home() {
           </div>
           <div className="manifestoFeature">
             <div className="manifestoFeatureImage">
-              <img src="/manifesto-bike-gravel.webp" alt="Ilustração técnica de uma bicicleta de gravel equipada para a prova" />
+              <img src="/manifesto-guid-bike.webp" alt="Orientações de navegação autossuficiente para os atletas" />
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o<br />desafio, entenda a jornada.</h3>

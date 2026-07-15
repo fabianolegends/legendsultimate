@@ -56,3 +56,7 @@
 .manifestoFeatureImage{aspect-ratio:16/9;background:#182630}.manifestoFeatureImage img{object-fit:contain;object-position:center}
 @media(max-width:1000px){.manifestoFeatureImage{aspect-ratio:16/9}}
 @media(max-width:640px){.manifestoFeatureImage{aspect-ratio:16/9}}
+
+.manifestoFeatureImage{aspect-ratio:2.1/1;background:#f4f0db}.manifestoFeatureImage img{object-fit:contain;mix-blend-mode:multiply}
+@media(max-width:1000px){.manifestoFeatureImage{aspect-ratio:2.1/1}}
+@media(max-width:640px){.manifestoFeatureImage{aspect-ratio:2.1/1}}
