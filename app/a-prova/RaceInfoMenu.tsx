@@ -103,10 +103,8 @@ export default function RaceInfoMenu() {
 
               <div className="raceInfoPanel" id={panelId} hidden={!isOpen}>
                 <div>
-                  <div className="raceInfoCopy">
-                    {item.detail.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-                    <a href={item.href}>{item.link} <span aria-hidden="true">→</span></a>
-                  </div>
+                  {item.detail.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                  <a href={item.href}>{item.link} <span aria-hidden="true">→</span></a>
                 </div>
               </div>
             </article>
