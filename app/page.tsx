@@ -108,7 +108,7 @@ export default function Home() {
           </div>
           <div className="manifestoFeature">
             <div className="manifestoFeatureImage">
-              <img src="/manifesto-guid-bike.webp" alt="Orientações de navegação autossuficiente para os atletas" />
+              <img src="/manifesto-guid-bike-approved.svg" alt="Guidão gravel com ciclocomputador" />
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
