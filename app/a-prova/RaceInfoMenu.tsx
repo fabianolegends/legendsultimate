@@ -102,8 +102,25 @@ export default function RaceInfoMenu() {
               </button>
 
               <div className="raceInfoPanel" id={panelId} hidden={!isOpen}>
-                <div>
-                  {item.detail.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                <div
+                  style={{
+                    display: "block",
+                    marginLeft: "clamp(0px, 6.2vw, 94px)",
+                    padding: "8px clamp(8px, 4vw, 50px) 30px 8px",
+                  }}
+                >
+                  {item.detail.map((paragraph) => (
+                    <p
+                      key={paragraph}
+                      style={{
+                        width: "100%",
+                        maxWidth: "none",
+                        margin: "0 0 18px",
+                      }}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
                   <a href={item.href}>{item.link} <span aria-hidden="true">→</span></a>
                 </div>
               </div>
