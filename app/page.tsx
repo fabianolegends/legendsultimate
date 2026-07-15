@@ -74,7 +74,7 @@ export default function Home() {
         <nav className="nav shell" aria-label="Navegação principal">
           <a className="brand" href="#inicio" aria-label="Legends Bike Race — início"><Logo /></a>
           <div className="navLinks">
-            <a href="#prova">A prova</a><a href="#percurso">Percurso</a><a href="#destinos">Destinos</a><a href="#experiencia">Experiência</a>
+            <a href="/a-prova">A prova</a><a href="#percurso">Percurso</a><a href="#destinos">Destinos</a><a href="#experiencia">Experiência</a>
           </div>
           <a className="navCta" href="#inscricao">Quero participar</a>
         </nav>
