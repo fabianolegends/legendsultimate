@@ -1,3 +1,5 @@
+import RaceInfoMenu from "./RaceInfoMenu";
+
 const numbers = [
   ["04", "dias de prova"],
   ["370 km", "de percurso"],
@@ -41,10 +43,11 @@ export default function AboutRace() {
           <div className="aboutNumbers">
             {numbers.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
           </div>
+          <RaceInfoMenu />
         </div>
       </section>
 
-      <section className="aboutConcept">
+      <section className="aboutConcept" id="conceito">
         <div className="shell aboutConceptGrid">
           <p className="detailEyebrow">O conceito</p>
           <div>
@@ -73,7 +76,7 @@ export default function AboutRace() {
         </div>
       </section>
 
-      <section className="aboutNavigation shell">
+      <section className="aboutNavigation shell" id="autonavegacao">
         <div>
           <p className="detailEyebrow">Autonavegação</p>
           <h2>Você escolhe o ritmo.<br /><em>O percurso mostra o caminho.</em></h2>
@@ -84,7 +87,7 @@ export default function AboutRace() {
         </div>
       </section>
 
-      <section className="dailyJourney">
+      <section className="dailyJourney" id="como-funciona">
         <div className="shell">
           <div className="journeyHead"><p className="detailEyebrow">Como funciona</p><h2>Um dia de cada vez.<br /><em>Uma história contínua.</em></h2></div>
           <div className="journeyGrid">
@@ -93,7 +96,7 @@ export default function AboutRace() {
         </div>
       </section>
 
-      <section className="classificationSection">
+      <section className="classificationSection" id="classificacao">
         <div className="shell">
           <div className="classificationIntro">
             <p className="detailEyebrow">Classificação geral</p>
@@ -118,7 +121,7 @@ export default function AboutRace() {
             </table>
           </div>
 
-          <div className="classificationBottom">
+          <div className="classificationBottom" id="categorias-regras">
             <div className="categoryBlock">
               <p className="detailEyebrow">Categorias</p>
               <div className="categoryCards">
@@ -153,7 +156,7 @@ export default function AboutRace() {
         </div>
       </section>
 
-      <section className="aboutAudience shell">
+      <section className="aboutAudience shell" id="para-quem">
         <p className="detailEyebrow">Para quem é</p>
         <div>
           <h2>Para quem entende que<br /><em>chegar é parte da jornada.</em></h2>
