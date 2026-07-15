@@ -50,7 +50,7 @@ export default function Home() {
         <div className="sectionLabel"><span>01</span> A prova</div>
         <div className="manifestoCopy">
           <p className="eyebrow">Mais que uma competição</p>
-          <h2>Uma travessia por dentro da <em>Serra.</em> E por dentro de você.</h2>
+          <h2>Uma travessia pela <em>Serra.</em> Uma jornada além do percurso.</h2>
           <div className="twoCols">
             <p>A Legends Ultimate é uma stage race de gravel criada para transformar distância em experiência. São quatro dias conectando alguns dos destinos mais emblemáticos da Serra Gaúcha.</p>
             <p>Autonavegação, estradas de terra e altimetria exigente formam uma jornada premium para atletas que valorizam o caminho tanto quanto a chegada.</p>
