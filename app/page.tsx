@@ -28,135 +28,67 @@ export default function Home() {
     <main>
       <style>{`
         @media (min-width: 641px) {
-          .hero {
-            display: grid;
-            grid-template-rows: 104px minmax(0, 1fr) auto;
-          }
+          .hero { display:grid; grid-template-rows:104px minmax(0,1fr) auto; }
+          .heroContent { display:flex; align-items:center; min-height:0; padding-top:0; padding-bottom:80px; }
+          .heroLockup { width:min(100%,651px); column-gap:10px; transform:none; }
+          .heroLockup > .eyebrow { margin-bottom:13px; font-size:14px; }
+          .heroGladiator { height:clamp(125px,13.16vw,216px); }
+          .heroLockup > h1 { max-width:532px; font-size:clamp(48px,5.04vw,83px); }
+          .heroDockActions { position:absolute; left:0; bottom:100%; z-index:3; }
 
-          .heroContent {
-            display: flex;
-            align-items: center;
-            min-height: 0;
-            padding-top: 0;
-            padding-bottom: 80px;
+          .manifestoContentGrid {
+            display:grid;
+            grid-template-columns:minmax(0,1fr) minmax(520px,1.08fr);
+            gap:56px;
+            align-items:stretch;
+            margin-top:42px;
           }
-
-          .heroLockup {
-            width: min(100%, 651px);
-            column-gap: 10px;
-            transform: none;
+          .manifestoTextColumns {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:38px;
+            border-top:1px solid #b9b1a4;
+            padding-top:28px;
+            align-content:start;
           }
-
-          .heroLockup > .eyebrow {
-            margin-bottom: 13px;
-            font-size: 14px;
+          .manifestoTextColumns p {
+            margin:0;
+            font-size:17px;
+            line-height:1.8;
+            color:#4d504a;
           }
-
-          .heroGladiator {
-            height: clamp(125px, 13.16vw, 216px);
-          }
-
-          .heroLockup > h1 {
-            max-width: 532px;
-            font-size: clamp(48px, 5.04vw, 83px);
-          }
-
-          .heroDockActions {
-            position: absolute;
-            left: 0;
-            bottom: 100%;
-            z-index: 3;
-          }
-
-          .manifestoFeatureImage {
-            background: transparent;
-          }
-
-          .manifestoFeatureImage img {
-            display: block;
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            background: transparent;
-            mix-blend-mode: normal;
-            opacity: 1;
-            visibility: visible;
+          .manifestoFeatureCopy {
+            width:100%;
+            min-height:100%;
+            margin:0;
           }
         }
 
         @media (max-width: 640px) {
-          .hero {
-            min-height: 100svh;
-            display: grid;
-            grid-template-rows: 82px minmax(0, 1fr) auto;
-          }
+          .hero { min-height:100svh; display:grid; grid-template-rows:82px minmax(0,1fr) auto; }
+          .heroContent { display:flex; align-items:center; min-height:0; flex:none; padding-top:30px; padding-bottom:24px; }
+          .heroBottom { padding-bottom:28px; }
+          .heroDockActions { margin-top:0; width:100%; gap:22px; }
+          .heroDockActions .button { width:min(78%,320px); min-width:0; padding:14px 20px; gap:22px; }
+          .heroDockActions .textLink { width:max-content; }
 
-          .heroContent {
-            display: flex;
-            align-items: center;
-            min-height: 0;
-            flex: none;
-            padding-top: 30px;
-            padding-bottom: 24px;
+          .manifestoContentGrid { display:block; margin-top:30px; }
+          .manifestoTextColumns {
+            display:grid;
+            grid-template-columns:1fr;
+            gap:14px;
+            border-top:1px solid #b9b1a4;
+            padding-top:24px;
+            margin-bottom:34px;
           }
-
-          .heroBottom {
-            padding-bottom: 28px;
-          }
-
-          .heroDockActions {
-            margin-top: 0;
-            width: 100%;
-            gap: 22px;
-          }
-
-          .heroDockActions .button {
-            width: min(78%, 320px);
-            min-width: 0;
-            padding: 14px 20px;
-            gap: 22px;
-          }
-
-          .heroDockActions .textLink {
-            width: max-content;
-          }
-
-          .manifestoFeature {
-            overflow: visible;
-            gap: 0;
-          }
-
-          .manifestoFeatureImage {
-            width: calc(100vw - 40px);
-            margin-left: calc(50% - 50vw + 20px);
-            height: auto;
-            overflow: visible;
-            background: transparent;
-          }
-
-          .manifestoFeatureImage img {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            object-fit: contain;
-            object-position: center;
-            transform: none;
-            filter: none;
-            mix-blend-mode: normal;
-            clip-path: none;
-            margin: 0;
-            opacity: 1;
-            visibility: visible;
-          }
-
+          .manifestoTextColumns p { margin:0; font-size:16px; line-height:1.75; color:#4d504a; }
           .manifestoFeatureCopy {
-            width: 100vw !important;
-            max-width: none !important;
-            margin: 20px 0 0 calc(50% - 50vw) !important;
-            padding: 36px 28px !important;
-            box-sizing: border-box;
-            border-radius: 0 !important;
+            width:100vw !important;
+            max-width:none !important;
+            margin-left:calc((100vw - 100%) / -2) !important;
+            padding:42px 28px !important;
+            box-sizing:border-box;
+            border-radius:0 !important;
           }
         }
       `}</style>
@@ -193,13 +125,10 @@ export default function Home() {
         <div className="manifestoCopy">
           <p className="eyebrow">Mais que uma competição</p>
           <h2>Uma travessia pela <em>Serra.</em> Uma jornada além do percurso.</h2>
-          <div className="twoCols">
-            <p>A Legends Ultimate é uma stage race de gravel criada para transformar distância em experiência. São quatro dias conectando alguns dos destinos mais emblemáticos da Serra Gaúcha.</p>
-            <p>Autonavegação, estradas de terra e altimetria exigente formam uma jornada premium para atletas que valorizam o caminho tanto quanto a chegada.</p>
-          </div>
-          <div className="manifestoFeature">
-            <div className="manifestoFeatureImage">
-              <img src="/guidom-gravel-final.svg" alt="Guidão gravel com ciclocomputador" />
+          <div className="manifestoContentGrid">
+            <div className="manifestoTextColumns">
+              <p>A Legends Ultimate é uma stage race de gravel criada para transformar distância em experiência. São quatro dias conectando alguns dos destinos mais emblemáticos da Serra Gaúcha.</p>
+              <p>Autonavegação, estradas de terra e altimetria exigente formam uma jornada premium para atletas que valorizam o caminho tanto quanto a chegada.</p>
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
@@ -221,7 +150,7 @@ export default function Home() {
       <section className="destinations section shell" id="destinos">
         <div className="sectionLabel"><span>03</span> O território</div>
         <div className="destinationIntro"><h2>Quatro destinos.<br /><em>Uma única Serra.</em></h2><div className="destinationCopy"><p>Da arquitetura às paisagens rurais, cada cidade entrega um capítulo próprio. Juntas, revelam uma região feita para o gravel.</p><a className="destinationCta" href="#cidades">Conheça as cidades do percurso <span>→</span></a></div></div>
-        <div className="destinationNames" id="cidades">{destinations.map(destination => <a href={destination.href} target="_blank" rel="noreferrer" key={destination.name} aria-label={`Conheça ${destination.name.replace("\n", " ")}`}><span className="cityIcon"><img src={destination.icon} alt="" aria-hidden="true" /></span><strong>{destination.name.split("\n").map((line, index) => <span key={line}>{line}{index === 0 && destination.name.includes("\n") ? <br /> : null}</span>)}</strong><i aria-hidden="true">↗</i></a>)}</div>
+        <div className="destinationNames" id="cidades">{destinations.map(destination => <a href={destination.href} target="_blank" rel="noreferrer" key={destination.name} aria-label={`Conheça ${destination.name.replace("\n", " ")}`}><span className="cityIcon"><img src={destination.icon} alt="" aria-hidden="true" /></span><strong>{destination.name.split("\n").map((line,index) => <span key={line}>{line}{index === 0 && destination.name.includes("\n") ? <br /> : null}</span>)}</strong><i aria-hidden="true">↗</i></a>)}</div>
       </section>
 
       <section className="experience section" id="experiencia">
