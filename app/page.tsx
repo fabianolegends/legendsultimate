@@ -128,9 +128,7 @@ export default function Home() {
 
           .manifestoFeatureImage {
             width: calc(100vw - 40px);
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-left: calc(50% - 50vw + 20px);
             height: auto;
             overflow: visible;
             background: transparent;
@@ -155,10 +153,7 @@ export default function Home() {
           .manifestoFeatureCopy {
             width: 100vw !important;
             max-width: none !important;
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-            margin: 20px 0 0 !important;
+            margin: 20px 0 0 calc(50% - 50vw) !important;
             padding: 36px 28px !important;
             box-sizing: border-box;
             border-radius: 0 !important;
@@ -204,7 +199,7 @@ export default function Home() {
           </div>
           <div className="manifestoFeature">
             <div className="manifestoFeatureImage">
-              <img src="/manifesto-guid-bike-approved.svg" alt="Guidão gravel com ciclocomputador" />
+              <img src="/guidom-gravel-final.svg" alt="Guidão gravel com ciclocomputador" />
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
