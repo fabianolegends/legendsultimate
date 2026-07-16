@@ -181,7 +181,10 @@ export default function Home() {
           </div>
           <div className="manifestoFeature">
             <div className="manifestoFeatureImage">
-              <img src="/guidom-gravel-transparente-v2.svg" alt="Guidão gravel com ciclocomputador" />
+              <picture>
+                <source media="(max-width: 640px)" srcSet="/guidom-gravel-transparente-v2.svg" />
+                <img src="/manifesto-guid-bike-approved.svg" alt="Guidão gravel com ciclocomputador" />
+              </picture>
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
