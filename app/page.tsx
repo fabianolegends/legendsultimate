@@ -68,12 +68,17 @@ export default function Home() {
             z-index: 3;
           }
 
+          .manifestoFeatureImage {
+            background: transparent;
+          }
+
           .manifestoFeatureImage img {
             display: block;
             width: 100%;
             height: auto;
             object-fit: contain;
             background: transparent;
+            mix-blend-mode: multiply;
           }
         }
 
@@ -136,6 +141,7 @@ export default function Home() {
             object-position: center;
             transform: none;
             filter: none;
+            mix-blend-mode: normal;
             clip-path: none;
             margin: 0;
           }
