@@ -38,17 +38,19 @@ export default function Home() {
 
           .manifestoContentGrid {
             display:grid;
-            grid-template-columns:minmax(0,1fr) minmax(520px,1.08fr);
-            gap:56px;
+            grid-template-columns:minmax(0,1fr) minmax(520px,1fr);
+            gap:60px;
             align-items:stretch;
+            width:133.333%;
+            margin-left:-33.333%;
             margin-top:42px;
           }
           .manifestoTextColumns {
             display:grid;
             grid-template-columns:1fr 1fr;
-            gap:38px;
+            gap:46px;
             border-top:1px solid #b9b1a4;
-            padding-top:28px;
+            padding-top:32px;
             align-content:start;
           }
           .manifestoTextColumns p {
@@ -61,6 +63,15 @@ export default function Home() {
             width:100%;
             min-height:100%;
             margin:0;
+            padding:48px 52px;
+            overflow:visible;
+          }
+          .manifestoFeatureCopy h3 {
+            white-space:normal;
+            overflow-wrap:normal;
+            word-break:normal;
+            max-width:100%;
+            line-height:1.08;
           }
         }
 
@@ -72,7 +83,7 @@ export default function Home() {
           .heroDockActions .button { width:min(78%,320px); min-width:0; padding:14px 20px; gap:22px; }
           .heroDockActions .textLink { width:max-content; }
 
-          .manifestoContentGrid { display:block; margin-top:30px; }
+          .manifestoContentGrid { display:block; width:100%; margin:30px 0 0; }
           .manifestoTextColumns {
             display:grid;
             grid-template-columns:1fr;
@@ -89,6 +100,14 @@ export default function Home() {
             padding:42px 28px !important;
             box-sizing:border-box;
             border-radius:0 !important;
+            overflow:visible;
+          }
+          .manifestoFeatureCopy h3 {
+            white-space:normal;
+            overflow-wrap:normal;
+            word-break:normal;
+            max-width:100%;
+            line-height:1.08;
           }
         }
       `}</style>
