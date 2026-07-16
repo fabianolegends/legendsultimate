@@ -77,8 +77,11 @@ export default function Home() {
             width: 100%;
             height: auto;
             object-fit: contain;
+            object-position: center;
             background: transparent;
-            mix-blend-mode: multiply;
+            mix-blend-mode: normal;
+            filter: none;
+            opacity: 1;
           }
         }
 
