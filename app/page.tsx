@@ -77,11 +77,10 @@ export default function Home() {
             width: 100%;
             height: auto;
             object-fit: contain;
-            object-position: center;
             background: transparent;
             mix-blend-mode: normal;
-            filter: none;
             opacity: 1;
+            visibility: visible;
           }
         }
 
@@ -129,7 +128,9 @@ export default function Home() {
 
           .manifestoFeatureImage {
             width: calc(100vw - 40px);
-            margin-left: calc(50% - 50vw + 20px);
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
             height: auto;
             overflow: visible;
             background: transparent;
@@ -147,15 +148,20 @@ export default function Home() {
             mix-blend-mode: normal;
             clip-path: none;
             margin: 0;
+            opacity: 1;
+            visibility: visible;
           }
 
           .manifestoFeatureCopy {
-            width: 100vw;
-            max-width: none;
-            margin: 20px 0 0 calc(50% - 50vw);
-            padding-left: 28px;
-            padding-right: 28px;
+            width: 100vw !important;
+            max-width: none !important;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 20px 0 0 !important;
+            padding: 36px 28px !important;
             box-sizing: border-box;
+            border-radius: 0 !important;
           }
         }
       `}</style>
@@ -198,7 +204,7 @@ export default function Home() {
           </div>
           <div className="manifestoFeature">
             <div className="manifestoFeatureImage">
-              <img src="/guidom-gravel-transparente-v2.svg" alt="Guidão gravel com ciclocomputador" />
+              <img src="/manifesto-guid-bike-approved.svg" alt="Guidão gravel com ciclocomputador" />
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
