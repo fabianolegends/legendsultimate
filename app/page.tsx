@@ -26,21 +26,6 @@ function Logo({ className = "" }: { className?: string }) {
 export default function Home() {
   return (
     <main>
-      <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: "absolute" }}>
-        <filter id="removeGuidonBackground" colorInterpolationFilters="sRGB">
-          <feColorMatrix
-            type="matrix"
-            values="1 0 0 0 0
-                    0 1 0 0 0
-                    0 0 1 0 0
-                    -0.2126 -0.7152 -0.0722 0 1"
-          />
-          <feComponentTransfer>
-            <feFuncA type="linear" slope="5" intercept="-0.72" />
-          </feComponentTransfer>
-        </filter>
-      </svg>
-
       <style>{`
         @media (min-width: 641px) {
           .hero {
@@ -123,13 +108,14 @@ export default function Home() {
 
           .manifestoFeature {
             overflow: visible;
+            gap: 0;
           }
 
           .manifestoFeatureImage {
             width: calc(100vw - 40px);
-            height: 360px;
             margin-left: calc(50% - 50vw + 20px);
-            overflow: hidden;
+            height: auto;
+            overflow: visible;
             background: transparent;
           }
 
@@ -140,22 +126,19 @@ export default function Home() {
             height: auto;
             object-fit: contain;
             object-position: center;
-            filter: url(#removeGuidonBackground);
-            clip-path: inset(11% 0 0 0);
-            transform: translateY(-11%);
+            transform: none;
+            filter: none;
+            clip-path: none;
             margin: 0;
           }
 
           .manifestoFeatureCopy {
-            position: relative;
-            left: 50%;
             width: 100vw;
             max-width: none;
-            margin-left: 0;
-            transform: translateX(-50%);
-            box-sizing: border-box;
+            margin: 20px 0 0 calc(50% - 50vw);
             padding-left: 28px;
             padding-right: 28px;
+            box-sizing: border-box;
           }
         }
       `}</style>
@@ -198,7 +181,7 @@ export default function Home() {
           </div>
           <div className="manifestoFeature">
             <div className="manifestoFeatureImage">
-              <img src="/manifesto-guid-bike-approved.svg" alt="Guidão gravel com ciclocomputador" />
+              <img src="/guidom-gravel-transparente-v2.svg" alt="Guidão gravel com ciclocomputador" />
             </div>
             <div className="manifestoFeatureCopy">
               <h3>Antes de aceitar o desafio, entenda a jornada.</h3>
