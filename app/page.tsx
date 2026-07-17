@@ -113,7 +113,6 @@ export default function Home() {
           <h2 className="manifestoQuote">A Legends não foi criada para quem procura apenas uma medalha. Foi criada para quem acredita que a bicicleta é o melhor passaporte para <em>descobrir lugares, pessoas e histórias.</em></h2>
           <a className="manifestoButton" href="/a-prova"><span>Entenda como funciona a Legends</span><span>→</span></a>
         </div>
-        <div className="manifestoHighlights"><span><i aria-hidden="true">⌖</i><b>Autonavegação<br />por GPS</b></span><span><i aria-hidden="true">▣</i><b>Transporte<br />de bagagem</b></span><span><i aria-hidden="true">♜</i><b>Classificação<br />por pontos</b></span><span><i aria-hidden="true">⛰</i><b>4 dias · 360 km<br />6.000 m+</b></span></div>
       </div></section>
 
       <section className="factsBand"><div className="wide"><div className="sectionHead"><div><p className="kicker">O que torna a Legends diferente</p><h2>Aventura com estrutura.<br /><em>Autonomia com cuidado.</em></h2></div><p>Uma experiência pensada para eliminar a complexidade logística sem retirar do atleta o protagonismo da jornada.</p></div><div className="factsGrid">{differences.map(([n,title,text]) => <div className="fact" key={n}><span>{n}</span><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
