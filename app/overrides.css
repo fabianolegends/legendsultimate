@@ -149,3 +149,122 @@
     border-bottom: 1px solid rgba(255,255,255,.35) !important;
   }
 }
+
+/* Homepage V2 — live composition based on the approved Legends visual. */
+.redesign .showcaseHero {
+  display: block;
+  min-height: 0;
+  color: #171817;
+  background: #f4f0db;
+}
+
+.showcaseHeader {
+  position: relative;
+  z-index: 2;
+  background: #f7f3eb;
+  border-bottom: 1px solid rgba(18, 19, 18, .12);
+}
+
+.showcaseNav {
+  min-height: 112px;
+  width: min(100% - 76px, 1536px);
+  margin: auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(22px, 4vw, 66px);
+}
+
+.showcaseBrand { display: flex; align-items: center; }
+.showcaseBrand .officialLogo { height: 66px; width: auto; }
+.showcaseMenu { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-width: 0; }
+.showcaseMenu a { color: #171817; font: 700 clamp(14px, 1.25vw, 20px) 'Barlow Condensed', sans-serif; letter-spacing: .055em; text-transform: uppercase; white-space: nowrap; transition: color .2s ease; }
+.showcaseMenu a:hover, .showcaseMenu a:focus-visible { color: #ca640f; }
+.showcaseSocials { display: flex; align-items: center; gap: 23px; padding-left: clamp(22px, 2.5vw, 42px); border-left: 1px solid rgba(18, 19, 18, .24); }
+.socialMark { display: grid; place-items: center; min-width: 18px; color: #121312; font: 700 32px/1 Arial, sans-serif; font-style: normal; text-decoration: none; transition: color .2s ease, transform .2s ease; }
+.socialMark:hover, .socialMark:focus-visible { color: #ca640f; transform: translateY(-2px); }
+.instagramMark { font-size: 35px; font-weight: 400; }
+.mailMark { font-size: 26px; }
+
+.redesign .showcaseScene {
+  min-height: calc(100svh - 112px);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background:
+    linear-gradient(90deg, rgba(247,243,235,.98) 0%, rgba(247,243,235,.93) 25%, rgba(247,243,235,.63) 41%, rgba(247,243,235,.13) 61%, rgba(247,243,235,0) 78%),
+    linear-gradient(0deg, rgba(8,10,8,.30), transparent 34%),
+    url('/hero-production.jpg') center / cover no-repeat;
+}
+
+.showcaseContent {
+  width: min(660px, 46vw);
+  padding: clamp(76px, 8vw, 130px) 0 58px clamp(38px, 4.8vw, 76px);
+  align-self: center;
+}
+
+.redesign .showcaseContent .kicker { margin: 0 0 30px; color: #ce6712; font-size: 16px; }
+.redesign .showcaseContent h1 { max-width: 650px; margin: 0; color: #242524; font: 700 clamp(38px, 3.02vw, 54px)/1.04 'Barlow Condensed', sans-serif; letter-spacing: -.025em; text-transform: uppercase; }
+.redesign .showcaseContent h1 em { color: #cd6815; font-style: normal; }
+.showcaseCta { width: min(100%, 560px); margin-top: 44px; padding: 26px 30px; display: flex; align-items: center; justify-content: space-between; gap: 24px; background: #ce630b; color: #fff; font: 700 clamp(17px, 1.55vw, 23px)/1 'Barlow Condensed', sans-serif; letter-spacing: .075em; text-transform: uppercase; box-shadow: 0 13px 28px rgba(79, 32, 5, .16); transition: transform .2s ease, background .2s ease; }
+.showcaseCta:hover, .showcaseCta:focus-visible { background: #a94e08; transform: translateY(-3px); }
+.showcaseCta b { font: 400 38px/0 Arial, sans-serif; }
+
+.showcaseFeatures { display: grid; grid-template-columns: repeat(4, 1fr); padding: 34px max(38px, calc((100vw - 1536px) / 2 + 38px)); background: linear-gradient(100deg, #ca5907, #e87505); color: #fff; }
+.showcaseFeatures > div { min-height: 72px; display: flex; align-items: center; gap: 22px; padding: 0 clamp(18px, 2.3vw, 48px); border-right: 1px solid rgba(255,255,255,.47); }
+.showcaseFeatures > div:first-child { padding-left: 0; }
+.showcaseFeatures > div:last-child { padding-right: 0; border-right: 0; }
+.featureSymbol { width: 56px; color: #fff; flex: 0 0 56px; text-align: center; font: 400 54px/1 'Barlow Condensed', sans-serif; font-style: normal; }
+.showcaseFeatures span { font: 700 clamp(17px, 1.48vw, 24px)/1.35 'Barlow Condensed', sans-serif; letter-spacing: .035em; text-transform: uppercase; white-space: nowrap; }
+
+@media (max-width: 1180px) {
+  .showcaseNav { width: calc(100% - 48px); gap: 25px; }
+  .showcaseMenu { gap: 13px; }
+  .showcaseMenu a { font-size: 15px; }
+  .showcaseSocials { gap: 15px; padding-left: 22px; }
+  .socialMark { font-size: 25px; }
+  .showcaseFeatures { padding-inline: 30px; }
+  .showcaseFeatures > div { gap: 14px; padding-inline: 20px; }
+  .featureSymbol { width: 42px; flex-basis: 42px; font-size: 43px; }
+}
+
+@media (max-width: 860px) {
+  .showcaseNav { grid-template-columns: auto minmax(0,1fr) auto; min-height: 88px; }
+  .showcaseBrand .officialLogo { height: 56px; }
+  .showcaseMenu { justify-content: flex-end; overflow: auto; scrollbar-width: none; }
+  .showcaseMenu::-webkit-scrollbar { display: none; }
+  .showcaseMenu a { font-size: 14px; }
+  .showcaseMenu a:nth-child(5), .showcaseMenu a:nth-child(6) { display: none; }
+  .showcaseSocials { gap: 12px; padding-left: 17px; }
+  .showcaseSocials > :nth-child(-n+2) { display: none; }
+  .redesign .showcaseScene { min-height: 745px; background-position: 64% center; }
+  .showcaseContent { width: min(620px, 68vw); padding-left: 38px; }
+  .showcaseFeatures { grid-template-columns: 1fr 1fr; padding: 18px 38px; }
+  .showcaseFeatures > div { min-height: 66px; padding: 10px 20px; }
+  .showcaseFeatures > div:nth-child(2) { border-right: 0; }
+  .showcaseFeatures > div:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,.47); }
+  .showcaseFeatures > div:first-child { padding-left: 0; }
+  .showcaseFeatures > div:nth-child(3) { padding-left: 0; }
+}
+
+@media (max-width: 560px) {
+  .showcaseNav { width: calc(100% - 32px); min-height: 78px; grid-template-columns: auto 1fr auto; gap: 14px; }
+  .showcaseBrand .officialLogo { height: 49px; }
+  .showcaseMenu { gap: 14px; }
+  .showcaseMenu a { display: none; font-size: 13px; }
+  .showcaseMenu a:nth-child(1), .showcaseMenu a:nth-child(2) { display: block; }
+  .showcaseSocials { padding-left: 13px; gap: 13px; }
+  .socialMark { font-size: 21px; }
+  .mailMark { font-size: 20px; }
+  .redesign .showcaseScene { min-height: 765px; background:
+    linear-gradient(180deg, rgba(247,243,235,.99) 0%, rgba(247,243,235,.94) 44%, rgba(247,243,235,.48) 66%, rgba(12,13,11,.53) 100%),
+    url('/hero-production.jpg') 64% center / cover no-repeat; }
+  .showcaseContent { width: 100%; padding: 50px 22px 28px; align-self: start; }
+  .redesign .showcaseContent .kicker { font-size: 13px; margin-bottom: 19px; }
+  .redesign .showcaseContent h1 { font-size: clamp(33px, 9.15vw, 44px); line-height: 1.03; }
+  .showcaseCta { margin-top: 30px; padding: 20px 21px; font-size: 16px; }
+  .showcaseCta b { font-size: 31px; }
+  .showcaseFeatures { padding: 10px 22px; }
+  .showcaseFeatures > div { min-height: 61px; gap: 9px; padding: 12px 10px; }
+  .featureSymbol { width: 34px; flex-basis: 34px; font-size: 35px; }
+  .showcaseFeatures span { font-size: 15px; line-height: 1.22; }
+}
