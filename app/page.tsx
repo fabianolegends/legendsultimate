@@ -109,7 +109,7 @@ export default function Home() {
           <p className="kicker">Por que ela existe</p>
           <h2 className="manifestoQuote">A Legends não foi criada para quem procura apenas uma medalha. Foi criada para quem acredita que a bicicleta é o melhor passaporte para <em>descobrir lugares, pessoas e histórias.</em></h2>
           <div className="manifestoRule" />
-          <div className="manifestoCopy"><p>A Legends Ultimate é uma travessia premium de gravel em quatro etapas pela Serra Gaúcha. Mais do que uma competição, ela combina desafio, turismo, autonomia e estrutura para transformar quatro dias de pedal em uma experiência inesquecível.</p><p>Antes de aceitar o desafio, entenda como funcionam a navegação por GPS, o transporte de bagagem, a classificação por pontos, as hospedagens, os checkpoints, os equipamentos obrigatórios e toda a dinâmica da prova.</p></div>
+          <div className="manifestoCopy"><p>Antes de aceitar o desafio, entenda como funcionam a navegação por GPS, o transporte de bagagem, a classificação por pontos, as hospedagens, os checkpoints, os equipamentos obrigatórios e toda a dinâmica da prova.</p></div>
           <a className="manifestoButton" href="/a-prova"><span>Entenda como funciona a Legends</span><span>→</span></a>
           <div className="manifestoHighlights"><span>Autonavegação<br />por GPS</span><span>Transporte<br />de bagagem</span><span>Classificação<br />por pontos</span><span>4 dias · 360 km<br />6.000 m+</span></div>
         </div>
