@@ -1,151 +1,117 @@
+/* Home — section "Por que ela existe" */
 .redesign .manifestoRedesign {
   padding: 0 !important;
-  background: #0b0d0c !important;
+  background: #f4f0db !important;
 }
 
 .redesign .manifestoRedesign > .wide.manifestoFeature {
   width: 100vw !important;
   max-width: none !important;
-  margin: 0 !important;
-  aspect-ratio: 3 / 2 !important;
   min-height: 820px !important;
+  margin: 0 !important;
   position: relative !important;
-  display: block !important;
+  display: grid !important;
+  grid-template-rows: 1fr auto;
   overflow: hidden !important;
   background:
-    linear-gradient(90deg, rgba(244,240,219,.96) 0%, rgba(244,240,219,.88) 27%, rgba(244,240,219,.42) 44%, rgba(244,240,219,0) 65%),
-    linear-gradient(0deg, rgba(5,8,6,.88) 0%, rgba(5,8,6,.62) 25%, rgba(5,8,6,.08) 58%),
-    url('/hero-production.jpg') 65% center / cover no-repeat !important;
+    linear-gradient(90deg, rgba(247,243,235,.98) 0%, rgba(247,243,235,.92) 27%, rgba(247,243,235,.54) 45%, rgba(247,243,235,.10) 66%, rgba(247,243,235,0) 80%),
+    linear-gradient(0deg, rgba(11,13,10,.28) 0%, transparent 40%),
+    url('/legends-manifesto-v2.png') center / cover no-repeat !important;
 }
 
 .redesign .manifestoRedesign .manifestoContent {
-  position: relative !important;
-  z-index: 2 !important;
   width: min(680px, 46vw) !important;
   max-width: 680px !important;
-  padding: clamp(72px,7vw,112px) 0 54px clamp(48px,5.5vw,88px) !important;
-  color: #111 !important;
+  align-self: center;
+  padding: clamp(76px,7.5vw,122px) 0 72px clamp(48px,5.2vw,88px) !important;
+  color: #171817 !important;
 }
 
 .redesign .manifestoRedesign .kicker {
-  margin-bottom: 24px !important;
+  margin: 0 0 28px !important;
+  color: #ce6712 !important;
+  font-size: 16px !important;
 }
 
 .redesign .manifestoRedesign .manifestoQuote {
-  font-size: clamp(34px,2.7vw,46px) !important;
-  line-height: 1.02 !important;
   max-width: 650px !important;
-  letter-spacing: -.01em !important;
+  margin: 0 !important;
+  color: #222321 !important;
+  font-size: clamp(38px,3.12vw,55px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.022em !important;
   text-wrap: balance !important;
 }
 
-.redesign .manifestoRedesign .manifestoRule {
-  width: 76px !important;
-  height: 3px !important;
-  margin: 24px 0 30px !important;
-}
-
-.redesign .manifestoRedesign .manifestoCopy {
-  max-width: 590px !important;
-}
-
-.redesign .manifestoRedesign .manifestoCopy p {
-  font-size: 17px !important;
-  line-height: 1.72 !important;
-  color: #fff !important;
-  text-shadow: 0 2px 12px rgba(0,0,0,.78) !important;
-}
+.redesign .manifestoRedesign .manifestoQuote em { color: #cf6815 !important; }
 
 .redesign .manifestoRedesign .manifestoButton {
-  width: min(100%, 545px) !important;
-  margin-top: 28px !important;
-  padding: 19px 22px !important;
+  width: min(100%, 560px) !important;
+  margin-top: 43px !important;
+  padding: 26px 30px !important;
   color: #fff !important;
-  background: #c9640b !important;
-  box-shadow: 0 12px 34px rgba(0,0,0,.18) !important;
+  background: #cf6208 !important;
+  box-shadow: 0 14px 30px rgba(91, 40, 6, .18) !important;
+  font-size: clamp(17px,1.5vw,22px) !important;
 }
 
+.redesign .manifestoRedesign .manifestoButton:hover { background: #ac4e06 !important; }
+
 .redesign .manifestoRedesign .manifestoHighlights {
-  width: min(100%, 670px) !important;
-  margin-top: 46px !important;
-  border-top: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+  align-self: end;
+  background: linear-gradient(100deg, #c95706, #e77405) !important;
+  border: 0 !important;
 }
 
 .redesign .manifestoRedesign .manifestoHighlights span {
+  min-height: 132px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px clamp(22px,3vw,58px) !important;
   color: #fff !important;
-  padding: 0 16px 0 16px !important;
-  border-right: 1px solid rgba(255,255,255,.55) !important;
-  text-shadow: 0 2px 10px rgba(0,0,0,.78) !important;
-  font-size: 13px !important;
+  border-right: 1px solid rgba(255,255,255,.48) !important;
+  text-shadow: none !important;
+  font: inherit !important;
 }
 
-.redesign .manifestoRedesign .manifestoHighlights span:first-child {
-  padding-left: 0 !important;
-}
-
-.redesign .manifestoRedesign .manifestoHighlights span:last-child {
-  border-right: 0 !important;
-}
+.redesign .manifestoRedesign .manifestoHighlights span:first-child { padding-left: max(48px, calc((100vw - 1536px) / 2 + 48px)) !important; }
+.redesign .manifestoRedesign .manifestoHighlights span:last-child { border-right: 0 !important; padding-right: max(48px, calc((100vw - 1536px) / 2 + 48px)) !important; }
+.redesign .manifestoRedesign .manifestoHighlights i { width: 50px; flex: 0 0 50px; color: #fff; text-align: center; font: 400 52px/1 'Barlow Condensed', sans-serif; font-style: normal; }
+.redesign .manifestoRedesign .manifestoHighlights b { font: 700 clamp(17px,1.45vw,24px)/1.3 'Barlow Condensed', sans-serif; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
 
 @media (max-width: 1000px) {
   .redesign .manifestoRedesign > .wide.manifestoFeature {
-    aspect-ratio: auto !important;
-    min-height: 820px !important;
-    background:
-      linear-gradient(90deg, rgba(244,240,219,.96) 0%, rgba(244,240,219,.84) 48%, rgba(9,12,10,.10) 72%),
-      linear-gradient(0deg, rgba(6,9,7,.84), rgba(6,9,7,0) 58%),
-      url('/hero-production.jpg') 68% center / cover no-repeat !important;
+    min-height: 800px !important;
+    background-position: 62% center !important;
   }
-
-  .redesign .manifestoRedesign .manifestoContent {
-    width: 64% !important;
-    padding-left: 44px !important;
-  }
+  .redesign .manifestoRedesign .manifestoContent { width: min(650px, 66vw) !important; padding-left: 44px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights { grid-template-columns: 1fr 1fr; }
+  .redesign .manifestoRedesign .manifestoHighlights span { min-height: 94px; padding: 20px 36px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span:first-child, .redesign .manifestoRedesign .manifestoHighlights span:nth-child(3) { padding-left: 44px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span:nth-child(2) { border-right: 0 !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span:nth-child(-n + 2) { border-bottom: 1px solid rgba(255,255,255,.48) !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span:last-child { padding-right: 44px !important; }
 }
 
 @media (max-width: 640px) {
   .redesign .manifestoRedesign > .wide.manifestoFeature {
-    width: 100vw !important;
-    min-height: 920px !important;
+    min-height: 820px !important;
     background:
-      linear-gradient(180deg, rgba(244,240,219,.98) 0%, rgba(244,240,219,.92) 43%, rgba(7,10,8,.25) 64%, rgba(7,10,8,.90) 100%),
-      url('/hero-production.jpg') 67% center / cover no-repeat !important;
+      linear-gradient(180deg, rgba(247,243,235,.99) 0%, rgba(247,243,235,.93) 42%, rgba(247,243,235,.43) 66%, rgba(10,12,9,.58) 100%),
+      url('/legends-manifesto-v2.png') 64% center / cover no-repeat !important;
   }
-
-  .redesign .manifestoRedesign .manifestoContent {
-    width: 100% !important;
-    max-width: none !important;
-    padding: 46px 22px 42px !important;
-  }
-
-  .redesign .manifestoRedesign .manifestoQuote {
-    font-size: 31px !important;
-    line-height: 1.02 !important;
-  }
-
-  .redesign .manifestoRedesign .manifestoCopy {
-    margin-top: 300px !important;
-  }
-
-  .redesign .manifestoRedesign .manifestoCopy p {
-    font-size: 15px !important;
-  }
-
-  .redesign .manifestoRedesign .manifestoButton {
-    width: 100% !important;
-    font-size: 15px !important;
-    padding: 18px !important;
-  }
-
-  .redesign .manifestoRedesign .manifestoHighlights {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0 !important;
-    margin-top: 30px !important;
-  }
-
-  .redesign .manifestoRedesign .manifestoHighlights span {
-    padding: 16px 10px !important;
-    border-right: 0 !important;
-    border-bottom: 1px solid rgba(255,255,255,.35) !important;
-  }
+  .redesign .manifestoRedesign .manifestoContent { width: 100% !important; max-width: none !important; align-self: start; padding: 49px 22px 30px !important; }
+  .redesign .manifestoRedesign .kicker { margin-bottom: 19px !important; font-size: 13px !important; }
+  .redesign .manifestoRedesign .manifestoQuote { font-size: clamp(33px,9.1vw,44px) !important; line-height: 1.03 !important; }
+  .redesign .manifestoRedesign .manifestoButton { width: 100% !important; margin-top: 30px !important; padding: 20px !important; font-size: 16px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span { min-height: 76px; gap: 9px; padding: 14px 10px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span:first-child, .redesign .manifestoRedesign .manifestoHighlights span:nth-child(3) { padding-left: 20px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights span:last-child { padding-right: 20px !important; }
+  .redesign .manifestoRedesign .manifestoHighlights i { width: 32px; flex-basis: 32px; font-size: 34px; }
+  .redesign .manifestoRedesign .manifestoHighlights b { font-size: 15px; line-height: 1.2; }
 }
