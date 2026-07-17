@@ -97,24 +97,25 @@ export default function Home() {
         @media(max-width:640px){.redesign .wide{width:calc(100% - 32px)}.heroRedesign{grid-template-rows:82px 1fr auto;min-height:100svh;background-position:68% center}.heroMain{padding:44px 0}.heroCopy h1{font-size:56px}.heroIntro{font-size:16px}.heroStats{grid-template-columns:1fr 1fr}.heroStat:nth-child(2){border-right:0}.heroStat:nth-child(-n+2){border-bottom:1px solid var(--line)}.heroStat strong{font-size:38px}.manifestoRedesign,.factsBand,.modes,.daySection,.routePreview,.destinationStory,.includedSection,.safetySection,.profileSection,.faqSection{padding:78px 0}.manifestoQuote{font-size:30px;line-height:1.04}.manifestoButton{font-size:16px;padding:18px 20px;margin-top:30px}.manifestoHighlights{grid-template-columns:1fr 1fr;margin-top:48px}.manifestoHighlights span{border-bottom:1px solid rgba(17,17,17,.2);padding:18px 10px 18px 0}.manifestoHighlights span:not(:first-child){padding-left:10px}.factsGrid,.stageGridNew,.safetyGrid,.includedGrid,.cityStrip{grid-template-columns:1fr}.fact,.stageNew,.safetyCard,.cityStrip a{border-right:0;border-bottom:1px solid var(--line)}.modeCard{padding:34px 26px}.timelineItem{grid-template-columns:90px 1fr;gap:18px}.stageNew{min-height:330px}.destinationText{gap:20px}.cityStrip a:last-child{padding-left:0}.includedGrid{background:transparent;border:0}.includedItem{border-bottom:1px solid var(--line)}.profileBox{gap:34px}}
       `}</style>
 
-      <section className="heroRedesign" id="inicio">
-        <nav className="nav wide" aria-label="Navegação principal">
-          <a className="brand" href="#inicio"><Logo /></a>
-          <div className="navLinks"><a href="/a-prova">A prova</a><a href="#modalidades">Modalidades</a><a href="#percurso">Percurso</a><a href="#destino">Destino</a><a href="#faq">FAQ</a></div>
-          <a className="navCta" href="#interesse">Lista prioritária</a>
-        </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a lenda começa.</h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Quatro etapas, quatro cidades e uma travessia criada para quem procura muito mais do que uma prova.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="#interesse">Entre para a lista prioritária</a></div></div></div>
-        <div className="wide"><div className="heroStats">{metrics.map(([value,label]) => <div className="heroStat" key={label}><strong>{value}</strong><span>{label}</span></div>)}</div></div>
-      </section>
-
-      <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
-        <div className="manifestoContent">
-          <p className="kicker">Por que ela existe</p>
-          <h2 className="manifestoQuote">A Legends não foi criada para quem procura apenas uma medalha. Foi criada para quem acredita que a bicicleta é o melhor passaporte para <em>descobrir lugares, pessoas e histórias.</em></h2>
-          <a className="manifestoButton" href="/a-prova"><span>Entenda como funciona a Legends</span><span>→</span></a>
-          <div className="manifestoHighlights"><span>Autonavegação<br />por GPS</span><span>Transporte<br />de bagagem</span><span>Classificação<br />por pontos</span><span>4 dias · 360 km<br />6.000 m+</span></div>
+      <section className="heroRedesign showcaseHero" id="inicio">
+        <header className="showcaseHeader">
+          <nav className="showcaseNav" aria-label="Navegação principal">
+            <a className="showcaseBrand" href="#inicio" aria-label="Legends Bike Race — início"><Logo /></a>
+            <div className="showcaseMenu">
+              <a href="#inicio">Home</a><a href="/a-prova">A prova</a><a href="#percurso">Etapas</a><a href="#destino">Cidades</a><a href="/a-prova#como-funciona">Guia do atleta</a><a href="#interesse">Inscrições</a><a href="mailto:contato@threerace.com.br?subject=Legends%20Bike%20Race">Contato</a>
+            </div>
+            <div className="showcaseSocials" aria-label="Canais de contato">
+              <span className="socialMark" aria-label="Facebook">f</span><span className="socialMark instagramMark" aria-label="Instagram">◎</span><a className="socialMark" href="https://wa.me/5554992476721?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20Legends%20Bike%20Race." aria-label="Falar pelo WhatsApp">◔</a><a className="socialMark mailMark" href="mailto:contato@threerace.com.br?subject=Legends%20Bike%20Race" aria-label="Enviar e-mail">✉</a>
+            </div>
+          </nav>
+        </header>
+        <div className="showcaseScene">
+          <div className="showcaseContent"><p className="kicker">Por que ela existe</p><h1>A Legends não foi criada para quem procura apenas uma medalha. Foi criada para quem acredita que a bicicleta é o melhor passaporte para <em>descobrir lugares, pessoas e histórias.</em></h1><a className="showcaseCta" href="/a-prova"><span>Entenda como funciona a Legends</span><b>→</b></a></div>
+          <div className="showcaseFeatures" aria-label="Principais características da Legends">
+            <div><i className="featureSymbol" aria-hidden="true">⌖</i><span>Autonavegação<br />por GPS</span></div><div><i className="featureSymbol" aria-hidden="true">▣</i><span>Transporte<br />de bagagem</span></div><div><i className="featureSymbol" aria-hidden="true">♜</i><span>Classificação<br />por pontos</span></div><div><i className="featureSymbol" aria-hidden="true">⛰</i><span>4 dias · 360 km<br />6.000 m+</span></div>
+          </div>
         </div>
-      </div></section>
+      </section>
 
       <section className="factsBand"><div className="wide"><div className="sectionHead"><div><p className="kicker">O que torna a Legends diferente</p><h2>Aventura com estrutura.<br /><em>Autonomia com cuidado.</em></h2></div><p>Uma experiência pensada para eliminar a complexidade logística sem retirar do atleta o protagonismo da jornada.</p></div><div className="factsGrid">{differences.map(([n,title,text]) => <div className="fact" key={n}><span>{n}</span><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
       <section className="modes" id="modalidades"><div className="wide"><div className="sectionHead"><div><p className="kicker">Escolha como viver a Legends</p><h2>Competir ou experimentar.<br /><em>A jornada é a mesma.</em></h2></div><p>O participante escolhe o propósito: disputar a classificação no gravel ou realizar a travessia em modo turismo.</p></div><div className="modeGrid"><div className="modeCard dark"><span className="tag">Modalidade competitiva</span><h3>Legends Gravel Race</h3><p>Para ciclistas de gravel ou cyclocross que desejam disputar as quatro etapas com tempo registrado, classificação por pontos, categorias e premiação final.</p><ul><li>Classificação oficial</li><li>Pontuação por etapa</li><li>Categorias por idade</li><li>Troféus ao final da travessia</li></ul></div><div className="modeCard"><span className="tag">Modalidade turismo</span><h3>Legends Experience</h3><p>Para participantes de MTB e E-bike que desejam viver o mesmo percurso e a mesma estrutura, sem pressão por tempo, ranking ou resultado competitivo.</p><ul><li>Sem classificação</li><li>MTB e E-bike permitidas</li><li>Mesma logística e segurança</li><li>Foco em turismo e desafio pessoal</li></ul></div></div></div></section>
