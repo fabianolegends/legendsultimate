@@ -115,3 +115,53 @@
   .redesign .manifestoRedesign .manifestoHighlights i { width: 32px; flex-basis: 32px; font-size: 34px; }
   .redesign .manifestoRedesign .manifestoHighlights b { font-size: 15px; line-height: 1.2; }
 }
+
+/* Home — seção "Escolha como viver a Legends" */
+.redesign .modes {
+  padding: 96px 0 !important;
+}
+
+.redesign .modes .sectionHead {
+  gap: 48px !important;
+  margin-bottom: 44px !important;
+}
+
+.redesign .modes .sectionHead h2 {
+  font-size: clamp(48px, 4.45vw, 70px) !important;
+  line-height: .94 !important;
+}
+
+.redesign .modes .sectionHead > p {
+  font-size: 17px !important;
+  line-height: 1.58 !important;
+}
+
+.redesign .modes .modeGrid { gap: 20px !important; }
+
+.redesign .modes .modeCard {
+  padding: 34px 38px !important;
+}
+
+.redesign .modes .modeCard h3 {
+  margin: 16px 0 !important;
+  font-size: 42px !important;
+}
+
+.redesign .modes .modeCard p {
+  margin: 0 !important;
+  line-height: 1.58 !important;
+}
+
+.redesign .modes .modeCard ul {
+  gap: 9px !important;
+  margin-top: 22px !important;
+}
+
+@media (max-width: 640px) {
+  .redesign .modes { padding: 64px 0 !important; }
+  .redesign .modes .sectionHead { gap: 22px !important; margin-bottom: 30px !important; }
+  .redesign .modes .sectionHead h2 { font-size: 42px !important; }
+  .redesign .modes .modeGrid { gap: 14px !important; }
+  .redesign .modes .modeCard { padding: 28px 24px !important; }
+  .redesign .modes .modeCard h3 { font-size: 36px !important; }
+}
