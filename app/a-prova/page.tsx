@@ -11,7 +11,7 @@ const journey = [
   ["01", "Antes da largada", "Recepção dos atletas, entrega do kit, orientações técnicas e disponibilização dos arquivos de navegação."],
   ["02", "Durante a etapa", "Cada atleta percorre a rota por autonavegação, administrando ritmo, alimentação, hidratação e estratégia."],
   ["03", "Ao cruzar a chegada", "A estrutura de chegada recebe os participantes para recuperação, convivência e preparação para o dia seguinte."],
-  ["04", "A consagração", "Quem completa a travessia vive a chegada final em Gramado e passa a fazer parte da história da Legends."],
+  ["04", "A consagração", "Quem completa a travessia vive a chegada final em Canela e passa a fazer parte da história da Legends."],
 ];
 
 const stagePoints = [
@@ -123,13 +123,18 @@ export default function AboutRace() {
 
           <div className="classificationBottom" id="categorias-regras">
             <div className="categoryBlock">
-              <p className="detailEyebrow">Categorias</p>
+              <p className="detailEyebrow">Categorias masculinas</p>
               <div className="categoryCards">
                 <article><strong>Open</strong><span>18–35 anos</span></article>
                 <article><strong>Master</strong><span>36–49 anos</span></article>
                 <article><strong>Senior</strong><span>50 anos ou mais</span></article>
               </div>
-              <p className="categoryNote">Classificações masculina e feminina separadas nas três faixas.</p>
+              <p className="detailEyebrow">Categorias femininas</p>
+              <div className="categoryCards">
+                <article><strong>Feminino A</strong><span>18–40 anos</span></article>
+                <article><strong>Feminino B</strong><span>41 anos ou mais</span></article>
+              </div>
+              <p className="categoryNote">As categorias femininas exigem no mínimo cinco atletas inscritas em cada faixa. Caso esse número não seja atingido, será formada uma categoria feminina única.</p>
             </div>
             <div className="rulesBlock">
               <p className="detailEyebrow">Regras da geral</p>
