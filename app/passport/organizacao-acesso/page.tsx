@@ -8,49 +8,16 @@ export default function OrganizationAccessPage() {
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(event: FormEvent) {
-    event.preventDefault();
-    setSubmitting(true);
-    setMessage("Validando acesso...");
+    event.preventDefault(); setSubmitting(true); setMessage("Validando acesso...");
     try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
+      const response = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Não foi possível autenticar.");
-      window.location.href = "/passport/organizacao/validacao";
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Não foi possível autenticar.");
-      setSubmitting(false);
-    }
+      window.location.href = "/passport/organizacao";
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Não foi possível autenticar."); setSubmitting(false); }
   }
 
-  return (
-    <main style={{ minHeight: "100vh", background: "#0d100d", color: "#f4eee4", display: "grid", placeItems: "center", padding: 20 }}>
-      <form onSubmit={submit} style={{ width: "min(460px, 100%)", border: "1px solid #3a3d35", background: "#171a16", padding: 34 }}>
-        <p style={{ color: "#d47b2d", letterSpacing: 3, textTransform: "uppercase", fontWeight: 800, marginTop: 0 }}>Legends Core</p>
-        <h1 style={{ fontSize: 42, lineHeight: 1, margin: "12px 0 16px" }}>Acesso da organização</h1>
-        <p style={{ color: "#b8b5ad", lineHeight: 1.6 }}>Área restrita para percursos oficiais, homologações e administração do evento.</p>
-        <label htmlFor="admin-password" style={{ display: "block", margin: "24px 0 8px", fontWeight: 800 }}>Senha administrativa</label>
-        <input
-          id="admin-password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-          style={{ width: "100%", boxSizing: "border-box", padding: 15, background: "#0d100d", color: "white", border: "1px solid #5a5f54" }}
-        />
-        <button
-          type="submit"
-          disabled={submitting || !password}
-          style={{ width: "100%", marginTop: 18, padding: 16, border: 0, background: "#e86619", color: "white", fontWeight: 900, cursor: "pointer", opacity: submitting ? 0.6 : 1 }}
-        >
-          {submitting ? "ENTRANDO..." : "ENTRAR NO PAINEL"}
-        </button>
-        {message && <p style={{ color: "#efb078", marginBottom: 0, lineHeight: 1.5 }}>{message}</p>}
-      </form>
-    </main>
-  );
+  return <main className="org-access"><style>{`
+    .org-access{min-height:100vh;background:linear-gradient(105deg,rgba(7,9,8,.98),rgba(7,9,8,.78)),url('/hero-production.jpg') center/cover;color:#f4eee4;display:grid;place-items:center;padding:20px;font-family:Arial,sans-serif}.org-box{width:min(470px,100%);border:1px solid #3a3d35;background:rgba(23,26,22,.96);padding:36px;box-sizing:border-box}.org-box img{width:180px;margin-bottom:34px}.org-box h1{font-size:44px;line-height:1;text-transform:uppercase;margin:12px 0 16px}.org-box p{color:#b8b5ad;line-height:1.65}.org-box label{display:block;margin:24px 0 8px;font-weight:800}.org-box input{width:100%;box-sizing:border-box;padding:15px;background:#0d100d;color:white;border:1px solid #5a5f54}.org-box button{width:100%;margin-top:18px;padding:16px;border:0;background:#e86619;color:white;font-weight:900;cursor:pointer}.back{display:block;text-align:center;margin-top:18px;color:#aaaFA7;font-size:13px;text-decoration:none}.kicker{color:#d47b2d!important;letter-spacing:.2em;text-transform:uppercase;font-size:12px;font-weight:900}
+  `}</style><form className="org-box" onSubmit={submit}><a href="/"><img src="/legends-logo-official.png" alt="Legends" /></a><p className="kicker">Legends Core</p><h1>Acesso da organização</h1><p>Área restrita para rotas oficiais, fila de revisões e decisões de homologação.</p><label htmlFor="admin-password">Senha administrativa</label><input id="admin-password" type="password" autoComplete="current-password" value={password} onChange={event=>setPassword(event.target.value)} required/><button type="submit" disabled={submitting||!password}>{submitting?"ENTRANDO...":"ENTRAR NO PAINEL"}</button>{message?<p style={{color:"#efb078",marginBottom:0}}>{message}</p>:null}<a className="back" href="/acesso">Escolher outra área de acesso</a></form></main>;
 }
