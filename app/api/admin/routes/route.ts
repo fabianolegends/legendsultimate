@@ -20,7 +20,7 @@ function haversineKm(a: Point, b: Point) {
   return 2 * radiusKm * Math.asin(Math.sqrt(value));
 }
 
-function parseGpx(xml: string) {
+function parseGpx(xml: string, intermediateCheckpointCount: number) {
   const pointRegex = /<(?:trkpt|rtept)\b[^>]*lat=["']([^"']+)["'][^>]*lon=["']([^"']+)["'][^>]*>([\s\S]*?)<\/(?:trkpt|rtept)>/gi;
   const points: Point[] = [];
   let match: RegExpExecArray | null;
@@ -48,16 +48,20 @@ function parseGpx(xml: string) {
     }
   }
 
-  const checkpointCount = Math.min(21, Math.max(6, Math.round(distanceKm / 5) + 1));
+  const checkpointCount = Math.min(14, Math.max(3, intermediateCheckpointCount + 2));
   const checkpoints = Array.from({ length: checkpointCount }, (_, index) => {
     const pointIndex = Math.round((index / (checkpointCount - 1)) * (points.length - 1));
     const point = points[pointIndex];
+    const isStart = index === 0;
+    const isFinish = index === checkpointCount - 1;
     return {
       sequence: index,
-      label: index === 0 ? "Largada" : index === checkpointCount - 1 ? "Chegada" : `CP ${index}`,
+      label: isStart ? "Largada" : isFinish ? "Chegada" : `CP ${index}`,
       latitude: point[0],
       longitude: point[1],
       route_progress: Number(((index / (checkpointCount - 1)) * 100).toFixed(2)),
+      checkpoint_kind: isStart ? "start" : isFinish ? "finish" : "control",
+      is_timing_point: true,
     };
   });
 
@@ -90,6 +94,10 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const stageId = String(formData.get("stageId") ?? "");
     const changeNote = String(formData.get("changeNote") ?? "").trim();
+    const checkpointCountInput = Number(formData.get("checkpointCount") ?? 5);
+    const intermediateCheckpointCount = Number.isFinite(checkpointCountInput)
+      ? Math.min(12, Math.max(1, Math.round(checkpointCountInput)))
+      : 5;
     const file = formData.get("file");
 
     if (!stageId || !(file instanceof File)) {
@@ -99,7 +107,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Envie um arquivo com extensão .gpx." }, { status: 400 });
     }
 
-    const parsed = parseGpx(await file.text());
+    const parsed = parseGpx(await file.text(), intermediateCheckpointCount);
     const supabase = createSupabaseAdmin();
     const { data: history, error: historyError } = await supabase
       .from("route_versions")
@@ -149,12 +157,12 @@ export async function POST(request: NextRequest) {
     const { error: checkpointDeleteError } = await supabase.from("checkpoints").delete().eq("stage_id", stageId);
     if (checkpointDeleteError) throw checkpointDeleteError;
     const { error: checkpointError } = await supabase.from("checkpoints").insert(
-      parsed.checkpoints.map((checkpoint) => ({ stage_id: stageId, ...checkpoint, radius_m: 180 })),
+      parsed.checkpoints.map((checkpoint) => ({ stage_id: stageId, ...checkpoint, radius_m: 120 })),
     );
     if (checkpointError) throw checkpointError;
 
     await supabase.from("stages").update({ distance_km: parsed.distanceKm, elevation_m: parsed.elevationM }).eq("id", stageId);
-    return NextResponse.json({ route, checkpoints: parsed.checkpoints.length });
+    return NextResponse.json({ route, checkpoints: parsed.checkpoints.length, intermediate_checkpoints: intermediateCheckpointCount });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Falha ao processar o GPX.";
     return NextResponse.json({ error: message }, { status: 500 });
