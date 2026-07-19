@@ -45,15 +45,78 @@ export async function GET(request: NextRequest) {
       validations = data ?? [];
     }
 
+    let timingConfigured = false;
+    let passageRows: any[] = [];
+    let segmentResultRows: any[] = [];
+    let checkpointRows: any[] = [];
+    let segmentRows: any[] = [];
+
+    if (activityIds.length) {
+      const { data: passages, error: passageError } = await supabase
+        .from("checkpoint_passages")
+        .select("id, activity_id, checkpoint_id, point_index, elapsed_s, activity_distance_m, nearest_distance_m, passed_at")
+        .in("activity_id", activityIds)
+        .order("elapsed_s", { ascending: true });
+
+      if (!passageError) {
+        timingConfigured = true;
+        passageRows = passages ?? [];
+        const checkpointIds = [...new Set(passageRows.map((passage) => passage.checkpoint_id))];
+        if (checkpointIds.length) {
+          const { data } = await supabase.from("checkpoints").select("id, stage_id, sequence, label, checkpoint_kind").in("id", checkpointIds);
+          checkpointRows = data ?? [];
+        }
+
+        const { data: segmentResults } = await supabase
+          .from("segment_results")
+          .select("id, activity_id, segment_id, elapsed_s, status, created_at")
+          .in("activity_id", activityIds)
+          .order("elapsed_s", { ascending: true });
+        segmentResultRows = segmentResults ?? [];
+        const segmentIds = [...new Set(segmentResultRows.map((result) => result.segment_id))];
+        if (segmentIds.length) {
+          const { data } = await supabase.from("timed_segments").select("id, stage_id, name, segment_type, start_checkpoint_id, finish_checkpoint_id").in("id", segmentIds);
+          segmentRows = data ?? [];
+        }
+      }
+    }
+
     const validationByActivity = new Map(validations.map((item) => [item.activity_id, item]));
-    const submissions = (activities ?? []).map((activity) => ({ ...activity, validation: validationByActivity.get(activity.id) ?? null }));
+    const checkpointById = new Map(checkpointRows.map((item) => [item.id, item]));
+    const segmentById = new Map(segmentRows.map((item) => [item.id, item]));
+    const passagesByActivity = new Map<string, any[]>();
+    for (const passage of passageRows) {
+      const checkpoint = checkpointById.get(passage.checkpoint_id);
+      const current = passagesByActivity.get(passage.activity_id) ?? [];
+      current.push({ ...passage, checkpoint });
+      passagesByActivity.set(passage.activity_id, current);
+    }
+    const segmentsByActivity = new Map<string, any[]>();
+    for (const result of segmentResultRows) {
+      const segment = segmentById.get(result.segment_id);
+      const current = segmentsByActivity.get(result.activity_id) ?? [];
+      current.push({ ...result, segment });
+      segmentsByActivity.set(result.activity_id, current);
+    }
+
+    const submissions = (activities ?? []).map((activity) => ({
+      ...activity,
+      validation: validationByActivity.get(activity.id) ?? null,
+      passages: passagesByActivity.get(activity.id) ?? [],
+      segment_results: segmentsByActivity.get(activity.id) ?? [],
+    }));
     const normalizedStages = (stages ?? []).map((stage: any) => ({
       ...stage,
       event_name: Array.isArray(stage.events) ? stage.events[0]?.name : stage.events?.name,
       route_active: (stage.route_versions ?? []).some((route: any) => route.is_active),
     }));
 
-    return NextResponse.json({ athlete: { ...athleteCookie, database_id: athlete.id, full_name: athlete.full_name }, stages: normalizedStages, submissions });
+    return NextResponse.json({
+      athlete: { ...athleteCookie, database_id: athlete.id, full_name: athlete.full_name },
+      stages: normalizedStages,
+      submissions,
+      timing_configured: timingConfigured,
+    });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar o Passport." }, { status: 500 });
   }
