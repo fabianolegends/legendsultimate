@@ -112,6 +112,15 @@ function readAthleteCookie(request: NextRequest): StravaAthleteCookie | null {
   }
 }
 
+function sampleMapPoints(points: GeoPoint[], maxPoints = 2500): Array<[number, number]> {
+  if (points.length <= maxPoints) return points.map((point) => [point[0], point[1]]);
+  const step = (points.length - 1) / (maxPoints - 1);
+  return Array.from({ length: maxPoints }, (_, index) => {
+    const point = points[Math.round(index * step)];
+    return [point[0], point[1]] as [number, number];
+  });
+}
+
 export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) {
     return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
@@ -295,6 +304,18 @@ export async function POST(request: NextRequest) {
         elevation_m: Math.round(activity.total_elevation_gain || 0),
         moving_time_min: Math.round(activity.moving_time / 60),
         points_count: activityPoints.length,
+      },
+      map: {
+        official_points: sampleMapPoints(officialPoints),
+        activity_points: sampleMapPoints(activityPoints),
+        checkpoints: report.checkpoint_results.map((checkpoint) => ({
+          sequence: checkpoint.sequence,
+          label: checkpoint.label,
+          latitude: checkpoint.latitude,
+          longitude: checkpoint.longitude,
+          hit: checkpoint.hit,
+          nearest_distance_m: checkpoint.nearest_distance_m,
+        })),
       },
       saved,
     });
