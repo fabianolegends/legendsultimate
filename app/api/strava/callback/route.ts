@@ -17,7 +17,8 @@ type StravaTokenResponse = {
 
 export async function GET(request: NextRequest) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || request.nextUrl.origin;
-  const redirect = (status: string) => NextResponse.redirect(new URL(`/passport?strava=${status}`, siteUrl));
+  const redirect = (status: string, path = "/passport/acesso") =>
+    NextResponse.redirect(new URL(`${path}?strava=${status}`, siteUrl));
 
   const error = request.nextUrl.searchParams.get("error");
   if (error) return redirect("denied");
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
   const token = (await tokenResponse.json()) as StravaTokenResponse;
   if (!token.access_token || !token.refresh_token) return redirect("token_error");
 
-  const response = redirect("connected");
+  const response = redirect("connected", "/passport/atleta");
   const cookieBase = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
