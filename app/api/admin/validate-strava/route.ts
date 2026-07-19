@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { GeoPoint, validateActivity } from "@/lib/race-engine";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -112,6 +113,10 @@ function readAthleteCookie(request: NextRequest): StravaAthleteCookie | null {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
+  }
+
   try {
     const body = (await request.json()) as { stageId?: string; activityId?: string; toleranceM?: number };
     const stageId = String(body.stageId ?? "").trim();
