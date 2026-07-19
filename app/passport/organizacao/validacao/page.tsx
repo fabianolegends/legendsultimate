@@ -1,12 +1,30 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+
+const ValidationMap = dynamic(() => import("./ValidationMap"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ marginTop: 24, padding: 28, border: "1px solid #c8bcaa", background: "#fffaf2", color: "#6c685f" }}>
+      Carregando o mapa da validação...
+    </div>
+  ),
+});
 
 type Stage = { id: string; name: string; stage_date: string };
 type CheckpointResult = {
   id?: string;
   sequence: number;
   label: string;
+  hit: boolean;
+  nearest_distance_m: number;
+};
+type MapCheckpoint = {
+  sequence: number;
+  label: string;
+  latitude: number;
+  longitude: number;
   hit: boolean;
   nearest_distance_m: number;
 };
@@ -36,6 +54,11 @@ type Result = {
     distance_km?: number;
     elevation_m?: number;
     moving_time_min?: number;
+  };
+  map?: {
+    official_points: Array<[number, number]>;
+    activity_points: Array<[number, number]>;
+    checkpoints: MapCheckpoint[];
   };
   saved?: boolean;
 };
@@ -138,7 +161,7 @@ export default function ValidationPage() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Falha na validação pelo Strava.");
       setResult(payload);
-      setMessage(payload.saved ? "Atividade homologada e resultado salvo no Supabase." : "Atividade homologada.");
+      setMessage(payload.saved ? "Validação concluída e resultado salvo no Supabase." : "Validação concluída.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Falha na validação pelo Strava.");
     } finally {
@@ -293,6 +316,15 @@ export default function ValidationPage() {
             )}
           </div>
         </section>
+
+        {result?.map && (
+          <ValidationMap
+            officialPoints={result.map.official_points}
+            activityPoints={result.map.activity_points}
+            checkpoints={result.map.checkpoints}
+            toleranceM={result.report.tolerance_m}
+          />
+        )}
       </div>
     </main>
   );
