@@ -72,11 +72,17 @@ export async function GET() {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("stages")
-    .select("id, name, route_label, stage_date, distance_km, elevation_m, events(name), routes(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)")
+    .select("id, name, route_label, stage_date, distance_km, elevation_m, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)")
     .order("stage_date", { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ stages: data ?? [] });
+
+  const stages = (data ?? []).map((stage) => ({
+    ...stage,
+    routes: stage.route_versions ?? [],
+  }));
+
+  return NextResponse.json({ stages });
 }
 
 export async function POST(request: NextRequest) {
@@ -98,7 +104,7 @@ export async function POST(request: NextRequest) {
     const supabase = createSupabaseAdmin();
 
     const { data: history, error: historyError } = await supabase
-      .from("routes")
+      .from("route_versions")
       .select("id, version")
       .eq("stage_id", stageId)
       .order("version", { ascending: false })
@@ -115,13 +121,13 @@ export async function POST(request: NextRequest) {
     if (uploadError) throw uploadError;
 
     await supabase
-      .from("routes")
+      .from("route_versions")
       .update({ is_active: false, valid_until: new Date().toISOString() })
       .eq("stage_id", stageId)
       .eq("is_active", true);
 
     const { data: route, error: routeError } = await supabase
-      .from("routes")
+      .from("route_versions")
       .insert({
         stage_id: stageId,
         version,
@@ -133,6 +139,7 @@ export async function POST(request: NextRequest) {
         start_lng: parsed.start[1],
         finish_lat: parsed.finish[0],
         finish_lng: parsed.finish[1],
+        points_count: parsed.points.length,
         route_points: parsed.points,
         is_active: true,
         change_note: changeNote || null,
