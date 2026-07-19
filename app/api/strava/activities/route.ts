@@ -64,35 +64,82 @@ async function resolveAccessToken(request: NextRequest) {
   return { accessToken, refreshed };
 }
 
+function applyRefreshedCookies(response: NextResponse, refreshed: RefreshResponse | null) {
+  if (!refreshed) return;
+  const cookieBase = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+  };
+  response.cookies.set("strava_access_token", refreshed.access_token, {
+    ...cookieBase,
+    maxAge: Math.max(60, refreshed.expires_in || 21600),
+  });
+  response.cookies.set("strava_refresh_token", refreshed.refresh_token, {
+    ...cookieBase,
+    maxAge: 60 * 60 * 24 * 365,
+  });
+  response.cookies.set("strava_expires_at", String(refreshed.expires_at || 0), {
+    ...cookieBase,
+    maxAge: 60 * 60 * 24 * 365,
+  });
+}
+
 export async function GET(request: NextRequest) {
   const clientId = process.env.STRAVA_CLIENT_ID?.trim();
   const clientSecret = process.env.STRAVA_CLIENT_SECRET?.trim();
+  const requestedDate = request.nextUrl.searchParams.get("date")?.trim() || null;
+
   if (!clientId || !clientSecret) {
-    return NextResponse.json({ configured: false, connected: false, athlete: null, activities: [] });
+    return NextResponse.json({ configured: false, connected: false, athlete: null, activities: [], date: requestedDate });
   }
 
   const { accessToken, refreshed } = await resolveAccessToken(request);
   if (!accessToken) {
-    return NextResponse.json({ configured: true, connected: false, athlete: null, activities: [] });
+    return NextResponse.json({ configured: true, connected: false, athlete: null, activities: [], date: requestedDate });
   }
 
-  const after = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60;
+  let after: number;
+  let before: number | null = null;
+  if (requestedDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+    const start = new Date(`${requestedDate}T00:00:00-03:00`);
+    const end = new Date(`${requestedDate}T23:59:59-03:00`);
+    after = Math.floor(start.getTime() / 1000) - 6 * 60 * 60;
+    before = Math.floor(end.getTime() / 1000) + 6 * 60 * 60;
+  } else {
+    after = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60;
+  }
+
+  const params = new URLSearchParams({ after: String(after), per_page: "50" });
+  if (before) params.set("before", String(before));
+
   const activitiesResponse = await fetch(
-    `https://www.strava.com/api/v3/athlete/activities?after=${after}&per_page=30`,
+    `https://www.strava.com/api/v3/athlete/activities?${params.toString()}`,
     { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store" },
   );
 
   if (!activitiesResponse.ok) {
-    return NextResponse.json(
-      { configured: true, connected: false, athlete: null, activities: [], error: "Falha ao consultar atividades do Strava." },
+    const response = NextResponse.json(
+      {
+        configured: true,
+        connected: false,
+        athlete: null,
+        activities: [],
+        date: requestedDate,
+        error: "Falha ao consultar atividades do Strava.",
+      },
       { status: activitiesResponse.status },
     );
+    applyRefreshedCookies(response, refreshed);
+    return response;
   }
 
   const raw = (await activitiesResponse.json()) as StravaActivity[];
   const cyclingTypes = new Set(["Ride", "MountainBikeRide", "GravelRide", "EBikeRide", "VirtualRide"]);
   const activities = raw
     .filter((activity) => cyclingTypes.has(activity.sport_type || activity.type || ""))
+    .filter((activity) => !requestedDate || activity.start_date_local.slice(0, 10) === requestedDate)
     .map((activity) => ({
       id: String(activity.id),
       name: activity.name,
@@ -124,26 +171,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const response = NextResponse.json({ configured: true, connected: true, athlete, activities });
-  if (refreshed) {
-    const cookieBase = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax" as const,
-      path: "/",
-    };
-    response.cookies.set("strava_access_token", refreshed.access_token, {
-      ...cookieBase,
-      maxAge: Math.max(60, refreshed.expires_in || 21600),
-    });
-    response.cookies.set("strava_refresh_token", refreshed.refresh_token, {
-      ...cookieBase,
-      maxAge: 60 * 60 * 24 * 365,
-    });
-    response.cookies.set("strava_expires_at", String(refreshed.expires_at || 0), {
-      ...cookieBase,
-      maxAge: 60 * 60 * 24 * 365,
-    });
-  }
+  const response = NextResponse.json({ configured: true, connected: true, athlete, activities, date: requestedDate });
+  applyRefreshedCookies(response, refreshed);
   return response;
 }
