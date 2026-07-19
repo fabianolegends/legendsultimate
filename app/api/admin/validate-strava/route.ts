@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { GeoPoint, validateActivity } from "@/lib/race-engine";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { resolveRegistrationEligibility } from "@/lib/registration-access";
 import {
   buildFallbackDistanceStream,
   calculateSegmentResults,
@@ -15,31 +16,14 @@ export const runtime = "nodejs";
 type RefreshResponse = { access_token: string; refresh_token: string; expires_at: number; expires_in: number };
 type StravaAthleteCookie = { id?: number; firstname?: string; lastname?: string; profile?: string };
 type StravaActivityDetail = {
-  id: number;
-  name: string;
-  start_date: string;
-  start_date_local: string;
-  distance: number;
-  total_elevation_gain: number;
-  moving_time: number;
-  elapsed_time: number;
-  average_speed?: number;
-  average_heartrate?: number;
-  max_heartrate?: number;
-  average_watts?: number;
-  weighted_average_watts?: number;
-  calories?: number;
-  sport_type?: string;
-  type?: string;
+  id: number; name: string; start_date: string; start_date_local: string; distance: number;
+  total_elevation_gain: number; moving_time: number; elapsed_time: number; average_speed?: number;
+  average_heartrate?: number; max_heartrate?: number; average_watts?: number;
+  weighted_average_watts?: number; calories?: number; sport_type?: string; type?: string;
   athlete?: { id?: number };
 };
 type StravaStream<T> = { data: T[]; original_size?: number; resolution?: string; series_type?: string };
-type StravaStreams = {
-  latlng?: StravaStream<[number, number]>;
-  altitude?: StravaStream<number>;
-  time?: StravaStream<number>;
-  distance?: StravaStream<number>;
-};
+type StravaStreams = { latlng?: StravaStream<[number, number]>; altitude?: StravaStream<number>; time?: StravaStream<number>; distance?: StravaStream<number> };
 
 async function resolveAccessToken(request: NextRequest) {
   let accessToken = request.cookies.get("strava_access_token")?.value;
@@ -91,7 +75,8 @@ function normalizedStream(values: number[], length: number, fallbackFinish: numb
 
 export async function POST(request: NextRequest) {
   const athleteCookie = readAthleteCookie(request);
-  if (!isAdminRequest(request) && !athleteCookie?.id) return NextResponse.json({ error: "Sessão inválida ou expirada." }, { status: 401 });
+  const adminRequest = isAdminRequest(request);
+  if (!adminRequest && !athleteCookie?.id) return NextResponse.json({ error: "Sessão inválida ou expirada." }, { status: 401 });
 
   try {
     const body = await request.json() as { stageId?: string; activityId?: string; toleranceM?: number };
@@ -126,6 +111,9 @@ export async function POST(request: NextRequest) {
       : buildFallbackDistanceStream(activityPoints);
 
     const supabase = createSupabaseAdmin();
+    const { data: stage, error: stageError } = await supabase.from("stages").select("id, event_id").eq("id", stageId).single();
+    if (stageError || !stage) return NextResponse.json({ error: stageError?.message ?? "Etapa não encontrada." }, { status: 404 });
+
     const { data: route, error: routeError } = await supabase
       .from("route_versions")
       .select("id, version, file_name, distance_km, elevation_m, route_points")
@@ -159,6 +147,32 @@ export async function POST(request: NextRequest) {
       .select("id")
       .single();
     if (athleteError) throw athleteError;
+
+    let registration: any = null;
+    if (!adminRequest) {
+      const eligibility = await resolveRegistrationEligibility(supabase, { eventId: stage.event_id, athleteId: athleteRow.id });
+      if (eligibility.required && !eligibility.eligible) {
+        return NextResponse.json({
+          error: "Sua conta Strava ainda não está vinculada a uma inscrição confirmada para este evento. Use o código recebido na inscrição.",
+          code: "REGISTRATION_REQUIRED",
+        }, { status: 403 });
+      }
+      registration = eligibility.registration;
+      if (registration) {
+        const { error } = await supabase.from("athletes").update({
+          full_name: registration.full_name,
+          email: registration.email,
+          category: registration.category,
+          country_code: registration.country_code,
+          bib_number: registration.bib_number,
+          birth_date: registration.birth_date,
+          gender: registration.gender,
+          modality: registration.modality,
+          updated_at: new Date().toISOString(),
+        }).eq("id", athleteRow.id);
+        if (error) throw error;
+      }
+    }
 
     const { data: activityRow, error: activityError } = await supabase
       .from("activities")
@@ -214,9 +228,7 @@ export async function POST(request: NextRequest) {
 
     let timingConfigured = false;
     let timingMessage: string | null = null;
-    let timedSegments: TimedSegment[] = [];
     let segmentDetections = [] as ReturnType<typeof calculateSegmentResults>;
-
     const { data: segmentRows, error: segmentQueryError } = await supabase
       .from("timed_segments")
       .select("id, name, segment_type, start_checkpoint_id, finish_checkpoint_id")
@@ -225,30 +237,24 @@ export async function POST(request: NextRequest) {
 
     if (!segmentQueryError) {
       timingConfigured = true;
-      timedSegments = (segmentRows ?? []) as TimedSegment[];
-      segmentDetections = calculateSegmentResults(timedSegments, passageDetections);
-
+      segmentDetections = calculateSegmentResults((segmentRows ?? []) as TimedSegment[], passageDetections);
       const { error: passageDeleteError } = await supabase.from("checkpoint_passages").delete().eq("activity_id", activityRow.id);
       if (passageDeleteError) throw passageDeleteError;
       const passed = passageDetections.filter((passage) => passage.passed && passage.point_index !== null && passage.elapsed_s !== null && passage.passed_at);
       let savedPassages: Array<{ id: string; checkpoint_id: string }> = [];
       if (passed.length) {
-        const { data, error } = await supabase
-          .from("checkpoint_passages")
-          .insert(passed.map((passage) => ({
-            activity_id: activityRow.id,
-            checkpoint_id: passage.checkpoint_id,
-            point_index: passage.point_index,
-            elapsed_s: passage.elapsed_s,
-            activity_distance_m: passage.activity_distance_m,
-            nearest_distance_m: passage.nearest_distance_m,
-            passed_at: passage.passed_at,
-          })))
-          .select("id, checkpoint_id");
+        const { data, error } = await supabase.from("checkpoint_passages").insert(passed.map((passage) => ({
+          activity_id: activityRow.id,
+          checkpoint_id: passage.checkpoint_id,
+          point_index: passage.point_index,
+          elapsed_s: passage.elapsed_s,
+          activity_distance_m: passage.activity_distance_m,
+          nearest_distance_m: passage.nearest_distance_m,
+          passed_at: passage.passed_at,
+        }))).select("id, checkpoint_id");
         if (error) throw error;
         savedPassages = data ?? [];
       }
-
       const passageIdByCheckpoint = new Map(savedPassages.map((passage) => [passage.checkpoint_id, passage.id]));
       const completedSegments = segmentDetections.filter((segment) => segment.completed && segment.elapsed_s !== null);
       if (completedSegments.length) {
@@ -270,40 +276,25 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       report,
       validation,
+      registration,
       route: { id: route.id, version: route.version, file_name: route.file_name, distance_km: route.distance_km, elevation_m: route.elevation_m },
       activity: {
-        id: String(activity.id),
-        database_id: activityRow.id,
-        name: activity.name,
-        file_name: activity.name,
-        source: "Strava",
-        start_date: activity.start_date,
-        start_date_local: activity.start_date_local,
-        distance_km: Number((activity.distance / 1000).toFixed(2)),
-        elevation_m: Math.round(activity.total_elevation_gain || 0),
-        moving_time_min: Math.round(activity.moving_time / 60),
-        points_count: activityPoints.length,
+        id: String(activity.id), database_id: activityRow.id, name: activity.name, file_name: activity.name,
+        source: "Strava", start_date: activity.start_date, start_date_local: activity.start_date_local,
+        distance_km: Number((activity.distance / 1000).toFixed(2)), elevation_m: Math.round(activity.total_elevation_gain || 0),
+        moving_time_min: Math.round(activity.moving_time / 60), points_count: activityPoints.length,
       },
       map: {
         official_points: sampleMapPoints(officialPoints),
         activity_points: sampleMapPoints(activityPoints),
         checkpoints: report.checkpoint_results.map((checkpoint) => ({
-          sequence: checkpoint.sequence,
-          label: checkpoint.label,
-          latitude: checkpoint.latitude,
-          longitude: checkpoint.longitude,
-          hit: checkpoint.hit,
-          nearest_distance_m: checkpoint.nearest_distance_m,
+          sequence: checkpoint.sequence, label: checkpoint.label, latitude: checkpoint.latitude, longitude: checkpoint.longitude,
+          hit: checkpoint.hit, nearest_distance_m: checkpoint.nearest_distance_m,
           passed_at: checkpoint.id ? passageByCheckpoint.get(checkpoint.id)?.passed_at ?? null : null,
           elapsed_s: checkpoint.id ? passageByCheckpoint.get(checkpoint.id)?.elapsed_s ?? null : null,
         })),
       },
-      timing: {
-        configured: timingConfigured,
-        message: timingMessage,
-        passages: passageDetections,
-        segments: segmentDetections,
-      },
+      timing: { configured: timingConfigured, message: timingMessage, passages: passageDetections, segments: segmentDetections },
       saved: true,
     });
     applyRefreshedCookies(response, refreshed);
