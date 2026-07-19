@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { GeoPoint, parseGpx, validateActivity } from "@/lib/race-engine";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export async function POST(request: NextRequest) {
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
     const stageId = String(formData.get("stageId") ?? "");
@@ -18,7 +23,6 @@ export async function POST(request: NextRequest) {
 
     const activityPoints = parseGpx(await file.text());
     const supabase = createSupabaseAdmin();
-
     const { data: route, error: routeError } = await supabase
       .from("route_versions")
       .select("id, version, file_name, distance_km, elevation_m, route_points")
@@ -43,7 +47,6 @@ export async function POST(request: NextRequest) {
       .select("id, sequence, label, latitude, longitude, radius_m")
       .eq("stage_id", stageId)
       .order("sequence", { ascending: true });
-
     if (checkpointError) throw checkpointError;
 
     const report = validateActivity({
@@ -62,10 +65,7 @@ export async function POST(request: NextRequest) {
         distance_km: route.distance_km,
         elevation_m: route.elevation_m,
       },
-      activity: {
-        file_name: file.name,
-        points_count: activityPoints.length,
-      },
+      activity: { file_name: file.name, points_count: activityPoints.length },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Falha ao validar a atividade.";
