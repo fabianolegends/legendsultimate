@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { latLngBounds } from "leaflet";
+import { divIcon, latLngBounds } from "leaflet";
 import {
   CircleMarker,
   MapContainer,
+  Marker,
   Popup,
   Polyline,
   TileLayer,
-  Tooltip,
   useMap,
 } from "react-leaflet";
 
@@ -39,6 +39,11 @@ type RouteSegment = {
   maxDeviationM: number;
   averageDeviationM: number;
   lengthM: number;
+};
+
+type DirectionArrow = {
+  point: ValidationMapPoint;
+  bearing: number;
 };
 
 const EARTH_RADIUS_M = 6_371_000;
@@ -122,9 +127,7 @@ function splitActivitySegments(
       points.push(activityPoints[index]);
       distancesM.push(pointDistances[index]);
       if (points.length >= 2) {
-        segments.push(
-          buildSegment(matched, points, distancesM, startPointIndex, index),
-        );
+        segments.push(buildSegment(matched, points, distancesM, startPointIndex, index));
       }
 
       points = [activityPoints[index - 1], activityPoints[index]];
@@ -155,6 +158,84 @@ function splitActivitySegments(
 function formatDistance(distance: number) {
   if (distance >= 1000) return `${(distance / 1000).toFixed(2)} km`;
   return `${Math.round(distance)} m`;
+}
+
+function bearingDegrees(a: ValidationMapPoint, b: ValidationMapPoint) {
+  const lat1 = (a[0] * Math.PI) / 180;
+  const lat2 = (b[0] * Math.PI) / 180;
+  const dLon = ((b[1] - a[1]) * Math.PI) / 180;
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  return (Math.atan2(y, x) * 180) / Math.PI;
+}
+
+function buildDirectionArrows(
+  points: ValidationMapPoint[],
+  requestedCount = 10,
+): DirectionArrow[] {
+  if (points.length < 2) return [];
+
+  const cumulative = [0];
+  for (let index = 1; index < points.length; index += 1) {
+    cumulative.push(cumulative[index - 1] + distanceM(points[index - 1], points[index]));
+  }
+
+  const total = cumulative[cumulative.length - 1];
+  if (total <= 0) return [];
+  const count = Math.max(3, Math.min(requestedCount, Math.floor(total / 2500) + 2));
+  const arrows: DirectionArrow[] = [];
+
+  for (let arrowIndex = 1; arrowIndex <= count; arrowIndex += 1) {
+    const target = (arrowIndex / (count + 1)) * total;
+    let segmentIndex = 1;
+    while (segmentIndex < cumulative.length && cumulative[segmentIndex] < target) {
+      segmentIndex += 1;
+    }
+    if (segmentIndex >= points.length) segmentIndex = points.length - 1;
+
+    const previousDistance = cumulative[segmentIndex - 1];
+    const segmentDistance = Math.max(1, cumulative[segmentIndex] - previousDistance);
+    const fraction = Math.min(1, Math.max(0, (target - previousDistance) / segmentDistance));
+    const start = points[segmentIndex - 1];
+    const finish = points[segmentIndex];
+    const point: ValidationMapPoint = [
+      start[0] + (finish[0] - start[0]) * fraction,
+      start[1] + (finish[1] - start[1]) * fraction,
+    ];
+    arrows.push({ point, bearing: bearingDegrees(start, finish) });
+  }
+
+  return arrows;
+}
+
+function offsetPoint(
+  point: ValidationMapPoint,
+  northM: number,
+  eastM: number,
+): ValidationMapPoint {
+  const latitudeOffset = northM / 111_320;
+  const longitudeScale = 111_320 * Math.max(0.2, Math.cos((point[0] * Math.PI) / 180));
+  return [point[0] + latitudeOffset, point[1] + eastM / longitudeScale];
+}
+
+function markerIcon(label: string, color: string, size = 24) {
+  return divIcon({
+    className: "validation-marker-shell",
+    html: `<span style="width:${size}px;height:${size}px;background:${color}">${label}</span>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -(size / 2 + 3)],
+  });
+}
+
+function directionIcon(bearing: number) {
+  return divIcon({
+    className: "route-direction-shell",
+    html: `<span style="transform:rotate(${bearing}deg)">↑</span>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
 }
 
 function FitBounds({ points }: { points: ValidationMapPoint[] }) {
@@ -214,11 +295,32 @@ export default function ValidationMap({
     () => splitActivitySegments(activityPoints, officialPoints, toleranceM),
     [activityPoints, officialPoints, toleranceM],
   );
-
-  const allPoints = useMemo(
-    () => [...officialPoints, ...activityPoints],
-    [activityPoints, officialPoints],
+  const directionArrows = useMemo(
+    () => buildDirectionArrows(officialPoints),
+    [officialPoints],
   );
+
+  const endpointDisplay = useMemo(() => {
+    if (checkpoints.length < 2) return null;
+    const start: ValidationMapPoint = [checkpoints[0].latitude, checkpoints[0].longitude];
+    const finishCheckpoint = checkpoints[checkpoints.length - 1];
+    const finish: ValidationMapPoint = [finishCheckpoint.latitude, finishCheckpoint.longitude];
+    const separated = distanceM(start, finish) < 120;
+    return {
+      separated,
+      start,
+      finish,
+      startDisplay: separated ? offsetPoint(start, 38, -38) : start,
+      finishDisplay: separated ? offsetPoint(finish, -38, 38) : finish,
+    };
+  }, [checkpoints]);
+
+  const allPoints = useMemo(() => {
+    const endpointPoints = endpointDisplay
+      ? [endpointDisplay.startDisplay, endpointDisplay.finishDisplay]
+      : [];
+    return [...officialPoints, ...activityPoints, ...endpointPoints];
+  }, [activityPoints, endpointDisplay, officialPoints]);
 
   const matchedSegments = segments.filter((segment) => segment.matched);
   const deviationSegments = segments.filter((segment) => !segment.matched);
@@ -254,17 +356,17 @@ export default function ValidationMap({
         .validation-map-diagnostic{border:1px solid #d5cbbc;background:#f6efe4;padding:11px 13px}.validation-map-diagnostic small{display:block;color:#766f65;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.validation-map-diagnostic strong{display:block;margin-top:4px;font-size:17px;color:#292621}
         .validation-map-canvas{height:480px;width:100%;border:1px solid #b8ad9c;overflow:hidden;background:#ded8ce}
         .validation-map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;color:#4f4a43;font-size:13px}
-        .validation-map-legend span{display:inline-flex;align-items:center;gap:7px}.legend-line{display:inline-block;width:25px;height:4px}.legend-dot{display:inline-block;width:11px;height:11px;border-radius:50%}
+        .validation-map-legend span{display:inline-flex;align-items:center;gap:7px}.legend-line{display:inline-block;width:25px;height:4px}.legend-dot{display:inline-block;width:11px;height:11px;border-radius:50%}.legend-arrow{font-weight:900;color:#9a4a12;font-size:17px;line-height:1}
         .leaflet-container{font-family:Arial,sans-serif}.leaflet-popup-content{margin:12px 15px;line-height:1.45}
-        .leaflet-tooltip.checkpoint-number{background:transparent;border:0;box-shadow:none;color:#fff;font-size:10px;font-weight:900;line-height:18px;padding:0;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-        .leaflet-tooltip.checkpoint-number:before{display:none}
+        .validation-marker-shell{background:transparent!important;border:0!important}.validation-marker-shell span{display:flex;align-items:center;justify-content:center;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 7px rgba(0,0,0,.38);color:#fff;font-size:10px;font-weight:900;line-height:1;box-sizing:border-box}
+        .route-direction-shell{background:transparent!important;border:0!important;pointer-events:none}.route-direction-shell span{display:flex;width:24px;height:24px;align-items:center;justify-content:center;color:#8f3f0b;font-size:22px;font-weight:900;line-height:1;text-shadow:0 1px 2px #fff,0 0 3px #fff}
         @media(max-width:720px){.validation-map-card{padding:12px}.validation-map-head{display:block}.validation-map-controls{justify-content:flex-start;margin-top:12px}.validation-map-diagnostics{grid-template-columns:1fr}.validation-map-canvas{height:400px}}
       `}</style>
 
       <div className="validation-map-head">
         <div>
           <h3>Mapa da validação</h3>
-          <p>Compare os traçados. Clique em um trecho vermelho para ver a distância do desvio.</p>
+          <p>Compare os traçados. As setas mostram o sentido oficial; clique nos trechos para analisar os desvios.</p>
         </div>
         <div className="validation-map-controls" aria-label="Camadas do mapa">
           <LayerButton active={showOfficial} label="Rota oficial" onClick={() => setShowOfficial((value) => !value)} />
@@ -302,15 +404,27 @@ export default function ValidationMap({
         <FitBounds points={allPoints} />
 
         {showOfficial && (
-          <Polyline
-            positions={officialPoints}
-            pathOptions={{ color: "#e86619", weight: 6, opacity: 0.85 }}
-          >
-            <Popup>
-              <strong>Rota oficial</strong><br />
-              Traçado homologado pela organização.
-            </Popup>
-          </Polyline>
+          <>
+            <Polyline
+              positions={officialPoints}
+              pathOptions={{ color: "#e86619", weight: 6, opacity: 0.85 }}
+            >
+              <Popup>
+                <strong>Rota oficial</strong><br />
+                Traçado homologado pela organização. As setas indicam o sentido obrigatório.
+              </Popup>
+            </Polyline>
+            {directionArrows.map((arrow, index) => (
+              <Marker
+                key={`direction-${index}`}
+                position={arrow.point}
+                icon={directionIcon(arrow.bearing)}
+                interactive={false}
+                keyboard={false}
+                zIndexOffset={450}
+              />
+            ))}
+          </>
         )}
 
         {showActivity && matchedSegments.map((segment, index) => (
@@ -343,35 +457,57 @@ export default function ValidationMap({
           </Polyline>
         ))}
 
+        {showCheckpoints && endpointDisplay?.separated && (
+          <>
+            <Polyline
+              positions={[endpointDisplay.start, endpointDisplay.startDisplay]}
+              pathOptions={{ color: "#176b42", weight: 2, opacity: 0.8, dashArray: "4 5" }}
+            />
+            <Polyline
+              positions={[endpointDisplay.finish, endpointDisplay.finishDisplay]}
+              pathOptions={{ color: "#171817", weight: 2, opacity: 0.8, dashArray: "4 5" }}
+            />
+            <CircleMarker center={endpointDisplay.start} radius={3} pathOptions={{ color: "#176b42", fillColor: "#176b42", fillOpacity: 1 }} />
+            <CircleMarker center={endpointDisplay.finish} radius={3} pathOptions={{ color: "#171817", fillColor: "#171817", fillOpacity: 1 }} />
+          </>
+        )}
+
         {showCheckpoints && checkpoints.map((checkpoint, index) => {
           const isStart = index === 0;
           const isFinish = index === checkpoints.length - 1;
           const color = isFinish ? "#171817" : isStart ? "#176b42" : checkpoint.hit ? "#16844f" : "#cf3434";
           const markerLabel = isStart ? "L" : isFinish ? "C" : String(checkpoint.sequence);
+          const position: ValidationMapPoint = isStart && endpointDisplay
+            ? endpointDisplay.startDisplay
+            : isFinish && endpointDisplay
+              ? endpointDisplay.finishDisplay
+              : [checkpoint.latitude, checkpoint.longitude];
           return (
-            <CircleMarker
+            <Marker
               key={`${checkpoint.sequence}-${checkpoint.label}`}
-              center={[checkpoint.latitude, checkpoint.longitude]}
-              radius={isStart || isFinish ? 11 : 10}
-              pathOptions={{ color: "#fff", weight: 2, fillColor: color, fillOpacity: 1 }}
+              position={position}
+              icon={markerIcon(markerLabel, color, isStart || isFinish ? 28 : 24)}
+              zIndexOffset={isStart || isFinish ? 800 : 600}
             >
-              <Tooltip permanent direction="center" className="checkpoint-number" opacity={1}>
-                {markerLabel}
-              </Tooltip>
               <Popup>
                 <strong>{checkpoint.label}</strong><br />
                 {checkpoint.hit ? "Confirmado" : "Não confirmado"}<br />
                 Distância mínima: {checkpoint.nearest_distance_m} m
+                {(isStart || isFinish) && endpointDisplay?.separated ? (
+                  <><br /><small>Marcador deslocado apenas para evitar sobreposição visual.</small></>
+                ) : null}
               </Popup>
-            </CircleMarker>
+            </Marker>
           );
         })}
       </MapContainer>
 
       <div className="validation-map-legend" aria-label="Legenda do mapa">
         <span><i className="legend-line" style={{ background: "#e86619" }} />Rota oficial</span>
+        <span><i className="legend-arrow">↑</i>Sentido oficial</span>
         <span><i className="legend-line" style={{ background: "#16844f" }} />Trecho compatível</span>
         <span><i className="legend-line" style={{ background: "#cf3434" }} />Trecho fora da tolerância</span>
+        <span><i className="legend-dot" style={{ background: "#176b42" }} />Largada</span>
         <span><i className="legend-dot" style={{ background: "#16844f" }} />Checkpoint confirmado</span>
         <span><i className="legend-dot" style={{ background: "#cf3434" }} />Checkpoint não confirmado</span>
         <span><i className="legend-dot" style={{ background: "#171817" }} />Chegada</span>
