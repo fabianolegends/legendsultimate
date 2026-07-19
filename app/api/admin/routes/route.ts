@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 type Point = [number, number, number | null];
+
+function unauthorized() {
+  return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
+}
 
 function haversineKm(a: Point, b: Point) {
   const radiusKm = 6371;
@@ -30,9 +35,7 @@ function parseGpx(xml: string) {
     }
   }
 
-  if (points.length < 2) {
-    throw new Error("O arquivo não contém pontos GPX suficientes.");
-  }
+  if (points.length < 2) throw new Error("O arquivo não contém pontos GPX suficientes.");
 
   let distanceKm = 0;
   let elevationM = 0;
@@ -68,7 +71,8 @@ function parseGpx(xml: string) {
   };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!isAdminRequest(request)) return unauthorized();
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("stages")
@@ -76,16 +80,12 @@ export async function GET() {
     .order("stage_date", { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  const stages = (data ?? []).map((stage) => ({
-    ...stage,
-    routes: stage.route_versions ?? [],
-  }));
-
+  const stages = (data ?? []).map((stage) => ({ ...stage, routes: stage.route_versions ?? [] }));
   return NextResponse.json({ stages });
 }
 
 export async function POST(request: NextRequest) {
+  if (!isAdminRequest(request)) return unauthorized();
   try {
     const formData = await request.formData();
     const stageId = String(formData.get("stageId") ?? "");
@@ -99,10 +99,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Envie um arquivo com extensão .gpx." }, { status: 400 });
     }
 
-    const xml = await file.text();
-    const parsed = parseGpx(xml);
+    const parsed = parseGpx(await file.text());
     const supabase = createSupabaseAdmin();
-
     const { data: history, error: historyError } = await supabase
       .from("route_versions")
       .select("id, version")
@@ -114,7 +112,6 @@ export async function POST(request: NextRequest) {
     const version = (history?.[0]?.version ?? 0) + 1;
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const storagePath = `${stageId}/v${version}-${Date.now()}-${safeName}`;
-
     const { error: uploadError } = await supabase.storage
       .from("official-routes")
       .upload(storagePath, file, { contentType: "application/gpx+xml", upsert: false });
@@ -149,26 +146,14 @@ export async function POST(request: NextRequest) {
       .single();
     if (routeError) throw routeError;
 
-    const { error: checkpointDeleteError } = await supabase
-      .from("checkpoints")
-      .delete()
-      .eq("stage_id", stageId);
+    const { error: checkpointDeleteError } = await supabase.from("checkpoints").delete().eq("stage_id", stageId);
     if (checkpointDeleteError) throw checkpointDeleteError;
-
     const { error: checkpointError } = await supabase.from("checkpoints").insert(
-      parsed.checkpoints.map((checkpoint) => ({
-        stage_id: stageId,
-        ...checkpoint,
-        radius_m: 180,
-      })),
+      parsed.checkpoints.map((checkpoint) => ({ stage_id: stageId, ...checkpoint, radius_m: 180 })),
     );
     if (checkpointError) throw checkpointError;
 
-    await supabase
-      .from("stages")
-      .update({ distance_km: parsed.distanceKm, elevation_m: parsed.elevationM })
-      .eq("id", stageId);
-
+    await supabase.from("stages").update({ distance_km: parsed.distanceKm, elevation_m: parsed.elevationM }).eq("id", stageId);
     return NextResponse.json({ route, checkpoints: parsed.checkpoints.length });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Falha ao processar o GPX.";
