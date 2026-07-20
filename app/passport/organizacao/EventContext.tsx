@@ -20,6 +20,19 @@ export type OrganizationEvent = {
   is_test?: boolean;
   stage_count?: number;
   registration_count?: number;
+  stages?: OrganizationStage[];
+};
+
+export type OrganizationStage = {
+  id: string;
+  event_id: string;
+  stage_number: number;
+  name: string;
+  route_label: string | null;
+  stage_date: string;
+  classification_weight: number;
+  time_limit_s: number | null;
+  results_published: boolean;
 };
 
 type EventContextValue = {

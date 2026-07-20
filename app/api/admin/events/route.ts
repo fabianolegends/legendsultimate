@@ -21,14 +21,20 @@ function dateAtOffset(date: string, offset: number) {
 
 async function eventCounts(supabase: ReturnType<typeof createSupabaseAdmin>) {
   const [{ data: stages }, { data: registrations }] = await Promise.all([
-    supabase.from("stages").select("event_id"),
+    supabase.from("stages").select("id, event_id, stage_number, name, route_label, stage_date, classification_weight, time_limit_s, results_published").order("stage_number", { ascending: true }),
     supabase.from("registrations").select("event_id"),
   ]);
   const stageCounts = new Map<string, number>();
   const registrationCounts = new Map<string, number>();
   for (const row of stages ?? []) stageCounts.set(row.event_id, (stageCounts.get(row.event_id) ?? 0) + 1);
   for (const row of registrations ?? []) if (row.event_id) registrationCounts.set(row.event_id, (registrationCounts.get(row.event_id) ?? 0) + 1);
-  return { stageCounts, registrationCounts };
+  const stagesByEvent = new Map<string, NonNullable<typeof stages>>();
+  for (const stage of stages ?? []) {
+    const rows = stagesByEvent.get(stage.event_id) ?? [];
+    rows.push(stage);
+    stagesByEvent.set(stage.event_id, rows);
+  }
+  return { stageCounts, registrationCounts, stagesByEvent };
 }
 
 export async function GET(request: NextRequest) {
@@ -43,11 +49,12 @@ export async function GET(request: NextRequest) {
     error = fallback.error;
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  const { stageCounts, registrationCounts } = await eventCounts(supabase);
+  const { stageCounts, registrationCounts, stagesByEvent } = await eventCounts(supabase);
   const events = (data ?? []).map((event) => ({
     ...event,
     stage_count: stageCounts.get(event.id) ?? 0,
     registration_count: registrationCounts.get(event.id) ?? 0,
+    stages: stagesByEvent.get(event.id) ?? [],
   }));
   return NextResponse.json({ events, module_ready: moduleReady });
 }
