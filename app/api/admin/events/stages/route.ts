@@ -19,7 +19,7 @@ function stagePayload(body: Record<string, unknown>) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "events.manage")) return unauthorized();
   try {
     const body = await request.json() as Record<string, unknown>;
     const eventId = String(body.event_id ?? "").trim();
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "events.manage")) return unauthorized();
   try {
     const body = await request.json() as Record<string, unknown>;
     const stageId = String(body.stage_id ?? "").trim();

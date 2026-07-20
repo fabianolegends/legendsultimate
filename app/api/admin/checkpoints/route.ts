@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "routes.manage")) return unauthorized();
   try {
     const body = (await request.json()) as {
       stageId?: string;
@@ -357,7 +357,7 @@ function timingForActivity(activity: any, points: GeoPoint[]) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "routes.manage")) return unauthorized();
   try {
     const body = (await request.json()) as { stageId?: string };
     const stageId = String(body.stageId ?? "").trim();
@@ -525,7 +525,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "routes.manage")) return unauthorized();
   try {
     const body = (await request.json()) as {
       stageId?: string;
@@ -617,7 +617,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "routes.manage")) return unauthorized();
   try {
     const segmentId = request.nextUrl.searchParams.get("segmentId")?.trim();
     if (!segmentId)

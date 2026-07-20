@@ -69,7 +69,7 @@ function elevationGain(points: GeoPoint[]) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) {
+  if (!isAdminRequest(request, "results.review")) {
     return NextResponse.json(
       { error: "Sessão administrativa inválida ou expirada." },
       { status: 401 },

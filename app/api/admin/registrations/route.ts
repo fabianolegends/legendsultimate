@@ -191,7 +191,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "registrations.manage")) return unauthorized();
   try {
     const body = await request.json() as { action?: string; id?: string; fromId?: string; toId?: string; reason?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput; sequences?: Array<{ category?: string; start_number?: number; padding?: number }> };
     const supabase = createSupabaseAdmin();
@@ -277,7 +277,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "registrations.manage")) return unauthorized();
   try {
     const body = await request.json() as { id?: string; registration?: RegistrationInput };
     const id = String(body.id ?? "").trim();

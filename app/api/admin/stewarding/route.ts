@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { recordAdminAudit } from "@/lib/admin-audit";
 
 function unauthorized() {
   return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
@@ -161,7 +162,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "results.review")) return unauthorized();
   try {
     const body = await request.json() as { resultId?: string; status?: string; timePenaltyS?: number; pointsPenalty?: number; acceptDuplicate?: boolean; note?: string };
     const resultId = String(body.resultId ?? "").trim();
@@ -197,6 +198,7 @@ export async function PATCH(request: NextRequest) {
       action: "adjust_result", note: decisionNote, previous_value: current, new_value: saved,
     });
     if (auditError) throw auditError;
+    await recordAdminAudit(request, { action: "result.adjusted", resourceType: "stage_result", resourceId: resultId, eventId: current.event_id, details: { status, time_penalty_s: timePenaltyS, points_penalty: pointsPenalty, note: decisionNote } });
     return NextResponse.json({ updated: true, result: saved });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao ajustar o resultado." }, { status: 500 });
@@ -204,7 +206,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "results.publish")) return unauthorized();
   try {
     const body = await request.json() as { stageId?: string; action?: "publish" | "reopen"; note?: string };
     const stageId = String(body.stageId ?? "").trim();
@@ -235,6 +237,7 @@ export async function POST(request: NextRequest) {
       note: note || "Etapa conferida, aprovada e publicada sem ressalvas.", previous_value: stage, new_value: { results_published: body.action === "publish", results_locked: body.action === "publish" },
     });
     if (auditError) throw auditError;
+    await recordAdminAudit(request, { action: body.action === "publish" ? "stage.published" : "stage.reopened", resourceType: "stage", resourceId: stageId, eventId: stage.event_id, details: { note } });
     return NextResponse.json({ updated: true, action: body.action });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao atualizar a etapa." }, { status: 500 });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { recordAdminAudit } from "@/lib/admin-audit";
 
 const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, created_at, updated_at";
 const baseFields = "id, slug, name, timezone, status, starts_on, ends_on, created_at, updated_at";
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "events.manage")) return unauthorized();
   try {
     const body = await request.json() as Record<string, unknown>;
     const name = String(body.name ?? "").trim();
@@ -109,6 +110,7 @@ export async function POST(request: NextRequest) {
     }));
     const { error: stagesError } = await supabase.from("stages").insert(stages);
     if (stagesError) throw stagesError;
+    await recordAdminAudit(request, { action: "event.created", resourceType: "event", resourceId: event.id, eventId: event.id, details: { name, stage_count: stageCount } });
     return NextResponse.json({ event: { ...event, stage_count: stageCount, registration_count: 0 } }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível criar o evento." }, { status: 500 });
@@ -116,7 +118,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "events.manage")) return unauthorized();
   try {
     const body = await request.json() as Record<string, unknown>;
     const eventId = String(body.event_id ?? "").trim();
@@ -128,6 +130,7 @@ export async function PATCH(request: NextRequest) {
     const { data, error } = await supabase.from("events").update(payload).eq("id", eventId).select(extendedFields).single();
     if (error?.code === "42703") return NextResponse.json({ error: "Execute a migration 012_multi_event_management.sql no Supabase." }, { status: 409 });
     if (error) throw error;
+    await recordAdminAudit(request, { action: "event.updated", resourceType: "event", resourceId: eventId, eventId, details: { fields: Object.keys(payload).filter((field) => field !== "updated_at") } });
     return NextResponse.json({ event: data });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível atualizar o evento." }, { status: 500 });

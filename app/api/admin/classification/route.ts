@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "results.review")) return unauthorized();
   try {
     const body = await request.json() as { eventId?: string };
     const eventId = String(body.eventId ?? "").trim();

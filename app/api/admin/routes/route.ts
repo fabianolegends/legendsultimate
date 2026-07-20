@@ -96,7 +96,7 @@ function bounded(value: unknown, minimum: number, maximum: number, fallback: num
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "routes.manage")) return unauthorized();
   try {
     const body = await request.json() as { stageId?: string; rules?: Record<string, unknown> };
     const stageId = String(body.stageId ?? "").trim();
@@ -130,7 +130,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "routes.manage")) return unauthorized();
   try {
     const formData = await request.formData();
     const stageId = String(formData.get("stageId") ?? "");

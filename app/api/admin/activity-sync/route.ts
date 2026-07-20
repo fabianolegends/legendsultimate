@@ -48,7 +48,7 @@ function scheduledRequest(request: NextRequest) {
 }
 
 function authorized(request: NextRequest) {
-  return isAdminRequest(request) || scheduledRequest(request);
+  return isAdminRequest(request, "results.review") || scheduledRequest(request);
 }
 
 function migrationMissing(error: { code?: string } | null | undefined) {

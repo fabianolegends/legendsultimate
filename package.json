@@ -7,6 +7,8 @@
     "build": "next build",
     "test:classification-engine": "node --import tsx --test lib/classification-engine/index.test.ts",
     "test:race-engine": "node --import tsx --test lib/race-engine/index.test.ts",
+    "test:load": "node --import tsx tools/race-load-simulation.ts 500",
+    "test:race-day": "node --import tsx tools/race-load-simulation.ts 1000",
     "start": "next start",
     "lint": "next lint"
   },

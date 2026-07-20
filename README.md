@@ -11,6 +11,19 @@ npm run dev
 
 Copie `.env.example` para `.env.local` e preencha as credenciais do Supabase e do Ride with GPS.
 
+## Segurança operacional
+
+Após executar `019_access_audit_backups.sql`, entre com a senha administrativa de contingência e abra **Segurança** para criar o primeiro proprietário individual. Papéis: proprietário, diretor, comissário e consulta. A mesma tela permite bloquear acessos, consultar a auditoria imutável e baixar um backup JSON com checksum SHA-256.
+
+O backup baixado deve ser armazenado fora da Vercel e do Supabase. Ele complementa, mas não substitui, o backup nativo/PITR do banco contratado.
+
+Simulação isolada, sem gravar no banco:
+
+```bash
+npm run test:load
+npm run test:race-day
+```
+
 ## Ride with GPS
 
 Crie um cliente OAuth no Ride with GPS e cadastre o callback abaixo exatamente como está:

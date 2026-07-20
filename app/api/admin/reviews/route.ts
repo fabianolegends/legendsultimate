@@ -163,7 +163,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isAdminRequest(request)) return unauthorized();
+  if (!isAdminRequest(request, "results.review")) return unauthorized();
   try {
     const body = await request.json() as { validationId?: string; decision?: "validated" | "rejected" | "review"; note?: string };
     const validationId = String(body.validationId ?? "");
