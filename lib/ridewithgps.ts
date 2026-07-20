@@ -44,12 +44,22 @@ export function readRideWithGpsUser(request: NextRequest): RideWithGpsUser | nul
   try {
     return JSON.parse(raw) as RideWithGpsUser;
   } catch {
-    return null;
+    try {
+      return JSON.parse(decodeURIComponent(raw)) as RideWithGpsUser;
+    } catch {
+      return null;
+    }
   }
 }
 
 export function readRideWithGpsAccessToken(request: NextRequest) {
-  return request.cookies.get("rwgps_access_token")?.value || null;
+  const raw = request.cookies.get("rwgps_access_token")?.value;
+  if (!raw) return null;
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
 }
 
 export function setRideWithGpsSession(response: NextResponse, input: { accessToken: string; user: RideWithGpsUser }) {
