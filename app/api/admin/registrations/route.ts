@@ -54,7 +54,6 @@ function normalizePaymentStatus(value: unknown, registrationStatus: string, sour
   if (["courtesy", "cortesia", "convidado", "convidada", "isento", "isenta"].includes(text)) return "courtesy";
   if (["pending", "pendente", "aguardando", "em aberto", "boleto pendente"].includes(text)) return "pending";
   if (source === "manual" && registrationStatus === "confirmed") return "courtesy";
-  if (source === "windfit" && registrationStatus === "confirmed") return "paid";
   return "pending";
 }
 
