@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
-import { GeoPoint, parseGpx, polylineDistanceKm, validateActivity } from "@/lib/race-engine";
+import {
+  GeoPoint,
+  parseGpx,
+  polylineDistanceKm,
+  validateActivity,
+} from "@/lib/race-engine";
 import {
   buildFallbackDistanceStream,
   calculateSegmentResults,
@@ -11,8 +16,12 @@ import {
 } from "@/lib/checkpoint-engine";
 import { isAdminRequest } from "@/lib/admin-auth";
 
-function sampleMapPoints(points: GeoPoint[], maxPoints = 2500): Array<[number, number]> {
-  if (points.length <= maxPoints) return points.map((point) => [point[0], point[1]]);
+function sampleMapPoints(
+  points: GeoPoint[],
+  maxPoints = 2500,
+): Array<[number, number]> {
+  if (points.length <= maxPoints)
+    return points.map((point) => [point[0], point[1]]);
   const step = (points.length - 1) / (maxPoints - 1);
   return Array.from({ length: maxPoints }, (_, index) => {
     const point = points[Math.round(index * step)];
@@ -21,18 +30,26 @@ function sampleMapPoints(points: GeoPoint[], maxPoints = 2500): Array<[number, n
 }
 
 function parseGpxTiming(xml: string, pointCount: number) {
-  const pointRegex = /<(?:trkpt|rtept)\b[^>]*lat=["'][^"']+["'][^>]*lon=["'][^"']+["'][^>]*>([\s\S]*?)<\/(?:trkpt|rtept)>/gi;
+  const pointRegex =
+    /<(?:trkpt|rtept)\b[^>]*lat=["'][^"']+["'][^>]*lon=["'][^"']+["'][^>]*>([\s\S]*?)<\/(?:trkpt|rtept)>/gi;
   const timestamps: number[] = [];
   let match: RegExpExecArray | null;
   while ((match = pointRegex.exec(xml))) {
     const timeMatch = match[1].match(/<time>([^<]+)<\/time>/i);
     timestamps.push(timeMatch ? new Date(timeMatch[1]).getTime() : Number.NaN);
   }
-  const complete = timestamps.length === pointCount && timestamps.every(Number.isFinite);
+  const complete =
+    timestamps.length === pointCount && timestamps.every(Number.isFinite);
   if (!complete) return null;
   const first = timestamps[0];
   const elapsedSeconds = timestamps.map((value) => (value - first) / 1000);
-  if (elapsedSeconds.some((value, index) => value < 0 || (index > 0 && value < elapsedSeconds[index - 1]))) return null;
+  if (
+    elapsedSeconds.some(
+      (value, index) =>
+        value < 0 || (index > 0 && value < elapsedSeconds[index - 1]),
+    )
+  )
+    return null;
   return {
     startedAt: new Date(first).toISOString(),
     elapsedSeconds,
@@ -43,15 +60,20 @@ function parseGpxTiming(xml: string, pointCount: number) {
 function elevationGain(points: GeoPoint[]) {
   let gain = 0;
   for (let index = 1; index < points.length; index += 1) {
-    const previous = points[index - 1][2]; const current = points[index][2];
-    if (previous !== null && current !== null && current > previous) gain += current - previous;
+    const previous = points[index - 1][2];
+    const current = points[index][2];
+    if (previous !== null && current !== null && current > previous)
+      gain += current - previous;
   }
   return Math.round(gain);
 }
 
 export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) {
-    return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sessão administrativa inválida ou expirada." },
+      { status: 401 },
+    );
   }
 
   try {
@@ -62,10 +84,16 @@ export async function POST(request: NextRequest) {
     const toleranceM = Number(formData.get("toleranceM") ?? 120);
 
     if (!stageId || !registrationId || !(file instanceof File)) {
-      return NextResponse.json({ error: "Selecione a etapa, o atleta e envie o GPX da atividade." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Selecione a etapa, o atleta e envie o GPX da atividade." },
+        { status: 400 },
+      );
     }
     if (!file.name.toLowerCase().endsWith(".gpx")) {
-      return NextResponse.json({ error: "O arquivo da atividade precisa estar no formato GPX." }, { status: 400 });
+      return NextResponse.json(
+        { error: "O arquivo da atividade precisa estar no formato GPX." },
+        { status: 400 },
+      );
     }
 
     const gpxText = await file.text();
@@ -73,21 +101,45 @@ export async function POST(request: NextRequest) {
     const supabase = createSupabaseAdmin();
     let { data: stage, error: stageError } = await supabase
       .from("stages")
-      .select("id, event_id, stage_date, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, route_tolerance_m, auto_validate_max_off_route_percent, review_max_off_route_percent, max_continuous_off_route_km, auto_validate_min_checkpoint_ratio, review_min_checkpoint_ratio")
+      .select(
+        "id, event_id, stage_date, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, route_tolerance_m, auto_validate_max_off_route_percent, review_max_off_route_percent, max_continuous_off_route_km, auto_validate_min_checkpoint_ratio, review_min_checkpoint_ratio",
+      )
       .eq("id", stageId)
       .single();
     if (stageError?.code === "42703") {
-      const legacy = await supabase.from("stages").select("id, event_id, stage_date, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage").eq("id", stageId).single();
+      const legacy = await supabase
+        .from("stages")
+        .select(
+          "id, event_id, stage_date, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage",
+        )
+        .eq("id", stageId)
+        .single();
       stage = legacy.data as typeof stage;
       stageError = legacy.error;
     }
-    if (stageError || !stage) return NextResponse.json({ error: stageError?.message ?? "Etapa não encontrada." }, { status: 404 });
-    const { data: registration, error: registrationError } = await supabase.from("registrations")
-      .select("id, event_id, athlete_id, full_name, email, birth_date, gender, category, modality, country_code, bib_number, status, payment_status")
-      .eq("id", registrationId).eq("event_id", stage.event_id).maybeSingle();
+    if (stageError || !stage)
+      return NextResponse.json(
+        { error: stageError?.message ?? "Etapa não encontrada." },
+        { status: 404 },
+      );
+    const { data: registration, error: registrationError } = await supabase
+      .from("registrations")
+      .select(
+        "id, event_id, athlete_id, full_name, email, birth_date, gender, category, modality, country_code, bib_number, status, payment_status",
+      )
+      .eq("id", registrationId)
+      .eq("event_id", stage.event_id)
+      .maybeSingle();
     if (registrationError) throw registrationError;
-    if (!registration || registration.status !== "confirmed" || !["paid", "courtesy"].includes(registration.payment_status)) {
-      return NextResponse.json({ error: "Selecione um atleta confirmado e elegível deste evento." }, { status: 403 });
+    if (
+      !registration ||
+      registration.status !== "confirmed" ||
+      !["paid", "courtesy"].includes(registration.payment_status)
+    ) {
+      return NextResponse.json(
+        { error: "Selecione um atleta confirmado e elegível deste evento." },
+        { status: 403 },
+      );
     }
     const { data: route, error: routeError } = await supabase
       .from("route_versions")
@@ -98,14 +150,20 @@ export async function POST(request: NextRequest) {
 
     if (routeError || !route) {
       return NextResponse.json(
-        { error: routeError?.message ?? "A etapa não possui uma rota oficial ativa." },
+        {
+          error:
+            routeError?.message ?? "A etapa não possui uma rota oficial ativa.",
+        },
         { status: 404 },
       );
     }
 
     const officialPoints = (route.route_points ?? []) as GeoPoint[];
     if (officialPoints.length < 2) {
-      return NextResponse.json({ error: "A versão oficial não possui pontos de rota válidos." }, { status: 422 });
+      return NextResponse.json(
+        { error: "A versão oficial não possui pontos de rota válidos." },
+        { status: 422 },
+      );
     }
 
     const { data: checkpoints, error: checkpointError } = await supabase
@@ -119,7 +177,9 @@ export async function POST(request: NextRequest) {
       officialPoints,
       activityPoints,
       checkpoints: checkpoints ?? [],
-      toleranceM: Number.isFinite(toleranceM) ? Math.min(300, Math.max(40, toleranceM)) : 120,
+      toleranceM: Number.isFinite(toleranceM)
+        ? Math.min(300, Math.max(40, toleranceM))
+        : 120,
       rules: {
         routeToleranceM: Number(stage.route_tolerance_m ?? toleranceM ?? 120),
         startRadiusM: Number(stage.start_radius_m ?? 180),
@@ -127,29 +187,56 @@ export async function POST(request: NextRequest) {
         directionRequired: stage.direction_required !== false,
         autoValidateMinCoverage: Number(stage.auto_validate_min_coverage ?? 95),
         reviewMinCoverage: Number(stage.review_min_coverage ?? 80),
-        autoValidateMaxOffRoutePercent: Number(stage.auto_validate_max_off_route_percent ?? 5),
-        reviewMaxOffRoutePercent: Number(stage.review_max_off_route_percent ?? 20),
-        maxContinuousOffRouteKm: Number(stage.max_continuous_off_route_km ?? 1.5),
-        autoValidateMinCheckpointRatio: Number(stage.auto_validate_min_checkpoint_ratio ?? .95),
-        reviewMinCheckpointRatio: Number(stage.review_min_checkpoint_ratio ?? .8),
+        autoValidateMaxOffRoutePercent: Number(
+          stage.auto_validate_max_off_route_percent ?? 5,
+        ),
+        reviewMaxOffRoutePercent: Number(
+          stage.review_max_off_route_percent ?? 20,
+        ),
+        maxContinuousOffRouteKm: Number(
+          stage.max_continuous_off_route_km ?? 1.5,
+        ),
+        autoValidateMinCheckpointRatio: Number(
+          stage.auto_validate_min_checkpoint_ratio ?? 0.95,
+        ),
+        reviewMinCheckpointRatio: Number(
+          stage.review_min_checkpoint_ratio ?? 0.8,
+        ),
       },
     });
 
     let athleteId = registration.athlete_id as string | null;
     if (!athleteId) {
-      const { data: knownAthletes, error: knownAthleteError } = await supabase.from("athletes").select("id").eq("email", registration.email).order("created_at", { ascending: true }).limit(1);
+      const { data: knownAthletes, error: knownAthleteError } = await supabase
+        .from("athletes")
+        .select("id")
+        .eq("email", registration.email)
+        .order("created_at", { ascending: true })
+        .limit(1);
       if (knownAthleteError) throw knownAthleteError;
       athleteId = knownAthletes?.[0]?.id ?? null;
       if (!athleteId) {
-        const { data: athlete, error: athleteError } = await supabase.from("athletes").insert({
-          full_name: registration.full_name, email: registration.email, birth_date: registration.birth_date,
-          gender: registration.gender, category: registration.category, modality: registration.modality,
-          country_code: registration.country_code, bib_number: registration.bib_number,
-        }).select("id").single();
+        const { data: athlete, error: athleteError } = await supabase
+          .from("athletes")
+          .insert({
+            full_name: registration.full_name,
+            email: registration.email,
+            birth_date: registration.birth_date,
+            gender: registration.gender,
+            category: registration.category,
+            modality: registration.modality,
+            country_code: registration.country_code,
+            bib_number: registration.bib_number,
+          })
+          .select("id")
+          .single();
         if (athleteError) throw athleteError;
         athleteId = athlete.id;
       }
-      const { error: linkError } = await supabase.from("registrations").update({ athlete_id: athleteId, updated_at: new Date().toISOString() }).eq("id", registration.id);
+      const { error: linkError } = await supabase
+        .from("registrations")
+        .update({ athlete_id: athleteId, updated_at: new Date().toISOString() })
+        .eq("id", registration.id);
       if (linkError) throw linkError;
     }
 
@@ -157,29 +244,71 @@ export async function POST(request: NextRequest) {
     const trackFingerprint = createHash("sha256").update(gpxText).digest("hex");
     const sourceActivityId = `admin:${stageId}:${registration.id}:${trackFingerprint.slice(0, 20)}`;
     const activityPayload = {
-      athlete_id: athleteId, stage_id: stageId, source: "gpx", source_activity_id: sourceActivityId,
+      athlete_id: athleteId,
+      stage_id: stageId,
+      source: "gpx",
+      source_activity_id: sourceActivityId,
       name: file.name.replace(/\.gpx$/i, "") || "GPX recebido pela organização",
-      started_at: timingStream?.startedAt ?? `${stage.stage_date}T12:00:00-03:00`,
-      distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
-      moving_time_s: timingStream?.movingTimeS ?? null, gps_points: activityPoints,
-      raw_payload: { file_name: file.name, uploaded_by: "organizer", registration_id: registration.id }, track_fingerprint: trackFingerprint,
+      started_at:
+        timingStream?.startedAt ?? `${stage.stage_date}T12:00:00-03:00`,
+      distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)),
+      elevation_m: elevationGain(activityPoints),
+      moving_time_s: timingStream?.movingTimeS ?? null,
+      gps_points: activityPoints,
+      raw_payload: {
+        file_name: file.name,
+        uploaded_by: "organizer",
+        registration_id: registration.id,
+        timing_stream: timingStream
+          ? {
+              elapsed_seconds: timingStream.elapsedSeconds,
+              distance_meters: buildFallbackDistanceStream(activityPoints),
+            }
+          : null,
+      },
+      track_fingerprint: trackFingerprint,
     };
-    let { data: activity, error: activityError } = await supabase.from("activities").upsert(activityPayload, { onConflict: "source,source_activity_id" }).select("id").single();
+    let { data: activity, error: activityError } = await supabase
+      .from("activities")
+      .upsert(activityPayload, { onConflict: "source,source_activity_id" })
+      .select("id")
+      .single();
     if (activityError?.code === "42703") {
-      const { track_fingerprint: _fingerprint, ...legacyPayload } = activityPayload;
-      const legacy = await supabase.from("activities").upsert(legacyPayload, { onConflict: "source,source_activity_id" }).select("id").single();
-      activity = legacy.data; activityError = legacy.error;
+      const { track_fingerprint: _fingerprint, ...legacyPayload } =
+        activityPayload;
+      const legacy = await supabase
+        .from("activities")
+        .upsert(legacyPayload, { onConflict: "source,source_activity_id" })
+        .select("id")
+        .single();
+      activity = legacy.data;
+      activityError = legacy.error;
     }
-    if (activityError || !activity) throw activityError ?? new Error("Não foi possível salvar a atividade.");
+    if (activityError || !activity)
+      throw activityError ?? new Error("Não foi possível salvar a atividade.");
 
-    const validationStatus = report.status === "manual_review" ? "review" : report.status;
-    const { error: validationError } = await supabase.from("validation_results").upsert({
-      activity_id: activity.id, stage_id: stageId, status: validationStatus,
-      coverage_percent: report.coverage_percent, start_ok: report.start_ok, finish_ok: report.finish_ok,
-      direction_ok: report.direction_ok, checkpoints_passed: report.checkpoints_hit,
-      checkpoints_total: report.checkpoints_total, max_deviation_m: report.max_deviation_m,
-      notes: report.notes.join("\n"), validated_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-    }, { onConflict: "activity_id" });
+    const validationStatus =
+      report.status === "manual_review" ? "review" : report.status;
+    const { error: validationError } = await supabase
+      .from("validation_results")
+      .upsert(
+        {
+          activity_id: activity.id,
+          stage_id: stageId,
+          status: validationStatus,
+          coverage_percent: report.coverage_percent,
+          start_ok: report.start_ok,
+          finish_ok: report.finish_ok,
+          direction_ok: report.direction_ok,
+          checkpoints_passed: report.checkpoints_hit,
+          checkpoints_total: report.checkpoints_total,
+          max_deviation_m: report.max_deviation_m,
+          notes: report.notes.join("\n"),
+          validated_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "activity_id" },
+      );
     if (validationError) throw validationError;
 
     let timingConfigured = false;
@@ -199,49 +328,81 @@ export async function POST(request: NextRequest) {
       });
       const { data: segmentRows, error: segmentQueryError } = await supabase
         .from("timed_segments")
-        .select("id, name, segment_type, start_checkpoint_id, finish_checkpoint_id")
+        .select(
+          "id, name, segment_type, start_checkpoint_id, finish_checkpoint_id",
+        )
         .eq("stage_id", stageId)
         .eq("is_active", true);
 
       if (!segmentQueryError) {
         timingConfigured = true;
-        segmentDetections = calculateSegmentResults((segmentRows ?? []) as TimedSegment[], passageDetections);
-        const { error: passageDeleteError } = await supabase.from("checkpoint_passages").delete().eq("activity_id", activity.id);
+        segmentDetections = calculateSegmentResults(
+          (segmentRows ?? []) as TimedSegment[],
+          passageDetections,
+        );
+        const { error: passageDeleteError } = await supabase
+          .from("checkpoint_passages")
+          .delete()
+          .eq("activity_id", activity.id);
         if (passageDeleteError) throw passageDeleteError;
-        const passed = passageDetections.filter((passage) => passage.passed && passage.point_index !== null && passage.elapsed_s !== null && passage.passed_at);
+        const passed = passageDetections.filter(
+          (passage) =>
+            passage.passed &&
+            passage.point_index !== null &&
+            passage.elapsed_s !== null &&
+            passage.passed_at,
+        );
         let savedPassages: Array<{ id: string; checkpoint_id: string }> = [];
         if (passed.length) {
-          const { data, error } = await supabase.from("checkpoint_passages").insert(passed.map((passage) => ({
-            activity_id: activity.id,
-            checkpoint_id: passage.checkpoint_id,
-            point_index: passage.point_index,
-            elapsed_s: passage.elapsed_s,
-            activity_distance_m: passage.activity_distance_m,
-            nearest_distance_m: passage.nearest_distance_m,
-            passed_at: passage.passed_at,
-          }))).select("id, checkpoint_id");
+          const { data, error } = await supabase
+            .from("checkpoint_passages")
+            .insert(
+              passed.map((passage) => ({
+                activity_id: activity.id,
+                checkpoint_id: passage.checkpoint_id,
+                point_index: passage.point_index,
+                elapsed_s: passage.elapsed_s,
+                activity_distance_m: passage.activity_distance_m,
+                nearest_distance_m: passage.nearest_distance_m,
+                passed_at: passage.passed_at,
+              })),
+            )
+            .select("id, checkpoint_id");
           if (error) throw error;
           savedPassages = data ?? [];
         }
-        const passageIdByCheckpoint = new Map(savedPassages.map((passage) => [passage.checkpoint_id, passage.id]));
-        const completedSegments = segmentDetections.filter((segment) => segment.completed && segment.elapsed_s !== null);
+        const passageIdByCheckpoint = new Map(
+          savedPassages.map((passage) => [passage.checkpoint_id, passage.id]),
+        );
+        const completedSegments = segmentDetections.filter(
+          (segment) => segment.completed && segment.elapsed_s !== null,
+        );
         if (completedSegments.length) {
-          const { error } = await supabase.from("segment_results").insert(completedSegments.map((segment) => ({
-            activity_id: activity.id,
-            segment_id: segment.segment_id,
-            start_passage_id: passageIdByCheckpoint.get(segment.start_checkpoint_id),
-            finish_passage_id: passageIdByCheckpoint.get(segment.finish_checkpoint_id),
-            elapsed_s: segment.elapsed_s,
-            status: validationStatus === "validated" ? "valid" : "review",
-          })));
+          const { error } = await supabase.from("segment_results").insert(
+            completedSegments.map((segment) => ({
+              activity_id: activity.id,
+              segment_id: segment.segment_id,
+              start_passage_id: passageIdByCheckpoint.get(
+                segment.start_checkpoint_id,
+              ),
+              finish_passage_id: passageIdByCheckpoint.get(
+                segment.finish_checkpoint_id,
+              ),
+              elapsed_s: segment.elapsed_s,
+              status: validationStatus === "validated" ? "valid" : "review",
+            })),
+          );
           if (error) throw error;
         }
       } else {
-        timingMessage = "Cronometragem de checkpoints ainda não está disponível no banco de dados.";
+        timingMessage =
+          "Cronometragem de checkpoints ainda não está disponível no banco de dados.";
       }
     }
 
-    const passageByCheckpoint = new Map(passageDetections.map((passage) => [passage.checkpoint_id, passage]));
+    const passageByCheckpoint = new Map(
+      passageDetections.map((passage) => [passage.checkpoint_id, passage]),
+    );
 
     return NextResponse.json({
       report,
@@ -252,12 +413,28 @@ export async function POST(request: NextRequest) {
         distance_km: route.distance_km,
         elevation_m: route.elevation_m,
       },
-      activity: { database_id: activity.id, file_name: file.name, points_count: activityPoints.length,
-        distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
-        moving_time_min: timingStream?.movingTimeS ? Number((timingStream.movingTimeS / 60).toFixed(1)) : null,
-        timing_source: timingStream ? "gpx" : null },
-      athlete: { registration_id: registration.id, full_name: registration.full_name, bib_number: registration.bib_number },
-      timing: { configured: timingConfigured, message: timingMessage, passages: passageDetections, segments: segmentDetections },
+      activity: {
+        database_id: activity.id,
+        file_name: file.name,
+        points_count: activityPoints.length,
+        distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)),
+        elevation_m: elevationGain(activityPoints),
+        moving_time_min: timingStream?.movingTimeS
+          ? Number((timingStream.movingTimeS / 60).toFixed(1))
+          : null,
+        timing_source: timingStream ? "gpx" : null,
+      },
+      athlete: {
+        registration_id: registration.id,
+        full_name: registration.full_name,
+        bib_number: registration.bib_number,
+      },
+      timing: {
+        configured: timingConfigured,
+        message: timingMessage,
+        passages: passageDetections,
+        segments: segmentDetections,
+      },
       saved: true,
       map: {
         official_points: sampleMapPoints(officialPoints),
@@ -269,13 +446,18 @@ export async function POST(request: NextRequest) {
           longitude: checkpoint.longitude,
           hit: checkpoint.hit,
           nearest_distance_m: checkpoint.nearest_distance_m,
-          passed_at: checkpoint.id ? passageByCheckpoint.get(checkpoint.id)?.passed_at ?? null : null,
-          elapsed_s: checkpoint.id ? passageByCheckpoint.get(checkpoint.id)?.elapsed_s ?? null : null,
+          passed_at: checkpoint.id
+            ? (passageByCheckpoint.get(checkpoint.id)?.passed_at ?? null)
+            : null,
+          elapsed_s: checkpoint.id
+            ? (passageByCheckpoint.get(checkpoint.id)?.elapsed_s ?? null)
+            : null,
         })),
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Falha ao validar a atividade.";
+    const message =
+      error instanceof Error ? error.message : "Falha ao validar a atividade.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
