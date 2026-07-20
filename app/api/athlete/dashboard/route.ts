@@ -21,11 +21,52 @@ export async function GET(request: NextRequest) {
       .single();
     if (athleteError) throw athleteError;
 
-    const { data: stages, error: stageError } = await supabase
+    const { data: stageRows, error: stageError } = await supabase
       .from("stages")
-      .select("id, name, route_label, stage_date, distance_km, elevation_m, stage_number, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, is_active)")
+      .select("id, event_id, name, route_label, stage_date, distance_km, elevation_m, stage_number, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, is_active)")
       .order("stage_date", { ascending: true });
     if (stageError) throw stageError;
+
+    const eventIds = [...new Set((stageRows ?? []).map((stage: any) => stage.event_id).filter(Boolean))];
+    let registrationModuleReady = true;
+    let registrationRequired = false;
+    let openTestMode = false;
+    let registrations: any[] = [];
+
+    if (eventIds.length) {
+      const { data, error } = await supabase
+        .from("registrations")
+        .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
+        .in("event_id", eventIds)
+        .eq("athlete_id", athlete.id)
+        .order("created_at", { ascending: false });
+
+      if (error?.code === "42P01") {
+        registrationModuleReady = false;
+        openTestMode = true;
+      } else if (error) {
+        throw error;
+      } else {
+        registrations = data ?? [];
+        const { count, error: countError } = await supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .in("event_id", eventIds)
+          .neq("status", "cancelled");
+        if (countError) throw countError;
+        registrationRequired = (count ?? 0) > 0 && !registrations.some((item) => item.status === "confirmed");
+        openTestMode = (count ?? 0) === 0;
+      }
+    } else {
+      openTestMode = true;
+    }
+
+    const confirmedEventIds = new Set(registrations.filter((item) => item.status === "confirmed").map((item) => item.event_id));
+    const visibleStages = registrationRequired
+      ? []
+      : confirmedEventIds.size
+        ? (stageRows ?? []).filter((stage: any) => confirmedEventIds.has(stage.event_id))
+        : stageRows ?? [];
 
     const { data: activities, error: activityError } = await supabase
       .from("activities")
@@ -105,14 +146,27 @@ export async function GET(request: NextRequest) {
       passages: passagesByActivity.get(activity.id) ?? [],
       segment_results: segmentsByActivity.get(activity.id) ?? [],
     }));
-    const normalizedStages = (stages ?? []).map((stage: any) => ({
+    const normalizedStages = (visibleStages ?? []).map((stage: any) => ({
       ...stage,
       event_name: Array.isArray(stage.events) ? stage.events[0]?.name : stage.events?.name,
       route_active: (stage.route_versions ?? []).some((route: any) => route.is_active),
     }));
+    const confirmedRegistration = registrations.find((item) => item.status === "confirmed") ?? null;
 
     return NextResponse.json({
-      athlete: { ...athleteCookie, database_id: athlete.id, full_name: athlete.full_name },
+      athlete: {
+        ...athleteCookie,
+        database_id: athlete.id,
+        full_name: confirmedRegistration?.full_name ?? athlete.full_name,
+        category: confirmedRegistration?.category ?? athlete.category,
+        country_code: confirmedRegistration?.country_code ?? athlete.country_code,
+        bib_number: confirmedRegistration?.bib_number ?? null,
+        modality: confirmedRegistration?.modality ?? null,
+      },
+      registration: confirmedRegistration,
+      registration_module_ready: registrationModuleReady,
+      registration_required: registrationRequired,
+      open_test_mode: openTestMode,
       stages: normalizedStages,
       submissions,
       timing_configured: timingConfigured,
