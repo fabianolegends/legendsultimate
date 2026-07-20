@@ -2,6 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationCode, normalizeRegistrationEmail, registrationPaymentAllowsAccess } from "@/lib/registration-access";
 
+type RegistrationRow = {
+  id: string;
+  event_id: string;
+  athlete_id: string | null;
+  registration_code: string;
+  bib_number: string | null;
+  full_name: string;
+  email: string;
+  birth_date: string | null;
+  gender: string | null;
+  category: string | null;
+  modality: string | null;
+  country_code: string | null;
+  city: string | null;
+  status: string;
+  claimed_at: string | null;
+  source: string;
+  external_registration_id: string | null;
+  payment_status: string;
+  last_synced_at: string | null;
+};
+
 function readAthlete(request: NextRequest) {
   const raw = request.cookies.get("strava_athlete")?.value;
   if (!raw) return null;
@@ -12,7 +34,7 @@ function readAthlete(request: NextRequest) {
   }
 }
 
-function paymentStatusText(value: string) {
+function paymentStatusText(value: unknown) {
   if (value === "pending") return "com pagamento pendente";
   if (value === "refunded") return "com pagamento reembolsado";
   if (value === "cancelled") return "com pagamento cancelado";
@@ -30,43 +52,35 @@ export async function POST(request: NextRequest) {
     if (!code) return NextResponse.json({ error: "Informe o código de vínculo da inscrição." }, { status: 400 });
 
     const supabase = createSupabaseAdmin();
-    const modernFields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, source, external_registration_id, payment_status, last_synced_at";
-    let query = supabase.from("registrations").select(modernFields).eq("registration_code", code);
+    let query = supabase
+      .from("registrations")
+      .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, source, external_registration_id, payment_status, last_synced_at")
+      .eq("registration_code", code);
     if (email) query = query.eq("email", email);
-    let { data: registration, error: registrationError } = await query.maybeSingle();
 
-    if (registrationError?.code === "42703") {
-      let fallbackQuery = supabase
-        .from("registrations")
-        .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
-        .eq("registration_code", code);
-      if (email) fallbackQuery = fallbackQuery.eq("email", email);
-      const fallback = await fallbackQuery.maybeSingle();
-      registration = fallback.data ? { ...fallback.data, source: "manual", payment_status: "courtesy" } : null;
-      registrationError = fallback.error;
-    }
-
-    if (registrationError) {
-      if (registrationError.code === "42P01") {
+    const registrationResult = await query.maybeSingle();
+    if (registrationResult.error) {
+      if (registrationResult.error.code === "42P01") {
         return NextResponse.json({ error: "O módulo de inscritos ainda não foi ativado no Supabase." }, { status: 503 });
       }
-      throw registrationError;
+      throw registrationResult.error;
     }
+
+    const registration = (registrationResult.data ?? null) as RegistrationRow | null;
     if (!registration) return NextResponse.json({ error: "Inscrição não encontrada. Confira o código e o e-mail." }, { status: 404 });
     if (registration.status !== "confirmed") {
-      const statusText = registration.status === "pending" ? "pendente" : registration.status === "waitlist" ? "em lista de espera" : "cancelada";
-      return NextResponse.json({ error: `Esta inscrição está ${statusText} na Windfit e ainda não libera o Passport.` }, { status: 403 });
+      const label = registration.status === "pending" ? "pendente" : registration.status === "waitlist" ? "em lista de espera" : "cancelada";
+      return NextResponse.json({ error: `Esta inscrição está ${label} na Windfit e ainda não libera o Passport.` }, { status: 403 });
     }
     if (!registrationPaymentAllowsAccess(registration.payment_status)) {
       return NextResponse.json({ error: `Esta inscrição está ${paymentStatusText(registration.payment_status)} na Windfit. O Passport será liberado após a confirmação.` }, { status: 403 });
     }
 
-    const fullName = `${athleteCookie.firstname ?? ""} ${athleteCookie.lastname ?? ""}`.trim() || registration.full_name;
     const { data: athlete, error: athleteError } = await supabase
       .from("athletes")
       .upsert({
         strava_athlete_id: athleteCookie.id,
-        full_name: registration.full_name || fullName,
+        full_name: registration.full_name,
         email: registration.email,
         category: registration.category,
         country_code: registration.country_code,
