@@ -11,6 +11,7 @@ type RegistrationInput = {
   birth_date?: string | null; gender?: string | null; category?: string | null; modality?: string;
   country_code?: string | null; city?: string | null; status?: string; source?: string;
   external_registration_id?: string | null; payment_status?: string; imported_at?: string | null; last_synced_at?: string | null;
+  phone?: string | null; location?: string | null; registered_at?: string | null;
 };
 
 function unauthorized() { return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 }); }
@@ -24,6 +25,15 @@ function normalizeDate(value: unknown) {
   const match = text.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
   if (!match) return text;
   return `${match[3]}-${match[2].padStart(2, "0")}-${match[1].padStart(2, "0")}`;
+}
+
+function normalizeDateTime(value: unknown) {
+  const text = String(value ?? "").trim();
+  if (!text) return null;
+  const brazilian = text.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (brazilian) return `${brazilian[3]}-${brazilian[2].padStart(2,"0")}-${brazilian[1].padStart(2,"0")}T${(brazilian[4]??"00").padStart(2,"0")}:${brazilian[5]??"00"}:${brazilian[6]??"00"}-03:00`;
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
 function normalizeText(value: unknown) {
@@ -90,6 +100,9 @@ function normalizeInput(input: RegistrationInput, options?: { forcedEventId?: st
     status,
     source,
     external_registration_id: cleanNullable(input.external_registration_id),
+    phone: cleanNullable(input.phone),
+    location: cleanNullable(input.location),
+    registered_at: normalizeDateTime(input.registered_at),
     payment_status: paymentStatus,
     imported_at: source === "windfit" ? (input.imported_at || now) : (input.imported_at || null),
     last_synced_at: source === "windfit" ? now : (input.last_synced_at || null),
@@ -114,13 +127,23 @@ export async function GET(request: NextRequest) {
     const { data: events, error: eventError } = await supabase.from("events").select("id, slug, name, status, starts_on, ends_on").order("starts_on", { ascending: false });
     if (eventError) throw eventError;
     const eventId = request.nextUrl.searchParams.get("eventId")?.trim();
-    const fields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
+    const baseFields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
+    const fields = `${baseFields}, phone, location, registered_at`;
     let query = supabase.from("registrations").select(fields).order("full_name", { ascending: true });
     if (eventId) query = query.eq("event_id", eventId);
-    const { data: registrations, error } = await query;
+    let { data: registrations, error } = await query;
+    let detailsReady = true;
+    if (error?.code === "42703") {
+      detailsReady = false;
+      let fallbackQuery = supabase.from("registrations").select(baseFields).order("full_name", { ascending: true });
+      if (eventId) fallbackQuery = fallbackQuery.eq("event_id", eventId);
+      const fallback = await fallbackQuery;
+      registrations = fallback.data as typeof registrations;
+      error = fallback.error;
+    }
     if (error) {
       if (error.code === "42P01") return NextResponse.json({ module_ready: false, windfit_ready: false, events: events ?? [], registrations: [], summary: null });
-      if (error.code === "42703") return NextResponse.json({ module_ready: true, windfit_ready: false, events: events ?? [], registrations: [], summary: null, message: "Execute a migration 007_windfit_source.sql." });
+      if (error.code === "42703") return NextResponse.json({ module_ready: true, windfit_ready: false, details_ready: false, events: events ?? [], registrations: [], summary: null, message: "Execute as migrations pendentes do Supabase." });
       throw error;
     }
     const athleteIds = [...new Set((registrations ?? []).map((item) => item.athlete_id).filter(Boolean))];
@@ -141,7 +164,7 @@ export async function GET(request: NextRequest) {
       linked: items.filter((item) => Boolean(item.athlete_id)).length,
       last_sync: lastSync,
     };
-    return NextResponse.json({ module_ready: true, windfit_ready: true, events: events ?? [], registrations: items, summary });
+    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, events: events ?? [], registrations: items, summary, message: detailsReady ? undefined : "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar inscritos Windfit." }, { status: 500 });
   }
@@ -164,6 +187,7 @@ export async function POST(request: NextRequest) {
       const codeByEmail = new Map((existing ?? []).map((registration) => [normalizeRegistrationEmail(registration.email), registration.registration_code]));
       const normalized = rows.map((row) => normalizeInput({ ...row, registration_code: row.registration_code || codeByEmail.get(normalizeRegistrationEmail(String(row.email ?? ""))) }, { forcedEventId: eventId, forcedSource: "windfit" }));
       const { data, error } = await supabase.from("registrations").upsert(normalized, { onConflict: "event_id,email" }).select("*");
+      if (error?.code === "42703") return NextResponse.json({ error: "Execute a migration 010_windfit_registration_details.sql antes de importar este arquivo." }, { status: 409 });
       if (error) throw error;
       for (const registration of data ?? []) await syncLinkedAthlete(supabase, registration);
       return NextResponse.json({ imported: data?.length ?? 0, synced_at: new Date().toISOString() });

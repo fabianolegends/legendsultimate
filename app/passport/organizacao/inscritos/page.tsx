@@ -8,6 +8,7 @@ type Registration = {
   full_name: string; email: string; birth_date: string | null; gender: string | null; category: string | null;
   modality: string; country_code: string | null; city: string | null; status: string; claimed_at: string | null;
   source: "windfit" | "manual"; external_registration_id: string | null; payment_status: string;
+  phone?: string | null; location?: string | null; registered_at?: string | null;
   imported_at: string | null; last_synced_at: string | null; athlete?: { ride_with_gps_user_id?: number } | null;
 };
 type Summary = { total: number; eligible: number; paid: number; payment_pending: number; refunded: number; cancelled: number; linked: number; last_sync: string | null };
@@ -15,10 +16,11 @@ type FormState = {
   event_id: string; registration_code: string; bib_number: string; full_name: string; email: string;
   birth_date: string; gender: string; category: string; modality: string; country_code: string; city: string;
   status: string; payment_status: string; external_registration_id: string;
+  phone: string; location: string; registered_at: string;
 };
 
 const categories = ["Masculino Open 18–35", "Masculino Master 36–49", "Masculino Sênior 50+", "Feminino 18–40", "Feminino 41+", "Feminino única", "Experience"];
-const emptyForm: FormState = { event_id: "", registration_code: "", bib_number: "", full_name: "", email: "", birth_date: "", gender: "", category: "", modality: "gravel_race", country_code: "BR", city: "", status: "confirmed", payment_status: "courtesy", external_registration_id: "" };
+const emptyForm: FormState = { event_id: "", registration_code: "", bib_number: "", full_name: "", email: "", birth_date: "", gender: "", category: "", modality: "gravel_race", country_code: "BR", city: "", status: "confirmed", payment_status: "courtesy", external_registration_id: "", phone: "", location: "", registered_at: "" };
 
 function csvLine(line: string, separator: string) {
   const cells: string[] = []; let value = ""; let quoted = false;
@@ -39,7 +41,7 @@ function parseCsv(text: string) {
     full_name: ["nome", "nome_completo", "atleta", "participante", "full_name"], email: ["email", "e_mail", "email_do_atleta"],
     bib_number: ["numero", "numero_atleta", "numero_do_atleta", "bib", "bib_number"], birth_date: ["nascimento", "data_nascimento", "data_de_nascimento", "birth_date"],
     gender: ["sexo", "genero", "gender"], category: ["categoria", "category"], modality: ["modalidade", "produto", "prova", "modality"],
-    country_code: ["pais", "country", "country_code"], city: ["cidade", "city", "cidade_estado_pais"], status: ["status", "status_da_inscricao", "situacao", "situacao_inscricao", "situacao_da_inscricao"],
+    country_code: ["pais", "country", "country_code"], city: ["cidade", "city"], location: ["cidade_estado_pais", "localizacao", "location"], phone: ["telefone", "telefone_do_atleta", "celular", "phone", "whatsapp"], registered_at: ["data_da_inscricao", "data_inscricao", "inscrito_em", "registration_date", "registered_at"], status: ["status", "status_da_inscricao", "situacao", "situacao_inscricao", "situacao_da_inscricao"],
     registration_code: ["codigo", "codigo_inscricao", "codigo_de_inscricao", "registration_code"],
     external_registration_id: ["id", "id_inscricao", "id_da_inscricao", "inscricao_id", "pedido", "numero_pedido"],
     payment_status: ["pagamento", "status_pagamento", "status_do_pagamento", "situacao_pagamento", "situacao_do_pagamento", "payment_status", "financeiro"],
@@ -52,7 +54,8 @@ function parseCsv(text: string) {
     return { full_name: read("full_name"), email: read("email").toLowerCase(), bib_number: read("bib_number") || null, birth_date: read("birth_date") || null,
       gender: read("gender") || null, category: read("category") || null, modality: modalityText.includes("experience") || modalityText.includes("turismo") ? "experience" : "gravel_race",
       country_code: read("country_code") || "BR", city: read("city") || null, status: registrationStatus || "confirmed", registration_code: read("registration_code") || undefined,
-      external_registration_id: read("external_registration_id") || null, payment_status: read("payment_status") || registrationStatus || undefined };
+      external_registration_id: read("external_registration_id") || null, payment_status: read("payment_status") || registrationStatus || undefined,
+      phone: read("phone") || null, location: read("location") || null, registered_at: read("registered_at") || null };
   }).filter((row) => row.full_name && row.email);
 }
 function formatDateTime(value?: string | null) { return value ? new Date(value).toLocaleString("pt-BR") : "—"; }
@@ -62,13 +65,13 @@ export default function RegistrationsPage() {
   const [events, setEvents] = useState<EventRow[]>([]); const [items, setItems] = useState<Registration[]>([]); const [summary, setSummary] = useState<Summary | null>(null);
   const [eventId, setEventId] = useState(""); const [search, setSearch] = useState(""); const [statusFilter, setStatusFilter] = useState("all"); const [paymentFilter, setPaymentFilter] = useState("all");
   const [editingId, setEditingId] = useState(""); const [form, setForm] = useState<FormState>(emptyForm); const [message, setMessage] = useState(""); const [saving, setSaving] = useState(false);
-  const [moduleReady, setModuleReady] = useState(true); const [windfitReady, setWindfitReady] = useState(true);
+  const [moduleReady, setModuleReady] = useState(true); const [windfitReady, setWindfitReady] = useState(true); const [detailsReady,setDetailsReady]=useState(true);
 
   async function load(preferredEvent?: string) {
     const selected = preferredEvent ?? eventId;
     const response = await fetch(`/api/admin/registrations${selected ? `?eventId=${encodeURIComponent(selected)}` : ""}`, { cache: "no-store" });
     const payload = await response.json(); if (!response.ok) throw new Error(payload.error ?? "Falha ao carregar inscritos Windfit.");
-    setModuleReady(payload.module_ready !== false); setWindfitReady(payload.windfit_ready !== false); setEvents(payload.events ?? []);
+    setModuleReady(payload.module_ready !== false); setWindfitReady(payload.windfit_ready !== false); setDetailsReady(payload.details_ready !== false); setEvents(payload.events ?? []);
     const nextEvent = selected || payload.events?.[0]?.id || ""; if (!selected && nextEvent) setEventId(nextEvent);
     setItems(payload.registrations ?? []); setSummary(payload.summary ?? null); setForm((current) => ({ ...current, event_id: current.event_id || nextEvent })); if (payload.message) setMessage(payload.message);
   }
@@ -85,7 +88,7 @@ export default function RegistrationsPage() {
   function edit(item: Registration) {
     setEditingId(item.id); setForm({ event_id: item.event_id, registration_code: item.registration_code, bib_number: item.bib_number ?? "", full_name: item.full_name, email: item.email,
       birth_date: item.birth_date ?? "", gender: item.gender ?? "", category: item.category ?? "", modality: item.modality, country_code: item.country_code ?? "", city: item.city ?? "",
-      status: item.status, payment_status: item.payment_status, external_registration_id: item.external_registration_id ?? "" });
+      status: item.status, payment_status: item.payment_status, external_registration_id: item.external_registration_id ?? "", phone: item.phone ?? "", location: item.location ?? "", registered_at: item.registered_at?.slice(0,16) ?? "" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   async function save(event: FormEvent) {
@@ -114,12 +117,15 @@ export default function RegistrationsPage() {
     <section className="head"><div><p className="kicker">Windfit → Legends Core</p><h1>Inscritos Windfit</h1></div><div><p>A Windfit permanece responsável por inscrição e pagamento. Esta área funciona como espelho operacional para elegibilidade, categoria, número e vínculo com o Ride with GPS.</p><div className="sync">Última sincronização: <strong>{formatDateTime(summary?.last_sync)}</strong></div></div></section>
     {!moduleReady?<div className="not-ready">Execute a migration 006_registrations_eligibility.sql no Supabase.</div>:null}
     {moduleReady&&!windfitReady?<div className="not-ready">Execute a migration 007_windfit_source.sql para ativar pagamento e sincronização Windfit.</div>:null}
+    {moduleReady&&windfitReady&&!detailsReady?<div className="not-ready">Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição.</div>:null}
     <section className="metrics">{[[summary?.total,"registros"],[summary?.eligible,"elegíveis"],[summary?.paid,"pagos"],[summary?.linked,"Ride with GPS vinculado"],[summary?.payment_pending,"pagamento pendente"],[summary?.refunded,"reembolsados"]].map(([value,label])=><div className="metric" key={String(label)}><strong>{value??"—"}</strong><span>{label}</span></div>)}</section>
     {message?<p className="message">{message}</p>:null}
     <section className="workspace">
       <form className="panel" onSubmit={save}><h2>{editingId?"Editar registro":"Exceção manual"}</h2><p className="panel-intro">Use o cadastro manual somente para cortesia, convidado ou correção administrativa. Inscrições comerciais devem entrar pela importação Windfit.</p><div className="form-grid">
         <div className="field wide"><label>Evento</label><select value={form.event_id} onChange={(e)=>setForm({...form,event_id:e.target.value})}>{events.map((row)=><option key={row.id} value={row.id}>{row.name}</option>)}</select></div>
         <div className="field wide"><label>Nome completo</label><input required value={form.full_name} onChange={(e)=>setForm({...form,full_name:e.target.value})}/></div><div className="field wide"><label>E-mail da inscrição</label><input required type="email" value={form.email} onChange={(e)=>setForm({...form,email:e.target.value})}/></div>
+        <div className="field"><label>Telefone</label><input value={form.phone} onChange={(e)=>setForm({...form,phone:e.target.value})}/></div><div className="field"><label>Data da inscrição</label><input type="datetime-local" value={form.registered_at} onChange={(e)=>setForm({...form,registered_at:e.target.value})}/></div>
+        <div className="field wide"><label>Cidade / Estado / País</label><input value={form.location} onChange={(e)=>setForm({...form,location:e.target.value})}/></div>
         <div className="field"><label>Número do atleta</label><input value={form.bib_number} onChange={(e)=>setForm({...form,bib_number:e.target.value})}/></div><div className="field"><label>ID Windfit</label><input value={form.external_registration_id} onChange={(e)=>setForm({...form,external_registration_id:e.target.value})}/></div>
         <div className="field"><label>Código de vínculo</label><input placeholder="Gerado automaticamente" value={form.registration_code} onChange={(e)=>setForm({...form,registration_code:e.target.value})}/></div><div className="field"><label>Nascimento</label><input type="date" value={form.birth_date} onChange={(e)=>setForm({...form,birth_date:e.target.value})}/></div>
         <div className="field"><label>Gênero</label><select value={form.gender} onChange={(e)=>setForm({...form,gender:e.target.value})}><option value="">Não informado</option><option value="male">Masculino</option><option value="female">Feminino</option><option value="other">Outro</option></select></div>
@@ -131,7 +137,7 @@ export default function RegistrationsPage() {
       </div><button className="primary" disabled={saving}>{saving?"SALVANDO...":editingId?"ATUALIZAR REGISTRO":"CRIAR EXCEÇÃO MANUAL"}</button>{editingId?<button className="secondary" type="button" onClick={startNew}>CANCELAR EDIÇÃO</button>:null}
       <div className="import"><strong>Importar lista da Windfit</strong><p className="panel-intro">Exporte o CSV na Windfit e envie aqui. A sincronização atualiza o mesmo atleta pelo e-mail e não processa pagamentos no Legends.</p><p className="panel-intro">Campos reconhecidos: nome, email, número, categoria, modalidade, status, pagamento, ID da inscrição, país e cidade.</p><input type="file" accept=".csv,text/csv" onChange={importCsv}/></div></form>
       <section className="panel light"><div className="filters"><input placeholder="Buscar nome, e-mail, número, código ou ID Windfit" value={search} onChange={(e)=>setSearch(e.target.value)}/><select value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}><option value="all">Todos os status</option><option value="confirmed">Confirmados</option><option value="pending">Pendentes</option><option value="waitlist">Lista de espera</option><option value="cancelled">Cancelados</option></select><select value={paymentFilter} onChange={(e)=>setPaymentFilter(e.target.value)}><option value="all">Todos os pagamentos</option><option value="paid">Pagos</option><option value="pending">Pendentes</option><option value="refunded">Reembolsados</option><option value="cancelled">Cancelados</option><option value="courtesy">Cortesias</option></select></div>
-      {filtered.length?<div className="table-wrap"><table className="table"><thead><tr><th>Nº</th><th>Atleta</th><th>Categoria</th><th>Pagamento</th><th>Origem</th><th>Código</th><th>Vínculo</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map((item)=><tr key={item.id}><td>{item.bib_number??"—"}</td><td><strong>{item.full_name}</strong><span>{item.email}</span>{item.external_registration_id?<span>ID Windfit: {item.external_registration_id}</span>:null}</td><td>{item.category??"—"}<span>{item.modality==="experience"?"Experience":"Gravel Race"}</span></td><td><span className={item.payment_status}>{paymentLabel(item.payment_status)}</span></td><td><span className={`source ${item.source}`}>{item.source==="windfit"?"Windfit":"Manual"}</span><span>{formatDateTime(item.last_synced_at)}</span></td><td className="code">{item.registration_code}</td><td><span className={item.athlete_id?"linked":"unlinked"}>{item.athlete_id?`✓ Ride with GPS ${item.athlete?.ride_with_gps_user_id??""}`:"Aguardando vínculo"}</span></td><td>{item.status}</td><td><button className="edit" onClick={()=>edit(item)}>EDITAR</button></td></tr>)}</tbody></table></div>:<div className="empty-state"><div><strong>Nenhum inscrito sincronizado</strong><p>Exporte a lista de participantes na Windfit e use o campo “Importar lista da Windfit”. Os atletas aparecerão aqui com pagamento, categoria, elegibilidade e vínculo com o Ride with GPS.</p></div></div>}
+      {filtered.length?<div className="table-wrap"><table className="table"><thead><tr><th>Nº</th><th>Atleta</th><th>Categoria</th><th>Pagamento</th><th>Origem</th><th>Código</th><th>Vínculo</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map((item)=><tr key={item.id}><td>{item.bib_number??"—"}</td><td><strong>{item.full_name}</strong><span>{item.email}</span>{item.phone?<span>{item.phone}</span>:null}{item.location?<span>{item.location}</span>:null}{item.external_registration_id?<span>ID Windfit: {item.external_registration_id}</span>:null}</td><td>{item.category??"—"}<span>{item.modality==="experience"?"Experience":"Gravel Race"}</span></td><td><span className={item.payment_status}>{paymentLabel(item.payment_status)}</span>{item.registered_at?<span>Inscrição: {formatDateTime(item.registered_at)}</span>:null}</td><td><span className={`source ${item.source}`}>{item.source==="windfit"?"Windfit":"Manual"}</span><span>{formatDateTime(item.last_synced_at)}</span></td><td className="code">{item.registration_code}</td><td><span className={item.athlete_id?"linked":"unlinked"}>{item.athlete_id?`✓ Ride with GPS ${item.athlete?.ride_with_gps_user_id??""}`:"Aguardando vínculo"}</span></td><td>{item.status}</td><td><button className="edit" onClick={()=>edit(item)}>EDITAR</button></td></tr>)}</tbody></table></div>:<div className="empty-state"><div><strong>Nenhum inscrito sincronizado</strong><p>Exporte a lista de participantes na Windfit e use o campo “Importar lista da Windfit”. Os atletas aparecerão aqui com pagamento, categoria, elegibilidade e vínculo com o Ride with GPS.</p></div></div>}
       </section>
     </section>
   </div></main>;
