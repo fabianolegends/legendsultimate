@@ -48,10 +48,10 @@ function normalizeStatus(value: unknown) {
 
 function normalizePaymentStatus(value: unknown, registrationStatus: string, source: string) {
   const text = normalizeText(value);
-  if (["paid", "pago", "aprovado", "aprovada", "confirmado", "confirmada", "payment approved"].includes(text)) return "paid";
+  if (["paid", "pago", "aprovado", "aprovada", "aprovado pelo organizador", "aprovada pelo organizador", "confirmado", "confirmada", "payment approved"].includes(text)) return "paid";
   if (["refunded", "reembolsado", "reembolsada", "estornado", "estornada"].includes(text)) return "refunded";
   if (["cancelled", "canceled", "cancelado", "cancelada"].includes(text)) return "cancelled";
-  if (["courtesy", "cortesia", "convidado", "convidada", "isento", "isenta"].includes(text)) return "courtesy";
+  if (["courtesy", "cortesia", "convidado", "convidada", "isento", "isenta", "gratis", "gratuito", "gratuita"].includes(text)) return "courtesy";
   if (["pending", "pendente", "aguardando", "em aberto", "boleto pendente"].includes(text)) return "pending";
   if (source === "manual" && registrationStatus === "confirmed") return "courtesy";
   return "pending";

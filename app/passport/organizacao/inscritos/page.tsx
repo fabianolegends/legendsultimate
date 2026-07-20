@@ -39,19 +39,20 @@ function parseCsv(text: string) {
     full_name: ["nome", "nome_completo", "atleta", "participante", "full_name"], email: ["email", "e_mail", "email_do_atleta"],
     bib_number: ["numero", "numero_atleta", "numero_do_atleta", "bib", "bib_number"], birth_date: ["nascimento", "data_nascimento", "data_de_nascimento", "birth_date"],
     gender: ["sexo", "genero", "gender"], category: ["categoria", "category"], modality: ["modalidade", "produto", "prova", "modality"],
-    country_code: ["pais", "country", "country_code"], city: ["cidade", "city"], status: ["status", "situacao", "situacao_inscricao"],
+    country_code: ["pais", "country", "country_code"], city: ["cidade", "city", "cidade_estado_pais"], status: ["status", "status_da_inscricao", "situacao", "situacao_inscricao", "situacao_da_inscricao"],
     registration_code: ["codigo", "codigo_inscricao", "codigo_de_inscricao", "registration_code"],
     external_registration_id: ["id", "id_inscricao", "id_da_inscricao", "inscricao_id", "pedido", "numero_pedido"],
-    payment_status: ["pagamento", "status_pagamento", "situacao_pagamento", "payment_status", "financeiro"],
+    payment_status: ["pagamento", "status_pagamento", "status_do_pagamento", "situacao_pagamento", "situacao_do_pagamento", "payment_status", "financeiro"],
   };
   const indexOf = (field: string) => headers.findIndex((header) => aliases[field].includes(header));
   return lines.slice(1).map((line) => {
     const values = csvLine(line, separator); const read = (field: string) => { const index = indexOf(field); return index >= 0 ? values[index] ?? "" : ""; };
     const modalityText = read("modality").toLowerCase();
+    const registrationStatus = read("status");
     return { full_name: read("full_name"), email: read("email").toLowerCase(), bib_number: read("bib_number") || null, birth_date: read("birth_date") || null,
       gender: read("gender") || null, category: read("category") || null, modality: modalityText.includes("experience") || modalityText.includes("turismo") ? "experience" : "gravel_race",
-      country_code: read("country_code") || "BR", city: read("city") || null, status: read("status") || "confirmed", registration_code: read("registration_code") || undefined,
-      external_registration_id: read("external_registration_id") || null, payment_status: read("payment_status") || undefined };
+      country_code: read("country_code") || "BR", city: read("city") || null, status: registrationStatus || "confirmed", registration_code: read("registration_code") || undefined,
+      external_registration_id: read("external_registration_id") || null, payment_status: read("payment_status") || registrationStatus || undefined };
   }).filter((row) => row.full_name && row.email);
 }
 function formatDateTime(value?: string | null) { return value ? new Date(value).toLocaleString("pt-BR") : "—"; }
