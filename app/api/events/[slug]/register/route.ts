@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationEmail } from "@/lib/registration-access";
+import { readRideWithGpsUser } from "@/lib/ridewithgps";
 
 export const runtime = "nodejs";
 
@@ -50,18 +51,27 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const category = modality === "experience" ? "Experience" : gender === "female" ? "Feminina livre" : gender === "male" ? "Masculina livre" : "Geral";
     const now = new Date().toISOString();
+    const rideWithGpsUser = readRideWithGpsUser(request);
+    let linkedAthleteId: string | null = null;
+    if (rideWithGpsUser?.id) {
+      const { data: linkedAthlete, error: linkedAthleteError } = await supabase.from("athletes")
+        .select("id").eq("ride_with_gps_user_id", rideWithGpsUser.id).maybeSingle();
+      if (linkedAthleteError) throw linkedAthleteError;
+      linkedAthleteId = linkedAthlete?.id ?? null;
+    }
     const { data: registration, error } = await supabase.from("registrations").insert({
       event_id: event.id, registration_code: code(), full_name: fullName, email, phone, birth_date: birthDate,
       gender: ["male", "female", "other"].includes(gender) ? gender : "other", category, modality,
       country_code: country.toLowerCase().includes("brasil") ? "BR" : null, city,
       location: [city, state, country].filter(Boolean).join(" / "), status: "confirmed", source: "online",
-      payment_status: "courtesy", registered_at: now, terms_accepted_at: now, privacy_accepted_at: now, updated_at: now,
+      payment_status: "courtesy", registered_at: now, terms_accepted_at: now, privacy_accepted_at: now,
+      athlete_id: linkedAthleteId, claimed_at: linkedAthleteId ? now : null, updated_at: now,
     }).select("id, registration_code, full_name, email, category, modality, status").single();
     if (error?.code === "23505") return NextResponse.json({ error: "Este e-mail já está inscrito no evento." }, { status: 409 });
     if (error?.code === "P0001") return NextResponse.json({ error: error.message }, { status: 409 });
     if (error?.code === "23514" || error?.code === "42703") return NextResponse.json({ error: "Execute a migration 013_public_event_registration.sql." }, { status: 503 });
     if (error) throw error;
-    return NextResponse.json({ registered: true, event: { name: event.name }, registration }, { status: 201 });
+    return NextResponse.json({ registered: true, linked: Boolean(linkedAthleteId), event: { name: event.name }, registration }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível concluir a inscrição." }, { status: 500 });
   }

@@ -25,13 +25,20 @@ export async function GET(request: NextRequest) {
       .single();
     if (athleteError) throw athleteError;
 
+    const { data: eventRows, error: eventError } = await supabase
+      .from("events")
+      .select("id, slug, name, status, starts_on, ends_on, location")
+      .neq("status", "archived")
+      .order("starts_on", { ascending: false });
+    if (eventError) throw eventError;
+
     const { data: stageRows, error: stageError } = await supabase
       .from("stages")
       .select("id, event_id, name, route_label, stage_date, distance_km, elevation_m, stage_number, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, is_active)")
       .order("stage_date", { ascending: true });
     if (stageError) throw stageError;
 
-    const eventIds = [...new Set((stageRows ?? []).map((stage: any) => stage.event_id).filter(Boolean))];
+    const eventIds = (eventRows ?? []).map((event) => event.id);
     let registrationModuleReady = true;
     let windfitReady = true;
     let registrationRequired = false;
@@ -43,7 +50,6 @@ export async function GET(request: NextRequest) {
       let result = await supabase
         .from("registrations")
         .select(modernFields)
-        .in("event_id", eventIds)
         .eq("athlete_id", athlete.id)
         .order("created_at", { ascending: false });
 
@@ -52,7 +58,6 @@ export async function GET(request: NextRequest) {
         const fallback = await supabase
           .from("registrations")
           .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
-          .in("event_id", eventIds)
           .eq("athlete_id", athlete.id)
           .order("created_at", { ascending: false });
         result = { data: (fallback.data ?? []).map((item: any) => ({ ...item, source: "manual", payment_status: "courtesy" })), error: fallback.error } as any;
@@ -68,7 +73,6 @@ export async function GET(request: NextRequest) {
         const { count, error: countError } = await supabase
           .from("registrations")
           .select("id", { count: "exact", head: true })
-          .in("event_id", eventIds)
           .neq("status", "cancelled");
         if (countError) throw countError;
         const hasEligibleRegistration = registrations.some((item) => item.status === "confirmed" && registrationPaymentAllowsAccess(item.payment_status));
@@ -169,6 +173,12 @@ export async function GET(request: NextRequest) {
       event_name: Array.isArray(stage.events) ? stage.events[0]?.name : stage.events?.name,
       route_active: (stage.route_versions ?? []).some((route: any) => route.is_active),
     }));
+    const eventById = new Map((eventRows ?? []).map((event) => [event.id, event]));
+    const normalizedRegistrations = eligibleRegistrations.map((registration) => ({
+      ...registration,
+      event: eventById.get(registration.event_id) ?? null,
+      stage_count: normalizedStages.filter((stage: any) => stage.event_id === registration.event_id).length,
+    }));
     const confirmedRegistration = eligibleRegistrations[0] ?? null;
 
     return NextResponse.json({
@@ -182,6 +192,7 @@ export async function GET(request: NextRequest) {
         modality: confirmedRegistration?.modality ?? null,
       },
       registration: confirmedRegistration,
+      registrations: normalizedRegistrations,
       registration_module_ready: registrationModuleReady,
       windfit_ready: windfitReady,
       registration_required: registrationRequired,
