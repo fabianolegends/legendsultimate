@@ -153,6 +153,16 @@ export async function GET(request: NextRequest) {
     if (athleteError) throw athleteError;
     const athleteMap = new Map((athletes ?? []).map((athlete) => [athlete.id, athlete]));
     const items = (registrations ?? []).map((item) => ({ ...item, athlete: item.athlete_id ? athleteMap.get(item.athlete_id) ?? null : null }));
+    let identityReady = true;
+    let linkAudit: unknown[] = [];
+    if (eventId) {
+      const auditQuery = await supabase.from("registration_link_audit")
+        .select("id, event_id, registration_id, previous_athlete_id, athlete_id, ride_with_gps_user_id, action, actor_type, actor_reference, reason, created_at")
+        .eq("event_id", eventId).order("created_at", { ascending: false }).limit(200);
+      if (auditQuery.error?.code === "42P01") identityReady = false;
+      else if (auditQuery.error) throw auditQuery.error;
+      else linkAudit = auditQuery.data ?? [];
+    }
     const lastSync = items.map((item) => item.last_synced_at).filter(Boolean).sort().at(-1) ?? null;
     const summary = {
       total: items.length,
@@ -174,7 +184,7 @@ export async function GET(request: NextRequest) {
       else if (sequenceQuery.error) throw sequenceQuery.error;
       else sequences = sequenceQuery.data ?? [];
     }
-    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, numbering_ready: numberingReady, sequences, events: events ?? [], registrations: items, summary, message: detailsReady ? undefined : "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." });
+    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, numbering_ready: numberingReady, identity_ready: identityReady, link_audit: linkAudit, sequences, events: events ?? [], registrations: items, summary, message: detailsReady ? undefined : "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar inscritos Windfit." }, { status: 500 });
   }
@@ -183,16 +193,41 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
   try {
-    const body = await request.json() as { action?: string; id?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput; sequences?: Array<{ category?: string; start_number?: number; padding?: number }> };
+    const body = await request.json() as { action?: string; id?: string; fromId?: string; toId?: string; reason?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput; sequences?: Array<{ category?: string; start_number?: number; padding?: number }> };
     const supabase = createSupabaseAdmin();
     if (body.action === "unlink_registration") {
       const id = String(body.id ?? "").trim();
       if (!id) return NextResponse.json({ error: "Inscrição não identificada." }, { status: 400 });
-      const { data, error } = await supabase.from("registrations")
-        .update({ athlete_id: null, claimed_at: null, updated_at: new Date().toISOString() })
-        .eq("id", id).select("id, full_name").single();
-      if (error) throw error;
-      return NextResponse.json({ unlinked: true, registration: data });
+      const unlinkResult = await supabase.rpc("unlink_registration_identity", {
+        p_registration_id: id,
+        p_actor_type: "admin",
+        p_actor_reference: "organization-passport",
+        p_reason: String(body.reason ?? "Correção administrativa de vínculo").trim(),
+      });
+      if (unlinkResult.error?.code === "PGRST202" || unlinkResult.error?.code === "42883") {
+        return NextResponse.json({ error: "Execute a migration 016_athlete_identity_integrity.sql no Supabase." }, { status: 409 });
+      }
+      if (unlinkResult.error) throw unlinkResult.error;
+      return NextResponse.json({ unlinked: true });
+    }
+    if (body.action === "transfer_registration_identity") {
+      const fromId = String(body.fromId ?? "").trim();
+      const toId = String(body.toId ?? "").trim();
+      if (!fromId || !toId) return NextResponse.json({ error: "Informe as inscrições de origem e destino." }, { status: 400 });
+      const transfer = await supabase.rpc("transfer_registration_identity", {
+        p_from_registration_id: fromId,
+        p_to_registration_id: toId,
+        p_actor_reference: "organization-passport",
+        p_reason: String(body.reason ?? "Correção administrativa de vínculo").trim(),
+      });
+      if (transfer.error?.code === "PGRST202" || transfer.error?.code === "42883") {
+        return NextResponse.json({ error: "Execute a migration 016_athlete_identity_integrity.sql no Supabase." }, { status: 409 });
+      }
+      if (transfer.error?.code === "P0001" || transfer.error?.code === "23505") {
+        return NextResponse.json({ error: transfer.error.message }, { status: 409 });
+      }
+      if (transfer.error) throw transfer.error;
+      return NextResponse.json({ transferred: true });
     }
     if (body.action === "configure_bib_sequences") {
       const eventId = String(body.eventId ?? "").trim();

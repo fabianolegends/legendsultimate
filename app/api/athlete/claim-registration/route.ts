@@ -79,21 +79,6 @@ export async function POST(request: NextRequest) {
     const { data: rideAthlete, error: rideAthleteError } = await supabase.from("athletes")
       .select("id, ride_with_gps_user_id, full_name").eq("ride_with_gps_user_id", athleteCookie.id).maybeSingle();
     if (rideAthleteError) throw rideAthleteError;
-    if (rideAthlete) {
-      const { data: eventLink, error: eventLinkError } = await supabase.from("registrations")
-        .select("id, full_name, email")
-        .eq("event_id", registration.event_id)
-        .eq("athlete_id", rideAthlete.id)
-        .neq("id", registration.id)
-        .limit(1)
-        .maybeSingle();
-      if (eventLinkError) throw eventLinkError;
-      if (eventLink) {
-        return NextResponse.json({
-          error: `Esta conta Ride with GPS já representa ${eventLink.full_name} neste evento. Desconecte a conta ou peça à organização para corrigir o vínculo.`,
-        }, { status: 409 });
-      }
-    }
     let athlete = rideAthlete;
     if (registration.athlete_id) {
       const { data: registrationAthlete, error: registrationAthleteError } = await supabase.from("athletes")
@@ -102,15 +87,7 @@ export async function POST(request: NextRequest) {
       if (registrationAthlete?.ride_with_gps_user_id && registrationAthlete.ride_with_gps_user_id !== athleteCookie.id) {
         return NextResponse.json({ error: "Esta inscrição já está vinculada a outra conta Ride with GPS. Fale com a organização." }, { status: 409 });
       }
-      if (rideAthlete && registrationAthlete && rideAthlete.id !== registrationAthlete.id) {
-        const { error: activityMoveError } = await supabase.from("activities").update({ athlete_id: rideAthlete.id }).eq("athlete_id", registrationAthlete.id);
-        if (activityMoveError) throw activityMoveError;
-        const { error: registrationMoveError } = await supabase.from("registrations").update({ athlete_id: rideAthlete.id, updated_at: new Date().toISOString() }).eq("athlete_id", registrationAthlete.id);
-        if (registrationMoveError) throw registrationMoveError;
-        const stageResultMove = await supabase.from("stage_results").update({ athlete_id: rideAthlete.id, updated_at: new Date().toISOString() }).eq("athlete_id", registrationAthlete.id);
-        if (stageResultMove.error && stageResultMove.error.code !== "42P01") throw stageResultMove.error;
-        athlete = rideAthlete;
-      } else if (registrationAthlete) {
+      if (!rideAthlete && registrationAthlete?.ride_with_gps_user_id === athleteCookie.id) {
         const updated = await supabase.from("athletes").update(athletePayload).eq("id", registrationAthlete.id).select("id, ride_with_gps_user_id, full_name").single();
         if (updated.error) throw updated.error;
         athlete = updated.data;
@@ -126,13 +103,26 @@ export async function POST(request: NextRequest) {
       athlete = updated.data;
     }
 
-    const { data: linked, error: linkError } = await supabase
-      .from("registrations")
-      .update({ athlete_id: athlete.id, claimed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", registration.id)
+    const linkResult = await supabase.rpc("link_registration_identity", {
+      p_registration_id: registration.id,
+      p_athlete_id: athlete.id,
+      p_ride_with_gps_user_id: athleteCookie.id,
+      p_actor_type: "athlete",
+      p_actor_reference: String(athleteCookie.id),
+      p_reason: "Vínculo confirmado pelo código da inscrição",
+    });
+    if (linkResult.error?.code === "PGRST202" || linkResult.error?.code === "42883") {
+      return NextResponse.json({ error: "Execute a migration 016_athlete_identity_integrity.sql no Supabase." }, { status: 503 });
+    }
+    if (linkResult.error?.code === "P0001" || linkResult.error?.code === "23505") {
+      return NextResponse.json({ error: linkResult.error.message }, { status: 409 });
+    }
+    if (linkResult.error) throw linkResult.error;
+
+    const { data: linked, error: linkedError } = await supabase.from("registrations")
       .select("id, event_id, registration_code, bib_number, full_name, email, category, modality, country_code, city, status, claimed_at, source, payment_status")
-      .single();
-    if (linkError) throw linkError;
+      .eq("id", registration.id).single();
+    if (linkedError) throw linkedError;
 
     return NextResponse.json({ linked: true, registration: linked });
   } catch (error) {

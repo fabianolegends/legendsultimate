@@ -69,13 +69,34 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       country_code: country.toLowerCase().includes("brasil") ? "BR" : null, city,
       location: [city, state, country].filter(Boolean).join(" / "), status: "confirmed", source: "online",
       payment_status: "courtesy", registered_at: now, terms_accepted_at: now, privacy_accepted_at: now,
-      athlete_id: linkedAthleteId, claimed_at: linkedAthleteId ? now : null, updated_at: now,
+      athlete_id: null, claimed_at: null, updated_at: now,
     }).select("id, registration_code, full_name, email, category, modality, status").single();
     if (error?.code === "23505") return NextResponse.json({ error: "Este e-mail já está inscrito no evento." }, { status: 409 });
     if (error?.code === "P0001") return NextResponse.json({ error: error.message }, { status: 409 });
     if (error?.code === "23514" || error?.code === "42703") return NextResponse.json({ error: "Execute a migration 013_public_event_registration.sql." }, { status: 503 });
     if (error) throw error;
-    return NextResponse.json({ registered: true, linked: Boolean(linkedAthleteId), event: { name: event.name }, registration }, { status: 201 });
+    let linked = false;
+    let linkWarning: string | null = null;
+    if (linkedAthleteId && rideWithGpsUser?.id) {
+      const linkResult = await supabase.rpc("link_registration_identity", {
+        p_registration_id: registration.id,
+        p_athlete_id: linkedAthleteId,
+        p_ride_with_gps_user_id: rideWithGpsUser.id,
+        p_actor_type: "athlete",
+        p_actor_reference: String(rideWithGpsUser.id),
+        p_reason: "Vínculo automático na inscrição online",
+      });
+      if (linkResult.error?.code === "PGRST202" || linkResult.error?.code === "42883") {
+        linkWarning = "Inscrição concluída. O vínculo automático ficará disponível após a atualização de segurança do banco.";
+      } else if (linkResult.error?.code === "P0001" || linkResult.error?.code === "23505") {
+        linkWarning = linkResult.error.message;
+      } else if (linkResult.error) {
+        throw linkResult.error;
+      } else {
+        linked = true;
+      }
+    }
+    return NextResponse.json({ registered: true, linked, link_warning: linkWarning, event: { name: event.name }, registration }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível concluir a inscrição." }, { status: 500 });
   }
