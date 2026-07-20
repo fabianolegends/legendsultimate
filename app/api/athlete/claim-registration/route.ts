@@ -79,6 +79,21 @@ export async function POST(request: NextRequest) {
     const { data: rideAthlete, error: rideAthleteError } = await supabase.from("athletes")
       .select("id, ride_with_gps_user_id, full_name").eq("ride_with_gps_user_id", athleteCookie.id).maybeSingle();
     if (rideAthleteError) throw rideAthleteError;
+    if (rideAthlete) {
+      const { data: eventLink, error: eventLinkError } = await supabase.from("registrations")
+        .select("id, full_name, email")
+        .eq("event_id", registration.event_id)
+        .eq("athlete_id", rideAthlete.id)
+        .neq("id", registration.id)
+        .limit(1)
+        .maybeSingle();
+      if (eventLinkError) throw eventLinkError;
+      if (eventLink) {
+        return NextResponse.json({
+          error: `Esta conta Ride with GPS já representa ${eventLink.full_name} neste evento. Desconecte a conta ou peça à organização para corrigir o vínculo.`,
+        }, { status: 409 });
+      }
+    }
     let athlete = rideAthlete;
     if (registration.athlete_id) {
       const { data: registrationAthlete, error: registrationAthleteError } = await supabase.from("athletes")

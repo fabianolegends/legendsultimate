@@ -56,7 +56,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const now = new Date().toISOString();
     const rideWithGpsUser = readRideWithGpsUser(request);
     let linkedAthleteId: string | null = null;
-    if (rideWithGpsUser?.id) {
+    const rideWithGpsEmail = normalizeRegistrationEmail(rideWithGpsUser?.email ?? "");
+    if (rideWithGpsUser?.id && rideWithGpsEmail && rideWithGpsEmail === email) {
       const { data: linkedAthlete, error: linkedAthleteError } = await supabase.from("athletes")
         .select("id").eq("ride_with_gps_user_id", rideWithGpsUser.id).maybeSingle();
       if (linkedAthleteError) throw linkedAthleteError;

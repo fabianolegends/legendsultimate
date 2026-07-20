@@ -89,6 +89,7 @@ export default function RegistrationsPage() {
     const matches = !term || [item.full_name, item.email, item.bib_number, item.registration_code, item.external_registration_id].some((value) => String(value ?? "").toLowerCase().includes(term));
     return matches && (statusFilter === "all" || item.status === statusFilter) && (paymentFilter === "all" || item.payment_status === paymentFilter);
   }), [items, search, statusFilter, paymentFilter]);
+  const editingRegistration = useMemo(() => items.find((item) => item.id === editingId) ?? null, [items, editingId]);
 
   function startNew() { setEditingId(""); setForm({ ...emptyForm, event_id: eventId }); setDrawer("form"); }
   function openNumbering() {
@@ -130,6 +131,15 @@ export default function RegistrationsPage() {
       setMessage(`${payload.configured} categorias configuradas. ${payload.assigned} atletas que estavam sem número foram numerados.`); setDrawer(null); await load(eventId);
     } catch(error) { setMessage(error instanceof Error?error.message:"Falha ao configurar a numeração."); } finally { setSaving(false); }
   }
+  async function unlinkRegistration() {
+    if(!editingRegistration?.athlete_id || !window.confirm(`Desvincular ${editingRegistration.full_name} da conta Ride with GPS?`)) return;
+    setSaving(true); setMessage("Removendo vínculo incorreto...");
+    try {
+      const response=await fetch("/api/admin/registrations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"unlink_registration",id:editingRegistration.id})});
+      const payload=await response.json(); if(!response.ok) throw new Error(payload.error??"Falha ao remover o vínculo.");
+      setMessage(`${editingRegistration.full_name} foi desvinculado da conta Ride with GPS.`); closeDrawer(); await load(eventId);
+    } catch(error) { setMessage(error instanceof Error?error.message:"Falha ao remover o vínculo."); } finally { setSaving(false); }
+  }
   async function copyCode(code: string) {
     try {
       await navigator.clipboard.writeText(code);
@@ -167,7 +177,7 @@ export default function RegistrationsPage() {
         <div className="field"><label>Pagamento</label><select value={form.payment_status} onChange={(e)=>setForm({...form,payment_status:e.target.value})}><option value="courtesy">Cortesia</option><option value="paid">Pago</option><option value="pending">Pendente</option><option value="refunded">Reembolsado</option><option value="cancelled">Cancelado</option></select></div>
         <div className="field"><label>Status esportivo</label><select value={form.status} onChange={(e)=>setForm({...form,status:e.target.value})}><option value="confirmed">Confirmada</option><option value="pending">Pendente</option><option value="waitlist">Lista de espera</option><option value="cancelled">Cancelada</option></select></div>
         <div className="field"><label>País</label><input maxLength={2} value={form.country_code} onChange={(e)=>setForm({...form,country_code:e.target.value.toUpperCase()})}/></div><div className="field"><label>Cidade</label><input value={form.city} onChange={(e)=>setForm({...form,city:e.target.value})}/></div>
-      </div><button className="primary" disabled={saving}>{saving?"SALVANDO...":editingId?"ATUALIZAR REGISTRO":"CRIAR EXCEÇÃO MANUAL"}</button>{editingId?<button className="secondary" type="button" onClick={closeDrawer}>CANCELAR EDIÇÃO</button>:null}</div>
+      </div><button className="primary" disabled={saving}>{saving?"SALVANDO...":editingId?"ATUALIZAR REGISTRO":"CRIAR EXCEÇÃO MANUAL"}</button>{editingRegistration?.athlete_id?<button className="secondary" type="button" disabled={saving} onClick={unlinkRegistration}>DESVINCULAR RIDE WITH GPS</button>:null}{editingId?<button className="secondary" type="button" onClick={closeDrawer}>CANCELAR EDIÇÃO</button>:null}</div>
       <div className="import"><strong>Importar lista da Windfit</strong><p className="panel-intro">Exporte o CSV na Windfit e envie aqui. A sincronização atualiza o mesmo atleta pelo e-mail e preserva o código de vínculo existente.</p><p className="panel-intro">Campos reconhecidos: ID, nome, categoria, nascimento, gênero, e-mail, telefone, localização, data e status da inscrição.</p><input type="file" accept=".csv,text/csv" onChange={importCsv}/></div>
       {drawer==="numbering"?<div className="numbering-fields"><p className="numbering-intro">Defina o primeiro número de cada categoria. Novas inscrições e importações receberão o próximo número livre automaticamente. Números já atribuídos são preservados.</p><div className="sequence-list">{sequenceRows.map((row,index)=><div className="sequence-row" key={row.category}><div><strong>{row.category}</strong>{row.next_number?<div className="sequence-current">Próximo disponível: {String(row.next_number).padStart(row.padding,"0")}</div>:null}</div><label>Primeiro número<input type="number" min="1" required value={row.start_number} onChange={(event)=>setSequenceRows((current)=>current.map((item,itemIndex)=>itemIndex===index?{...item,start_number:Number(event.target.value)}:item))}/></label><label>Dígitos<input type="number" min="1" max="8" required value={row.padding} onChange={(event)=>setSequenceRows((current)=>current.map((item,itemIndex)=>itemIndex===index?{...item,padding:Number(event.target.value)}:item))}/></label></div>)}</div><button className="primary" disabled={saving}>{saving?"SALVANDO...":"SALVAR E NUMERAR INSCRITOS"}</button></div>:null}</form></>:null}
       <section className="panel light"><div className="filters"><input placeholder="Buscar nome, e-mail, número, código ou ID Windfit" value={search} onChange={(e)=>setSearch(e.target.value)}/><select value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}><option value="all">Todos os status</option><option value="confirmed">Confirmados</option><option value="pending">Pendentes</option><option value="waitlist">Lista de espera</option><option value="cancelled">Cancelados</option></select><select value={paymentFilter} onChange={(e)=>setPaymentFilter(e.target.value)}><option value="all">Todos os pagamentos</option><option value="paid">Pagos</option><option value="pending">Pendentes</option><option value="refunded">Reembolsados</option><option value="cancelled">Cancelados</option><option value="courtesy">Cortesias</option></select></div>

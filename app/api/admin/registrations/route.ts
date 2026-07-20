@@ -183,8 +183,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
   try {
-    const body = await request.json() as { action?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput; sequences?: Array<{ category?: string; start_number?: number; padding?: number }> };
+    const body = await request.json() as { action?: string; id?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput; sequences?: Array<{ category?: string; start_number?: number; padding?: number }> };
     const supabase = createSupabaseAdmin();
+    if (body.action === "unlink_registration") {
+      const id = String(body.id ?? "").trim();
+      if (!id) return NextResponse.json({ error: "Inscrição não identificada." }, { status: 400 });
+      const { data, error } = await supabase.from("registrations")
+        .update({ athlete_id: null, claimed_at: null, updated_at: new Date().toISOString() })
+        .eq("id", id).select("id, full_name").single();
+      if (error) throw error;
+      return NextResponse.json({ unlinked: true, registration: data });
+    }
     if (body.action === "configure_bib_sequences") {
       const eventId = String(body.eventId ?? "").trim();
       const sequences = Array.isArray(body.sequences) ? body.sequences.slice(0, 50) : [];
