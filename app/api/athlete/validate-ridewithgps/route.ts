@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
         avg_heart_rate: trip.avg_hr ?? null,
         avg_watts: trip.avg_watts ?? null,
         gps_points: activityPoints,
-        raw_payload: trip,
+        raw_payload: { ...trip, registration_id: registration?.id ?? null },
       }, { onConflict: "source,source_activity_id" })
       .select("id")
       .single();

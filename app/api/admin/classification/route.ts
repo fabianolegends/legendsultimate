@@ -49,8 +49,31 @@ async function getClassification(supabase: any, requestedEventId?: string | null
   };
   if (resultError) throw resultError;
 
+  const resultActivityIds = [...new Set((results ?? []).map((result: any) => result.activity_id).filter(Boolean))];
+  const stageIds = (stages ?? []).map((stage: any) => stage.id);
+  const [{ data: checkpoints }, { data: passages }] = await Promise.all([
+    stageIds.length
+      ? supabase.from("checkpoints").select("id, stage_id, sequence, label, checkpoint_kind").in("stage_id", stageIds).order("sequence", { ascending: true })
+      : Promise.resolve({ data: [] }),
+    resultActivityIds.length
+      ? supabase.from("checkpoint_passages").select("activity_id, checkpoint_id, elapsed_s, passed_at").in("activity_id", resultActivityIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
   const stageMap = new Map((stages ?? []).map((stage: any) => [stage.id, stage]));
-  const enriched = (results ?? []).map((result: any) => ({ ...result, stage: stageMap.get(result.stage_id) ?? null }));
+  const checkpointMap = new Map((checkpoints ?? []).map((checkpoint: any) => [checkpoint.id, checkpoint]));
+  const passagesByActivity = new Map<string, any[]>();
+  for (const passage of passages ?? []) {
+    const checkpoint: any = checkpointMap.get(passage.checkpoint_id);
+    const current = passagesByActivity.get(passage.activity_id) ?? [];
+    current.push({ ...passage, checkpoint });
+    passagesByActivity.set(passage.activity_id, current);
+  }
+  const enriched = (results ?? []).map((result: any) => ({
+    ...result,
+    stage: stageMap.get(result.stage_id) ?? null,
+    passages: (passagesByActivity.get(result.activity_id) ?? []).sort((left, right) => Number(left.checkpoint?.sequence ?? 0) - Number(right.checkpoint?.sequence ?? 0)),
+  }));
   const overall = buildOverallClassification((results ?? []).map((result: any) => {
     const stage: any = stageMap.get(result.stage_id);
     return {
@@ -97,15 +120,12 @@ export async function POST(request: NextRequest) {
     if (validationError) throw validationError;
     const activityIds = [...new Set((validations ?? []).map((validation: any) => validation.activity_id))];
     const { data: activities, error: activityError } = activityIds.length
-      ? await supabase.from("activities").select("id, athlete_id, stage_id, moving_time_s, started_at, created_at").in("id", activityIds)
+      ? await supabase.from("activities").select("id, athlete_id, stage_id, moving_time_s, started_at, created_at, raw_payload").in("id", activityIds)
       : { data: [], error: null };
     if (activityError) throw activityError;
-    const athleteIds = [...new Set((activities ?? []).map((activity: any) => activity.athlete_id))];
-    const { data: registrations, error: registrationError } = athleteIds.length
-      ? await supabase.from("registrations")
+    const { data: registrations, error: registrationError } = await supabase.from("registrations")
         .select("id, event_id, athlete_id, full_name, bib_number, category, modality, status, payment_status")
-        .eq("event_id", eventId).in("athlete_id", athleteIds).eq("status", "confirmed").in("payment_status", ["paid", "courtesy"])
-      : { data: [], error: null };
+        .eq("event_id", eventId).eq("status", "confirmed").in("payment_status", ["paid", "courtesy"]);
     if (registrationError) throw registrationError;
 
     const { data: checkpoints, error: checkpointError } = await supabase
@@ -127,7 +147,14 @@ export async function POST(request: NextRequest) {
 
     const stageMap = new Map((stages ?? []).map((stage: any) => [stage.id, stage]));
     const activityMap = new Map((activities ?? []).map((activity: any) => [activity.id, activity]));
-    const registrationMap = new Map((registrations ?? []).map((registration: any) => [registration.athlete_id, registration]));
+    const registrationById = new Map((registrations ?? []).map((registration: any) => [registration.id, registration]));
+    const registrationsByAthlete = new Map<string, any[]>();
+    for (const registration of registrations ?? []) {
+      if (!registration.athlete_id) continue;
+      const current = registrationsByAthlete.get(registration.athlete_id) ?? [];
+      current.push(registration);
+      registrationsByAthlete.set(registration.athlete_id, current);
+    }
     const existingMap = new Map((existing ?? []).map((result: any) => [`${result.stage_id}:${result.athlete_id}`, result]));
     const passageMap = new Map((passages ?? []).map((passage: any) => [`${passage.activity_id}:${passage.checkpoint_id}`, passage]));
     const checkpointsByStage = new Map<string, any[]>();
@@ -138,20 +165,25 @@ export async function POST(request: NextRequest) {
     }
 
     const bestCandidate = new Map<string, any>();
+    const excluded = { missing_activity: 0, missing_registration: 0, experience: 0, missing_passages: 0 };
     for (const validation of validations ?? []) {
       const activity: any = activityMap.get(validation.activity_id);
       const stage: any = stageMap.get(validation.stage_id);
-      const registration: any = activity ? registrationMap.get(activity.athlete_id) : null;
-      if (!activity || !stage || !registration || registration.modality === "experience") continue;
+      if (!activity || !stage) { excluded.missing_activity += 1; continue; }
+      const explicitRegistrationId = String(activity.raw_payload?.registration_id ?? "");
+      const registration: any = registrationById.get(explicitRegistrationId)
+        ?? (registrationsByAthlete.get(activity.athlete_id)?.length === 1 ? registrationsByAthlete.get(activity.athlete_id)?.[0] : null);
+      if (!registration) { excluded.missing_registration += 1; continue; }
+      if (registration.modality === "experience") { excluded.experience += 1; continue; }
       const stageCheckpoints = checkpointsByStage.get(stage.id) ?? [];
       const start = stageCheckpoints.find((checkpoint) => checkpoint.checkpoint_kind === "start") ?? stageCheckpoints[0];
       const finish = stageCheckpoints.find((checkpoint) => checkpoint.checkpoint_kind === "finish") ?? stageCheckpoints.at(-1);
       const startPassage: any = start ? passageMap.get(`${activity.id}:${start.id}`) : null;
       const finishPassage: any = finish ? passageMap.get(`${activity.id}:${finish.id}`) : null;
       const passageTime = startPassage && finishPassage ? Math.round(Number(finishPassage.elapsed_s) - Number(startPassage.elapsed_s)) : 0;
-      const officialTime = passageTime > 0 ? passageTime : Math.round(Number(activity.moving_time_s ?? 0));
-      if (officialTime <= 0) continue;
-      const key = `${stage.id}:${activity.athlete_id}`;
+      if (passageTime <= 0) { excluded.missing_passages += 1; continue; }
+      const officialTime = passageTime;
+      const key = `${stage.id}:${registration.id}`;
       const current = bestCandidate.get(key);
       const candidate = { validation, activity, stage, registration, officialTime };
       const currentValidated = current?.validation.status === "validated";
@@ -204,7 +236,7 @@ export async function POST(request: NextRequest) {
       const { error } = await supabase.from("stage_results").upsert(rows, { onConflict: "stage_id,athlete_id" });
       if (error) throw error;
     }
-    return NextResponse.json({ recalculated: rows.length, event_id: eventId });
+    return NextResponse.json({ recalculated: rows.length, event_id: eventId, excluded });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao recalcular a classificação." }, { status: 500 });
   }

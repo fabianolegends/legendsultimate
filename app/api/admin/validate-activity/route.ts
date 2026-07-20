@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       name: file.name.replace(/\.gpx$/i, "") || "GPX recebido pela organização",
       started_at: timingStream?.startedAt ?? `${stage.stage_date}T12:00:00-03:00`,
       distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
-      moving_time_s: timingStream?.movingTimeS || null, gps_points: activityPoints,
+      moving_time_s: timingStream?.movingTimeS ?? null, gps_points: activityPoints,
       raw_payload: { file_name: file.name, uploaded_by: "organizer", registration_id: registration.id },
     }, { onConflict: "source,source_activity_id" }).select("id").single();
     if (activityError) throw activityError;
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
     let timingConfigured = false;
     let timingMessage: string | null = timingStream
       ? null
-      : "O GPX foi validado, mas não possui horário válido em todos os pontos para calcular passagens e segmentos.";
+      : "O GPX foi validado geometricamente, mas não possui horário válido em todos os pontos. Sem os horários reais, as passagens e a classificação não podem ser calculadas.";
     let passageDetections: ReturnType<typeof detectCheckpointPassages> = [];
     let segmentDetections: ReturnType<typeof calculateSegmentResults> = [];
 
@@ -247,7 +247,8 @@ export async function POST(request: NextRequest) {
       },
       activity: { database_id: activity.id, file_name: file.name, points_count: activityPoints.length,
         distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
-        moving_time_min: timingStream?.movingTimeS ? Number((timingStream.movingTimeS / 60).toFixed(1)) : null },
+        moving_time_min: timingStream?.movingTimeS ? Number((timingStream.movingTimeS / 60).toFixed(1)) : null,
+        timing_source: timingStream ? "gpx" : null },
       athlete: { registration_id: registration.id, full_name: registration.full_name, bib_number: registration.bib_number },
       timing: { configured: timingConfigured, message: timingMessage, passages: passageDetections, segments: segmentDetections },
       saved: true,

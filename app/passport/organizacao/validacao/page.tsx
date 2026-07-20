@@ -29,6 +29,8 @@ type MapCheckpoint = {
   longitude: number;
   hit: boolean;
   nearest_distance_m: number;
+  passed_at?: string | null;
+  elapsed_s?: number | null;
 };
 type Report = {
   status: "validated" | "manual_review" | "rejected";
@@ -63,6 +65,7 @@ type Result = {
     checkpoints: MapCheckpoint[];
   };
   saved?: boolean;
+  timing?: { configured:boolean; message?:string|null; passages?:unknown[]; segments?:unknown[] };
 };
 type RideWithGpsActivity = {
   id: string;
@@ -201,7 +204,13 @@ export default function ValidationPage() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Falha na validação.");
       setResult(payload);
-      setMessage("GPX validado. Este modo é a alternativa para quem não utiliza Ride with GPS.");
+      let classificationText="";
+      if(activeEventId&&payload.saved&&payload.report?.status!=="rejected"&&payload.activity?.moving_time_min){
+        const classificationResponse=await fetch("/api/admin/classification",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({eventId:activeEventId})});
+        const classification=await classificationResponse.json();
+        classificationText=classificationResponse.ok?` ${classification.recalculated} resultado(s) da classificação recalculado(s).`:` A classificação não foi recalculada: ${classification.error??"erro desconhecido"}.`;
+      }
+      setMessage(`GPX validado.${payload.timing?.message?` ${payload.timing.message}`:""}${classificationText}`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Falha na validação.");
     } finally {
@@ -318,9 +327,10 @@ export default function ValidationPage() {
                 <details style={{ marginTop: 18 }}>
                   <summary style={{ cursor: "pointer", fontWeight: 800 }}>Ver checkpoints e distâncias</summary>
                   <div style={{ marginTop: 12, display: "grid", gap: 7 }}>
-                    {result.report.checkpoint_results.map((checkpoint) => (
+                    {(result.map?.checkpoints ?? result.report.checkpoint_results).map((checkpoint) => (
                       <div key={`${checkpoint.sequence}-${checkpoint.label}`} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "8px 0", borderBottom: "1px solid #d8cebf" }}>
-                        <span><Check ok={checkpoint.hit} /> {checkpoint.label}</span><span>{checkpoint.nearest_distance_m} m</span>
+                        <span><Check ok={checkpoint.hit} /> {checkpoint.label}</span>
+                        <span>{"elapsed_s" in checkpoint&&checkpoint.elapsed_s!==null&&checkpoint.elapsed_s!==undefined?`${new Date(Number(checkpoint.elapsed_s)*1000).toISOString().slice(11,19)} · ${checkpoint.passed_at?new Date(checkpoint.passed_at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—"}`:`${checkpoint.nearest_distance_m} m`}</span>
                       </div>
                     ))}
                   </div>
@@ -329,6 +339,7 @@ export default function ValidationPage() {
                 <p style={{ marginTop: 20, fontSize: 13, color: "#6c685f" }}>
                   Rota oficial v{result.route.version}: {result.route.file_name} · atividade: {result.activity.file_name} ({result.activity.points_count} pontos GPS).{result.saved ? " Resultado armazenado no Supabase." : ""}
                 </p>
+                {result.timing?.message?<p style={{padding:12,border:"1px solid #b98445",background:"#fff0cf",color:"#704609",fontSize:13,lineHeight:1.5}}>{result.timing.message}</p>:null}
               </>
             )}
           </div>
