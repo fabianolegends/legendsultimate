@@ -62,7 +62,8 @@ export async function POST(request: NextRequest) {
     const stageCount = Math.min(20, Math.max(1, Math.round(Number(body.stage_count ?? 1))));
     if (!name || !startsOn || !endsOn) return NextResponse.json({ error: "Nome e datas do evento são obrigatórios." }, { status: 400 });
     if (endsOn < startsOn) return NextResponse.json({ error: "A data final não pode ser anterior à data inicial." }, { status: 400 });
-    const slug = slugify(String(body.slug ?? name));
+    const requestedSlug = String(body.slug ?? "").trim();
+    const slug = slugify(requestedSlug || name);
     if (!slug) return NextResponse.json({ error: "Informe um nome válido para gerar o endereço do evento." }, { status: 400 });
 
     const participantLimit = body.participant_limit ? Number(body.participant_limit) : null;
