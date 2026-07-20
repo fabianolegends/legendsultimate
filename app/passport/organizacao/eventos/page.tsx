@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { OrganizationEvent, useOrganizationEvent } from "../EventContext";
 import EventStagesEditor from "./EventStagesEditor";
+import TestEventCleanup from "./TestEventCleanup";
 
 type EventForm = {
   name: string; slug: string; starts_on: string; ends_on: string; stage_count: number;
@@ -108,7 +109,10 @@ export default function EventsPage() {
         {message && drawer && <div className="wide notice">{message}</div>}
         <div className="wide drawer-actions"><button type="button" className="secondary" onClick={() => setDrawer(null)}>Cancelar</button><button className="primary" disabled={saving}>{saving ? "Salvando..." : "Salvar evento"}</button></div>
       </form>
-      {drawer === "edit" && editing && <EventStagesEditor event={editing} onChanged={reloadEvents}/>} 
+      {drawer === "edit" && editing && <>
+        <EventStagesEditor event={editing} onChanged={reloadEvents}/>
+        {editing.is_test && <TestEventCleanup event={editing} onCleaned={reloadEvents}/>}
+      </>}
     </aside></>}
   </main>;
 }
