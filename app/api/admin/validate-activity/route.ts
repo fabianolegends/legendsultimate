@@ -154,16 +154,23 @@ export async function POST(request: NextRequest) {
     }
 
     const timingStream = parseGpxTiming(gpxText, activityPoints.length);
-    const sourceActivityId = `admin:${stageId}:${registration.id}:${createHash("sha256").update(gpxText).digest("hex").slice(0, 20)}`;
-    const { data: activity, error: activityError } = await supabase.from("activities").upsert({
+    const trackFingerprint = createHash("sha256").update(gpxText).digest("hex");
+    const sourceActivityId = `admin:${stageId}:${registration.id}:${trackFingerprint.slice(0, 20)}`;
+    const activityPayload = {
       athlete_id: athleteId, stage_id: stageId, source: "gpx", source_activity_id: sourceActivityId,
       name: file.name.replace(/\.gpx$/i, "") || "GPX recebido pela organização",
       started_at: timingStream?.startedAt ?? `${stage.stage_date}T12:00:00-03:00`,
       distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
       moving_time_s: timingStream?.movingTimeS ?? null, gps_points: activityPoints,
-      raw_payload: { file_name: file.name, uploaded_by: "organizer", registration_id: registration.id },
-    }, { onConflict: "source,source_activity_id" }).select("id").single();
-    if (activityError) throw activityError;
+      raw_payload: { file_name: file.name, uploaded_by: "organizer", registration_id: registration.id }, track_fingerprint: trackFingerprint,
+    };
+    let { data: activity, error: activityError } = await supabase.from("activities").upsert(activityPayload, { onConflict: "source,source_activity_id" }).select("id").single();
+    if (activityError?.code === "42703") {
+      const { track_fingerprint: _fingerprint, ...legacyPayload } = activityPayload;
+      const legacy = await supabase.from("activities").upsert(legacyPayload, { onConflict: "source,source_activity_id" }).select("id").single();
+      activity = legacy.data; activityError = legacy.error;
+    }
+    if (activityError || !activity) throw activityError ?? new Error("Não foi possível salvar a atividade.");
 
     const validationStatus = report.status === "manual_review" ? "review" : report.status;
     const { error: validationError } = await supabase.from("validation_results").upsert({

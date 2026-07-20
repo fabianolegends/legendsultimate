@@ -104,11 +104,14 @@ export async function POST(request: NextRequest) {
     const supabase = createSupabaseAdmin();
     const { data: stages, error: stageError } = await supabase
       .from("stages")
-      .select("id, event_id, stage_number, name, classification_weight, time_limit_s")
+      .select("id, event_id, stage_number, name, classification_weight, time_limit_s, results_locked")
       .eq("event_id", eventId)
       .order("stage_number", { ascending: true });
     if (migrationMissing(stageError)) return NextResponse.json({ error: "Execute a migration 011_official_classification.sql no Supabase." }, { status: 409 });
     if (stageError) throw stageError;
+    if ((stages ?? []).some((stage: any) => stage.results_locked)) {
+      return NextResponse.json({ error: "Há etapa publicada e bloqueada. Reabra a apuração antes de recalcular." }, { status: 423 });
+    }
     const stageIds = (stages ?? []).map((stage: any) => stage.id);
     if (!stageIds.length) return NextResponse.json({ error: "O evento não possui etapas cadastradas." }, { status: 422 });
 

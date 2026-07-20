@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { GeoPoint, validateActivity } from "@/lib/race-engine";
 import { resolveRegistrationEligibility } from "@/lib/registration-access";
@@ -176,9 +177,8 @@ export async function POST(request: NextRequest) {
       if (error) throw error;
     }
 
-    const { data: activityRow, error: activityError } = await supabase
-      .from("activities")
-      .upsert({
+    const trackFingerprint = createHash("sha256").update(JSON.stringify(trackPoints.map((point) => [point.x, point.y, point.t]))).digest("hex");
+    const activityPayload = {
         athlete_id: athleteRow.id,
         stage_id: stageId,
         source: "ride_with_gps",
@@ -193,10 +193,15 @@ export async function POST(request: NextRequest) {
         avg_watts: trip.avg_watts ?? null,
         gps_points: activityPoints,
         raw_payload: { ...trip, registration_id: registration?.id ?? null },
-      }, { onConflict: "source,source_activity_id" })
-      .select("id")
-      .single();
-    if (activityError) throw activityError;
+        track_fingerprint: trackFingerprint,
+      };
+    let { data: activityRow, error: activityError } = await supabase.from("activities").upsert(activityPayload, { onConflict: "source,source_activity_id" }).select("id").single();
+    if (activityError?.code === "42703") {
+      const { track_fingerprint: _fingerprint, ...legacyPayload } = activityPayload;
+      const legacy = await supabase.from("activities").upsert(legacyPayload, { onConflict: "source,source_activity_id" }).select("id").single();
+      activityRow = legacy.data; activityError = legacy.error;
+    }
+    if (activityError || !activityRow) throw activityError ?? new Error("Não foi possível salvar a atividade.");
 
     const status = report.status === "manual_review" ? "review" : report.status;
     const { data: validation, error: validationError } = await supabase
