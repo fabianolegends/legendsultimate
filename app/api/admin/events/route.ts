@@ -10,6 +10,17 @@ function unauthorized() {
   return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
 }
 
+function databaseError(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "object" && error) {
+    const candidate = error as { message?: unknown; details?: unknown; hint?: unknown };
+    const parts = [candidate.message, candidate.details, candidate.hint]
+      .filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+    if (parts.length) return [...new Set(parts)].join(" ");
+  }
+  return fallback;
+}
+
 function slugify(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
 }
@@ -215,9 +226,13 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ deleted: true, event_id: eventId, removed_fixture_athletes: removedFixtureAthletes });
   } catch (error) {
-    if (typeof error === "object" && error && "code" in error && (error as { code?: string }).code === "42883") {
+    const code = typeof error === "object" && error && "code" in error ? (error as { code?: string }).code : undefined;
+    if (code === "42883") {
       return NextResponse.json({ error: "Execute a migration 017_safe_test_data_cleanup.sql no Supabase." }, { status: 409 });
     }
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível excluir o evento." }, { status: 500 });
+    if (code === "42501" || code === "23503") {
+      return NextResponse.json({ error: "A auditoria imutável está bloqueando a exclusão. Execute a migration 020_safe_test_event_deletion.sql no Supabase." }, { status: 409 });
+    }
+    return NextResponse.json({ error: databaseError(error, "Não foi possível excluir o evento.") }, { status: 500 });
   }
 }
