@@ -136,3 +136,88 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível atualizar o evento." }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  if (!isAdminRequest(request, "events.manage")) return unauthorized();
+  try {
+    const body = await request.json() as Record<string, unknown>;
+    const eventId = String(body.event_id ?? "").trim();
+    const confirmation = String(body.confirmation ?? "");
+    if (!eventId || !confirmation) return NextResponse.json({ error: "Evento e confirmação são obrigatórios." }, { status: 400 });
+
+    const supabase = createSupabaseAdmin();
+    const { data: event, error: eventError } = await supabase
+      .from("events")
+      .select("id, name, slug, status, is_test, registration_open")
+      .eq("id", eventId)
+      .single();
+    if (eventError?.code === "PGRST116") return NextResponse.json({ error: "Evento não encontrado." }, { status: 404 });
+    if (eventError || !event) throw eventError ?? new Error("Evento não encontrado.");
+    if (event.is_test !== true) return NextResponse.json({ error: "Somente eventos marcados como teste podem ser excluídos pelo painel." }, { status: 409 });
+    if (event.status !== "draft" || event.registration_open === true) {
+      return NextResponse.json({ error: "Antes de excluir, deixe o evento em Rascunho e feche as inscrições." }, { status: 409 });
+    }
+    const requiredConfirmation = `EXCLUIR ${event.name}`;
+    if (confirmation !== requiredConfirmation) return NextResponse.json({ error: "A confirmação digitada não corresponde ao nome do evento." }, { status: 400 });
+
+    const { data: stages, error: stageError } = await supabase.from("stages").select("id").eq("event_id", eventId);
+    if (stageError) throw stageError;
+    const stageIds = (stages ?? []).map((stage) => stage.id);
+    const [{ data: registrations, error: registrationError }, routeResponse] = await Promise.all([
+      supabase.from("registrations").select("athlete_id").eq("event_id", eventId),
+      stageIds.length
+        ? supabase.from("route_versions").select("storage_path").in("stage_id", stageIds)
+        : Promise.resolve({ data: [], error: null }),
+    ]);
+    if (registrationError) throw registrationError;
+    if (routeResponse.error) throw routeResponse.error;
+    const athleteIds = [...new Set((registrations ?? []).map((row) => row.athlete_id).filter((id): id is string => Boolean(id)))];
+    const storagePaths = (routeResponse.data ?? []).map((route) => route.storage_path).filter((path): path is string => Boolean(path));
+
+    const { error: cleanupError } = await supabase.rpc("cleanup_test_event_data", {
+      p_event_id: eventId,
+      p_confirmation: `LIMPAR ${event.name}`,
+      p_actor_reference: "event-deletion",
+    });
+    if (cleanupError) throw cleanupError;
+
+    await recordAdminAudit(request, {
+      action: "test_event.deleted",
+      resourceType: "event",
+      resourceId: eventId,
+      eventId,
+      details: { name: event.name, slug: event.slug, stages: stageIds.length, candidate_athletes: athleteIds.length },
+    });
+    const { error: deleteError } = await supabase.from("events").delete().eq("id", eventId);
+    if (deleteError) throw deleteError;
+
+    if (storagePaths.length) await supabase.storage.from("official-routes").remove(storagePaths);
+
+    let removedFixtureAthletes = 0;
+    if (athleteIds.length) {
+      const [{ data: remainingRegistrations }, { data: remainingActivities }, { data: fixtureAthletes }] = await Promise.all([
+        supabase.from("registrations").select("athlete_id").in("athlete_id", athleteIds),
+        supabase.from("activities").select("athlete_id").in("athlete_id", athleteIds),
+        supabase.from("athletes").select("id, email, auth_user_id, ride_with_gps_user_id").in("id", athleteIds),
+      ]);
+      const retained = new Set([
+        ...(remainingRegistrations ?? []).map((row) => row.athlete_id),
+        ...(remainingActivities ?? []).map((row) => row.athlete_id),
+      ]);
+      const disposable = (fixtureAthletes ?? [])
+        .filter((athlete) => !retained.has(athlete.id) && !athlete.auth_user_id && !athlete.ride_with_gps_user_id && String(athlete.email ?? "").endsWith("@legends.invalid"))
+        .map((athlete) => athlete.id);
+      if (disposable.length) {
+        const { error: athleteDeleteError } = await supabase.from("athletes").delete().in("id", disposable);
+        if (!athleteDeleteError) removedFixtureAthletes = disposable.length;
+      }
+    }
+
+    return NextResponse.json({ deleted: true, event_id: eventId, removed_fixture_athletes: removedFixtureAthletes });
+  } catch (error) {
+    if (typeof error === "object" && error && "code" in error && (error as { code?: string }).code === "42883") {
+      return NextResponse.json({ error: "Execute a migration 017_safe_test_data_cleanup.sql no Supabase." }, { status: 409 });
+    }
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível excluir o evento." }, { status: 500 });
+  }
+}
