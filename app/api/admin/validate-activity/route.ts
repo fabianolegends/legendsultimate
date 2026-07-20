@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { GeoPoint, parseGpx, polylineDistanceKm, validateActivity } from "@/lib/race-engine";
+import {
+  buildFallbackDistanceStream,
+  calculateSegmentResults,
+  detectCheckpointPassages,
+  type TimedSegment,
+  type TimingCheckpoint,
+} from "@/lib/checkpoint-engine";
 import { isAdminRequest } from "@/lib/admin-auth";
 
 function sampleMapPoints(points: GeoPoint[], maxPoints = 2500): Array<[number, number]> {
@@ -13,10 +20,24 @@ function sampleMapPoints(points: GeoPoint[], maxPoints = 2500): Array<[number, n
   });
 }
 
-function gpxTimeRange(xml: string) {
-  const values = [...xml.matchAll(/<time>([^<]+)<\/time>/gi)]
-    .map((match) => new Date(match[1]).getTime()).filter(Number.isFinite).sort((a, b) => a - b);
-  return values.length ? { startedAt: new Date(values[0]).toISOString(), movingTimeS: Math.max(0, Math.round((values.at(-1)! - values[0]) / 1000)) } : null;
+function parseGpxTiming(xml: string, pointCount: number) {
+  const pointRegex = /<(?:trkpt|rtept)\b[^>]*lat=["'][^"']+["'][^>]*lon=["'][^"']+["'][^>]*>([\s\S]*?)<\/(?:trkpt|rtept)>/gi;
+  const timestamps: number[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = pointRegex.exec(xml))) {
+    const timeMatch = match[1].match(/<time>([^<]+)<\/time>/i);
+    timestamps.push(timeMatch ? new Date(timeMatch[1]).getTime() : Number.NaN);
+  }
+  const complete = timestamps.length === pointCount && timestamps.every(Number.isFinite);
+  if (!complete) return null;
+  const first = timestamps[0];
+  const elapsedSeconds = timestamps.map((value) => (value - first) / 1000);
+  if (elapsedSeconds.some((value, index) => value < 0 || (index > 0 && value < elapsedSeconds[index - 1]))) return null;
+  return {
+    startedAt: new Date(first).toISOString(),
+    elapsedSeconds,
+    movingTimeS: Math.max(0, Math.round(elapsedSeconds.at(-1) ?? 0)),
+  };
 }
 
 function elevationGain(points: GeoPoint[]) {
@@ -132,14 +153,14 @@ export async function POST(request: NextRequest) {
       if (linkError) throw linkError;
     }
 
-    const timeRange = gpxTimeRange(gpxText);
+    const timingStream = parseGpxTiming(gpxText, activityPoints.length);
     const sourceActivityId = `admin:${stageId}:${registration.id}:${createHash("sha256").update(gpxText).digest("hex").slice(0, 20)}`;
     const { data: activity, error: activityError } = await supabase.from("activities").upsert({
       athlete_id: athleteId, stage_id: stageId, source: "gpx", source_activity_id: sourceActivityId,
       name: file.name.replace(/\.gpx$/i, "") || "GPX recebido pela organização",
-      started_at: timeRange?.startedAt ?? `${stage.stage_date}T12:00:00-03:00`,
+      started_at: timingStream?.startedAt ?? `${stage.stage_date}T12:00:00-03:00`,
       distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
-      moving_time_s: timeRange?.movingTimeS || null, gps_points: activityPoints,
+      moving_time_s: timingStream?.movingTimeS || null, gps_points: activityPoints,
       raw_payload: { file_name: file.name, uploaded_by: "organizer", registration_id: registration.id },
     }, { onConflict: "source,source_activity_id" }).select("id").single();
     if (activityError) throw activityError;
@@ -154,6 +175,67 @@ export async function POST(request: NextRequest) {
     }, { onConflict: "activity_id" });
     if (validationError) throw validationError;
 
+    let timingConfigured = false;
+    let timingMessage: string | null = timingStream
+      ? null
+      : "O GPX foi validado, mas não possui horário válido em todos os pontos para calcular passagens e segmentos.";
+    let passageDetections: ReturnType<typeof detectCheckpointPassages> = [];
+    let segmentDetections: ReturnType<typeof calculateSegmentResults> = [];
+
+    if (timingStream) {
+      passageDetections = detectCheckpointPassages({
+        activityPoints,
+        elapsedSeconds: timingStream.elapsedSeconds,
+        activityDistanceMeters: buildFallbackDistanceStream(activityPoints),
+        startedAt: timingStream.startedAt,
+        checkpoints: (checkpoints ?? []) as TimingCheckpoint[],
+      });
+      const { data: segmentRows, error: segmentQueryError } = await supabase
+        .from("timed_segments")
+        .select("id, name, segment_type, start_checkpoint_id, finish_checkpoint_id")
+        .eq("stage_id", stageId)
+        .eq("is_active", true);
+
+      if (!segmentQueryError) {
+        timingConfigured = true;
+        segmentDetections = calculateSegmentResults((segmentRows ?? []) as TimedSegment[], passageDetections);
+        const { error: passageDeleteError } = await supabase.from("checkpoint_passages").delete().eq("activity_id", activity.id);
+        if (passageDeleteError) throw passageDeleteError;
+        const passed = passageDetections.filter((passage) => passage.passed && passage.point_index !== null && passage.elapsed_s !== null && passage.passed_at);
+        let savedPassages: Array<{ id: string; checkpoint_id: string }> = [];
+        if (passed.length) {
+          const { data, error } = await supabase.from("checkpoint_passages").insert(passed.map((passage) => ({
+            activity_id: activity.id,
+            checkpoint_id: passage.checkpoint_id,
+            point_index: passage.point_index,
+            elapsed_s: passage.elapsed_s,
+            activity_distance_m: passage.activity_distance_m,
+            nearest_distance_m: passage.nearest_distance_m,
+            passed_at: passage.passed_at,
+          }))).select("id, checkpoint_id");
+          if (error) throw error;
+          savedPassages = data ?? [];
+        }
+        const passageIdByCheckpoint = new Map(savedPassages.map((passage) => [passage.checkpoint_id, passage.id]));
+        const completedSegments = segmentDetections.filter((segment) => segment.completed && segment.elapsed_s !== null);
+        if (completedSegments.length) {
+          const { error } = await supabase.from("segment_results").insert(completedSegments.map((segment) => ({
+            activity_id: activity.id,
+            segment_id: segment.segment_id,
+            start_passage_id: passageIdByCheckpoint.get(segment.start_checkpoint_id),
+            finish_passage_id: passageIdByCheckpoint.get(segment.finish_checkpoint_id),
+            elapsed_s: segment.elapsed_s,
+            status: validationStatus === "validated" ? "valid" : "review",
+          })));
+          if (error) throw error;
+        }
+      } else {
+        timingMessage = "Cronometragem de checkpoints ainda não está disponível no banco de dados.";
+      }
+    }
+
+    const passageByCheckpoint = new Map(passageDetections.map((passage) => [passage.checkpoint_id, passage]));
+
     return NextResponse.json({
       report,
       route: {
@@ -165,8 +247,9 @@ export async function POST(request: NextRequest) {
       },
       activity: { database_id: activity.id, file_name: file.name, points_count: activityPoints.length,
         distance_km: Number(polylineDistanceKm(activityPoints).toFixed(3)), elevation_m: elevationGain(activityPoints),
-        moving_time_min: timeRange?.movingTimeS ? Number((timeRange.movingTimeS / 60).toFixed(1)) : null },
+        moving_time_min: timingStream?.movingTimeS ? Number((timingStream.movingTimeS / 60).toFixed(1)) : null },
       athlete: { registration_id: registration.id, full_name: registration.full_name, bib_number: registration.bib_number },
+      timing: { configured: timingConfigured, message: timingMessage, passages: passageDetections, segments: segmentDetections },
       saved: true,
       map: {
         official_points: sampleMapPoints(officialPoints),
@@ -178,6 +261,8 @@ export async function POST(request: NextRequest) {
           longitude: checkpoint.longitude,
           hit: checkpoint.hit,
           nearest_distance_m: checkpoint.nearest_distance_m,
+          passed_at: checkpoint.id ? passageByCheckpoint.get(checkpoint.id)?.passed_at ?? null : null,
+          elapsed_s: checkpoint.id ? passageByCheckpoint.get(checkpoint.id)?.elapsed_s ?? null : null,
         })),
       },
     });
