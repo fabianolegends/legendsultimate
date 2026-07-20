@@ -18,6 +18,10 @@ export type OrganizationEvent = {
   access_mode?: string;
   participant_limit?: number | null;
   is_test?: boolean;
+  registration_open?: boolean;
+  registration_closes_at?: string | null;
+  windfit_registration_url?: string | null;
+  terms_url?: string | null;
   stage_count?: number;
   registration_count?: number;
   stages?: OrganizationStage[];

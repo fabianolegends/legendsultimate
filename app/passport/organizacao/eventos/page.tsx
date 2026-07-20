@@ -8,12 +8,14 @@ type EventForm = {
   name: string; slug: string; starts_on: string; ends_on: string; stage_count: number;
   location: string; description: string; participant_limit: string; event_type: string;
   scoring_mode: string; registration_source: string; access_mode: string; status: string; is_test: boolean;
+  registration_open: boolean; registration_closes_at: string; windfit_registration_url: string; terms_url: string;
 };
 
 const initialForm: EventForm = {
   name: "", slug: "", starts_on: "", ends_on: "", stage_count: 2, location: "", description: "",
   participant_limit: "10", event_type: "adventure", scoring_mode: "weighted_points", registration_source: "mixed",
   access_mode: "invite", status: "draft", is_test: true,
+  registration_open: false, registration_closes_at: "", windfit_registration_url: "", terms_url: "",
 };
 
 function eventToForm(event: OrganizationEvent): EventForm {
@@ -23,6 +25,8 @@ function eventToForm(event: OrganizationEvent): EventForm {
     participant_limit: event.participant_limit ? String(event.participant_limit) : "", event_type: event.event_type ?? "adventure",
     scoring_mode: event.scoring_mode ?? "weighted_points", registration_source: event.registration_source ?? "mixed",
     access_mode: event.access_mode ?? "invite", status: event.status, is_test: event.is_test === true,
+    registration_open: event.registration_open === true, registration_closes_at: event.registration_closes_at?.slice(0,16) ?? "",
+    windfit_registration_url: event.windfit_registration_url ?? "", terms_url: event.terms_url ?? "",
   };
 }
 
@@ -46,7 +50,8 @@ export default function EventsPage() {
       const response = await fetch("/api/admin/events", {
         method: drawer === "edit" ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, event_id: editingId || undefined, participant_limit: form.participant_limit ? Number(form.participant_limit) : null }),
+        body: JSON.stringify({ ...form, event_id: editingId || undefined, participant_limit: form.participant_limit ? Number(form.participant_limit) : null,
+          registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null }),
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Não foi possível salvar o evento.");
@@ -66,7 +71,7 @@ export default function EventsPage() {
     `}</style>
     <div className="events-wrap">
       <header className="events-head"><div><div className="events-kicker">LEGENDS CORE · MULTI-EVENTO</div><h1>Eventos</h1><p>Crie ambientes independentes para testes, aventuras e provas oficiais. Rotas, atletas, validações e classificações ficam isolados dentro do evento selecionado.</p></div><button className="primary" onClick={openNew}>Novo evento</button></header>
-      {!moduleReady && <div className="notice">Execute a migration <strong>012_multi_event_management.sql</strong> no Supabase para liberar o cadastro completo.</div>}
+      {!moduleReady && <div className="notice">Execute as migrations pendentes do Supabase para liberar o cadastro completo.</div>}
       {message && <div className="notice">{message}</div>}
       {loading && !events.length ? <div className="empty">Carregando eventos...</div> : events.length ? <div className="event-grid">
         {events.map((event) => <article className={`event-card ${event.id === activeEventId ? "active" : ""}`} key={event.id}>
@@ -74,6 +79,7 @@ export default function EventsPage() {
           <h2>{event.name}</h2><p>{event.location || "Local a definir"}</p><p>{event.description || "Evento pronto para receber percursos, inscritos e regras próprias."}</p>
           <div className="event-stats"><div><strong>{event.stage_count ?? 0}</strong><span>Etapas</span></div><div><strong>{event.registration_count ?? 0}</strong><span>Inscritos</span></div><div><strong>{event.participant_limit ?? "∞"}</strong><span>Limite</span></div></div>
           <div className="event-actions"><button onClick={() => openEdit(event)}>Editar</button>{event.id === activeEventId ? <button disabled>Em uso</button> : <button className="use" onClick={() => setActiveEventId(event.id)}>Usar evento</button>}</div>
+          {event.registration_open && event.access_mode === "public" && <a href={`/eventos/${event.slug}`} target="_blank" style={{marginTop:10,padding:12,border:"1px solid #d76d20",color:"#ef9a59",textAlign:"center",textDecoration:"none",fontWeight:900}}>ABRIR PÁGINA DE INSCRIÇÃO ↗</a>}
         </article>)}
       </div> : <div className="empty"><p>Nenhum evento cadastrado.</p><button className="primary" onClick={openNew}>Criar o primeiro evento</button></div>}
     </div>
@@ -92,6 +98,11 @@ export default function EventsPage() {
         <label>Acesso<select value={form.access_mode} onChange={(e) => update("access_mode", e.target.value)}><option value="invite">Somente convidados</option><option value="public">Público</option></select></label>
         <label>Status<select value={form.status} onChange={(e) => update("status", e.target.value)}><option value="draft">Rascunho</option><option value="published">Publicado</option><option value="archived">Arquivado</option></select></label>
         <label className="check"><input type="checkbox" checked={form.is_test} onChange={(e) => update("is_test", e.target.checked)}/><span>Este é um evento de teste</span></label>
+        <div className="wide" style={{borderTop:"1px solid #41463e",paddingTop:18,marginTop:6}}><strong style={{color:"#ef8a43"}}>INSCRIÇÃO ONLINE</strong><p className="muted">Para exibir o botão público, deixe o evento Publicado, o acesso Público e ative as inscrições.</p></div>
+        <label className="check wide"><input type="checkbox" checked={form.registration_open} onChange={(e) => update("registration_open", e.target.checked)}/><span>Inscrições abertas neste evento</span></label>
+        <label>Encerramento das inscrições<input type="datetime-local" value={form.registration_closes_at} onChange={(e) => update("registration_closes_at", e.target.value)}/></label>
+        <label>Link da Windfit<input type="url" value={form.windfit_registration_url} onChange={(e) => update("windfit_registration_url", e.target.value)} placeholder="Opcional"/></label>
+        <label className="wide">Link do regulamento/termo<input type="url" value={form.terms_url} onChange={(e) => update("terms_url", e.target.value)} placeholder="Opcional"/></label>
         <label className="wide">Descrição<textarea rows={4} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Objetivo, regras gerais e observações do evento."/></label>
         <div className="wide muted">Ao criar, o sistema prepara automaticamente as etapas. Depois, envie um GPX diferente para cada uma em Percursos oficiais.</div>
         {message && drawer && <div className="wide notice">{message}</div>}

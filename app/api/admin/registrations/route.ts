@@ -72,13 +72,13 @@ function normalizeModality(value: unknown) {
   return text.includes("experience") || text.includes("turismo") || text.includes("e-bike") ? "experience" : "gravel_race";
 }
 
-function normalizeInput(input: RegistrationInput, options?: { forcedEventId?: string; forcedSource?: "windfit" | "manual" }) {
+function normalizeInput(input: RegistrationInput, options?: { forcedEventId?: string; forcedSource?: "windfit" | "manual" | "online" }) {
   const eventId = String(options?.forcedEventId ?? input.event_id ?? "").trim();
   const fullName = String(input.full_name ?? "").trim();
   const email = normalizeRegistrationEmail(String(input.email ?? ""));
   if (!eventId || !fullName || !email) throw new Error("Evento, nome completo e e-mail são obrigatórios.");
 
-  const source = options?.forcedSource ?? (input.source === "windfit" ? "windfit" : "manual");
+  const source = options?.forcedSource ?? (input.source === "windfit" ? "windfit" : input.source === "online" ? "online" : "manual");
   let status = normalizeStatus(input.status);
   const paymentStatus = normalizePaymentStatus(input.payment_status, status, source);
   if (["refunded", "cancelled"].includes(paymentStatus)) status = "cancelled";
@@ -210,7 +210,8 @@ export async function PATCH(request: NextRequest) {
     const supabase = createSupabaseAdmin();
     const { data: current, error: currentError } = await supabase.from("registrations").select("source").eq("id", id).single();
     if (currentError) throw currentError;
-    const normalized = normalizeInput(body.registration ?? {}, { forcedSource: current?.source === "windfit" ? "windfit" : "manual" });
+    const forcedSource = current?.source === "windfit" ? "windfit" : current?.source === "online" ? "online" : "manual";
+    const normalized = normalizeInput(body.registration ?? {}, { forcedSource });
     const { data, error } = await supabase.from("registrations").update(normalized).eq("id", id).select("*").single();
     if (error) throw error;
     await syncLinkedAthlete(supabase, data);

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
-const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, created_at, updated_at";
+const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, created_at, updated_at";
 const baseFields = "id, slug, name, timezone, status, starts_on, ends_on, created_at, updated_at";
 
 function unauthorized() {
@@ -90,6 +90,10 @@ export async function POST(request: NextRequest) {
       access_mode: String(body.access_mode ?? "invite"),
       participant_limit: Number.isFinite(participantLimit) ? participantLimit : null,
       is_test: body.is_test === true,
+      registration_open: body.registration_open === true,
+      registration_closes_at: String(body.registration_closes_at ?? "").trim() || null,
+      windfit_registration_url: String(body.windfit_registration_url ?? "").trim() || null,
+      terms_url: String(body.terms_url ?? "").trim() || null,
     }).select(extendedFields).single();
     if (error?.code === "42703") return NextResponse.json({ error: "Execute a migration 012_multi_event_management.sql no Supabase." }, { status: 409 });
     if (error?.code === "23505") return NextResponse.json({ error: "Já existe um evento com esse identificador." }, { status: 409 });
@@ -117,7 +121,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json() as Record<string, unknown>;
     const eventId = String(body.event_id ?? "").trim();
     if (!eventId) return NextResponse.json({ error: "Evento não informado." }, { status: 400 });
-    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test"] as const;
+    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "windfit_registration_url", "terms_url"] as const;
     const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
     for (const field of fields) if (field in body) payload[field] = field === "slug" ? slugify(String(body[field] ?? "")) : body[field];
     const supabase = createSupabaseAdmin();
