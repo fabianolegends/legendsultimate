@@ -69,15 +69,19 @@ function parseGpx(xml: string, intermediateCheckpointCount: number) {
 
 export async function GET(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
+  const eventId = request.nextUrl.searchParams.get("eventId")?.trim() ?? "";
   const supabase = createSupabaseAdmin();
-  let { data, error } = await supabase
+  let query = supabase
     .from("stages")
-    .select("id, name, route_label, stage_date, distance_km, elevation_m, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, route_tolerance_m, auto_validate_max_off_route_percent, review_max_off_route_percent, max_continuous_off_route_km, auto_validate_min_checkpoint_ratio, review_min_checkpoint_ratio, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)")
-    .order("stage_date", { ascending: true });
+    .select("id, event_id, stage_number, name, route_label, stage_date, distance_km, elevation_m, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, route_tolerance_m, auto_validate_max_off_route_percent, review_max_off_route_percent, max_continuous_off_route_km, auto_validate_min_checkpoint_ratio, review_min_checkpoint_ratio, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)");
+  if (eventId) query = query.eq("event_id", eventId);
+  let { data, error } = await query.order("stage_date", { ascending: true });
   let rulesModuleReady = true;
   if (error?.code === "42703") {
     rulesModuleReady = false;
-    const legacy = await supabase.from("stages").select("id, name, route_label, stage_date, distance_km, elevation_m, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)").order("stage_date", { ascending: true });
+    let legacyQuery = supabase.from("stages").select("id, event_id, stage_number, name, route_label, stage_date, distance_km, elevation_m, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)");
+    if (eventId) legacyQuery = legacyQuery.eq("event_id", eventId);
+    const legacy = await legacyQuery.order("stage_date", { ascending: true });
     data = legacy.data as typeof data;
     error = legacy.error;
   }

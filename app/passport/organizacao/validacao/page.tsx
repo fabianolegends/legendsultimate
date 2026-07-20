@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useOrganizationEvent } from "../EventContext";
 
 const ValidationMap = dynamic(() => import("./ValidationMap"), {
   ssr: false,
@@ -99,6 +100,7 @@ function formatStageDate(date: string) {
 }
 
 export default function ValidationPage() {
+  const { activeEventId } = useOrganizationEvent();
   const [stages, setStages] = useState<Stage[]>([]);
   const [stageId, setStageId] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -116,7 +118,9 @@ export default function ValidationPage() {
   );
 
   useEffect(() => {
-    fetch("/api/admin/routes", { cache: "no-store" })
+    if (!activeEventId) { setStages([]); setStageId(""); setLoading(false); return; }
+    setLoading(true);
+    fetch(`/api/admin/routes?eventId=${encodeURIComponent(activeEventId)}`, { cache: "no-store" })
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error ?? "Falha ao carregar etapas.");
@@ -125,7 +129,7 @@ export default function ValidationPage() {
       })
       .catch((error) => setMessage(error instanceof Error ? error.message : "Falha ao carregar etapas."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [activeEventId]);
 
   async function loadRideWithGps(date: string) {
     setRideLoading(true);

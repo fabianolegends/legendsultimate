@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { useOrganizationEvent } from "../EventContext";
 
 type EventRow = { id: string; name: string; status: string; starts_on: string | null; ends_on: string | null };
 type Registration = {
@@ -63,6 +64,7 @@ function paymentLabel(value: string) { return value === "paid" ? "Pago" : value 
 function statusLabel(value: string) { return value === "confirmed" ? "Confirmado" : value === "pending" ? "Pendente" : value === "waitlist" ? "Lista de espera" : value === "cancelled" ? "Cancelado" : value; }
 
 export default function RegistrationsPage() {
+  const {activeEventId}=useOrganizationEvent();
   const [events, setEvents] = useState<EventRow[]>([]); const [items, setItems] = useState<Registration[]>([]); const [summary, setSummary] = useState<Summary | null>(null);
   const [eventId, setEventId] = useState(""); const [search, setSearch] = useState(""); const [statusFilter, setStatusFilter] = useState("all"); const [paymentFilter, setPaymentFilter] = useState("all");
   const [editingId, setEditingId] = useState(""); const [form, setForm] = useState<FormState>(emptyForm); const [message, setMessage] = useState(""); const [saving, setSaving] = useState(false);
@@ -78,7 +80,7 @@ export default function RegistrationsPage() {
     const nextEvent = selected || payload.events?.[0]?.id || ""; if (!selected && nextEvent) setEventId(nextEvent);
     setItems(payload.registrations ?? []); setSummary(payload.summary ?? null); setForm((current) => ({ ...current, event_id: current.event_id || nextEvent })); if (payload.message) setMessage(payload.message);
   }
-  useEffect(() => { load().catch((error) => setMessage(error.message)); }, []);
+  useEffect(() => { if(activeEventId&&activeEventId!==eventId)setEventId(activeEventId); }, [activeEventId]);
   useEffect(() => { if (eventId) load(eventId).catch((error) => setMessage(error.message)); }, [eventId]);
 
   const filtered = useMemo(() => items.filter((item) => {

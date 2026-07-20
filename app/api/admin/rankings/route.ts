@@ -15,12 +15,14 @@ export async function GET(request: NextRequest) {
   try {
     const stageId = request.nextUrl.searchParams.get("stageId")?.trim() || null;
     const segmentId = request.nextUrl.searchParams.get("segmentId")?.trim() || null;
+    const eventId = request.nextUrl.searchParams.get("eventId")?.trim() || null;
     const supabase = createSupabaseAdmin();
 
-    const { data: stages, error: stageError } = await supabase
+    let stageQuery = supabase
       .from("stages")
-      .select("id, event_id, name, route_label, stage_date, stage_number")
-      .order("stage_date", { ascending: true });
+      .select("id, event_id, name, route_label, stage_date, stage_number");
+    if (eventId) stageQuery = stageQuery.eq("event_id", eventId);
+    const { data: stages, error: stageError } = await stageQuery.order("stage_date", { ascending: true });
     if (stageError) throw stageError;
 
     let segmentQuery = supabase
@@ -29,6 +31,11 @@ export async function GET(request: NextRequest) {
       .eq("is_active", true)
       .order("created_at", { ascending: true });
     if (stageId) segmentQuery = segmentQuery.eq("stage_id", stageId);
+    else if (eventId) {
+      const stageIds = (stages ?? []).map((stage) => stage.id);
+      if (!stageIds.length) return NextResponse.json({ module_ready: true, stages: [], segments: [], results: [] });
+      segmentQuery = segmentQuery.in("stage_id", stageIds);
+    }
     const { data: segments, error: segmentError } = await segmentQuery;
     if (segmentError) {
       return NextResponse.json({ module_ready: false, stages: stages ?? [], segments: [], results: [], message: "Execute a migration 005_checkpoint_segment_engine.sql no Supabase para habilitar os rankings." });

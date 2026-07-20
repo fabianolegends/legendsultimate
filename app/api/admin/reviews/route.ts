@@ -45,11 +45,21 @@ function checkpointResult(checkpoint: any, points: any[], passage?: any) {
 export async function GET(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
   try {
+    const eventId = request.nextUrl.searchParams.get("eventId")?.trim() ?? "";
     const supabase = createSupabaseAdmin();
-    const { data: validations, error } = await supabase
+    let eventStageIds: string[] | null = null;
+    if (eventId) {
+      const { data: eventStages, error: eventStageError } = await supabase.from("stages").select("id").eq("event_id", eventId);
+      if (eventStageError) throw eventStageError;
+      eventStageIds = (eventStages ?? []).map((stage) => stage.id);
+      if (!eventStageIds.length) return NextResponse.json({ summary: { total: 0, validated: 0, review: 0, rejected: 0, pending: 0 }, items: [] });
+    }
+    let validationQuery = supabase
       .from("validation_results")
       .select("id, activity_id, stage_id, status, coverage_percent, start_ok, finish_ok, direction_ok, checkpoints_passed, checkpoints_total, max_deviation_m, notes, validated_at, created_at, updated_at")
       .order("updated_at", { ascending: false });
+    if (eventStageIds) validationQuery = validationQuery.in("stage_id", eventStageIds);
+    const { data: validations, error } = await validationQuery;
     if (error) throw error;
 
     const activityIds = [...new Set((validations ?? []).map((validation) => validation.activity_id))];

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { EditorCheckpoint, EditorPoint } from "./CheckpointEditorMap";
+import { useOrganizationEvent } from "../EventContext";
 
 const CheckpointEditorMap = dynamic(() => import("./CheckpointEditorMap"), { ssr: false });
 
@@ -55,6 +56,7 @@ function formatStageDate(date: string) {
 }
 
 export default function CheckpointManagerPage() {
+  const { activeEventId } = useOrganizationEvent();
   const [stages, setStages] = useState<Stage[]>([]);
   const [stageId, setStageId] = useState("");
   const [payload, setPayload] = useState<Payload | null>(null);
@@ -75,7 +77,8 @@ export default function CheckpointManagerPage() {
   );
 
   async function loadStages() {
-    const response = await fetch("/api/admin/routes", { cache: "no-store" });
+    if (!activeEventId) { setStages([]); setStageId(""); setLoading(false); return; }
+    const response = await fetch(`/api/admin/routes?eventId=${encodeURIComponent(activeEventId)}`, { cache: "no-store" });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error ?? "Falha ao carregar etapas.");
     const normalized = (data.stages ?? []).map((stage: any) => ({
@@ -85,7 +88,7 @@ export default function CheckpointManagerPage() {
       stage_date: stage.stage_date,
     }));
     setStages(normalized);
-    setStageId((current) => current || normalized[0]?.id || "");
+    setStageId((current) => normalized.some((stage: Stage) => stage.id === current) ? current : normalized[0]?.id || "");
   }
 
   async function loadCheckpointData(currentStageId: string) {
@@ -109,7 +112,7 @@ export default function CheckpointManagerPage() {
 
   useEffect(() => {
     loadStages().catch((error) => { setStatus(error.message); setLoading(false); });
-  }, []);
+  }, [activeEventId]);
 
   useEffect(() => {
     if (!stageId) return;

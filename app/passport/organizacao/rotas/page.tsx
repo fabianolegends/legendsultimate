@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import ValidationRulesForm from "./ValidationRulesForm";
+import { useOrganizationEvent } from "../EventContext";
 
 type RouteVersion = {
   id: string;
@@ -31,6 +32,7 @@ type Stage = {
 };
 
 export default function RouteManagerPage() {
+  const { activeEventId, activeEvent } = useOrganizationEvent();
   const [stages, setStages] = useState<Stage[]>([]);
   const [stageId, setStageId] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -43,12 +45,13 @@ export default function RouteManagerPage() {
 
   async function loadStages() {
     setLoading(true);
-    const response = await fetch("/api/admin/routes", { cache: "no-store" });
+    if (!activeEventId) { setStages([]); setStageId(""); setLoading(false); return; }
+    const response = await fetch(`/api/admin/routes?eventId=${encodeURIComponent(activeEventId)}`, { cache: "no-store" });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error ?? "Não foi possível carregar as etapas.");
     setStages(payload.stages ?? []);
     setRulesModuleReady(payload.rules_module_ready === true);
-    setStageId((current) => current || payload.stages?.[0]?.id || "");
+    setStageId((current) => payload.stages?.some((stage: Stage) => stage.id === current) ? current : payload.stages?.[0]?.id || "");
     setLoading(false);
   }
 
@@ -57,7 +60,7 @@ export default function RouteManagerPage() {
       setStatus(error instanceof Error ? error.message : "Erro ao carregar etapas.");
       setLoading(false);
     });
-  }, []);
+  }, [activeEventId]);
 
   const selectedStage = useMemo(
     () => stages.find((stage) => stage.id === stageId) ?? null,
@@ -106,7 +109,7 @@ export default function RouteManagerPage() {
           Percursos oficiais
         </h1>
         <p style={{ maxWidth: 760, color: "#bbb7ae", fontSize: 18 }}>
-          Substitua o GPX sem mexer no GitHub. Cada envio cria uma nova versão, preserva o histórico e distribui os checkpoints iniciais.
+          Evento: <strong style={{color:"#ef8a43"}}>{activeEvent?.name ?? "selecione no topo"}</strong>. Cada envio cria uma nova versão, preserva o histórico e distribui os checkpoints iniciais.
         </p>
 
         <section style={{ marginTop: 36, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(300px, 0.8fr)", gap: 24 }}>
