@@ -70,13 +70,59 @@ function parseGpx(xml: string, intermediateCheckpointCount: number) {
 export async function GET(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
   const supabase = createSupabaseAdmin();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("stages")
-    .select("id, name, route_label, stage_date, distance_km, elevation_m, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)")
+    .select("id, name, route_label, stage_date, distance_km, elevation_m, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, route_tolerance_m, auto_validate_max_off_route_percent, review_max_off_route_percent, max_continuous_off_route_km, auto_validate_min_checkpoint_ratio, review_min_checkpoint_ratio, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)")
     .order("stage_date", { ascending: true });
+  let rulesModuleReady = true;
+  if (error?.code === "42703") {
+    rulesModuleReady = false;
+    const legacy = await supabase.from("stages").select("id, name, route_label, stage_date, distance_km, elevation_m, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, distance_km, elevation_m, is_active, valid_from, created_at, change_note)").order("stage_date", { ascending: true });
+    data = legacy.data as typeof data;
+    error = legacy.error;
+  }
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   const stages = (data ?? []).map((stage) => ({ ...stage, routes: stage.route_versions ?? [] }));
-  return NextResponse.json({ stages });
+  return NextResponse.json({ stages, rules_module_ready: rulesModuleReady });
+}
+
+function bounded(value: unknown, minimum: number, maximum: number, fallback: number) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? Math.min(maximum, Math.max(minimum, parsed)) : fallback;
+}
+
+export async function PATCH(request: NextRequest) {
+  if (!isAdminRequest(request)) return unauthorized();
+  try {
+    const body = await request.json() as { stageId?: string; rules?: Record<string, unknown> };
+    const stageId = String(body.stageId ?? "").trim();
+    if (!stageId) return NextResponse.json({ error: "Etapa não informada." }, { status: 400 });
+    const rules = body.rules ?? {};
+    const payload = {
+      route_tolerance_m: Math.round(bounded(rules.route_tolerance_m, 20, 500, 120)),
+      start_radius_m: Math.round(bounded(rules.start_radius_m, 20, 1000, 300)),
+      finish_radius_m: Math.round(bounded(rules.finish_radius_m, 20, 1000, 300)),
+      direction_required: rules.direction_required !== false,
+      auto_validate_min_coverage: bounded(rules.auto_validate_min_coverage, 50, 100, 95),
+      review_min_coverage: bounded(rules.review_min_coverage, 30, 100, 80),
+      auto_validate_max_off_route_percent: bounded(rules.auto_validate_max_off_route_percent, 0, 50, 5),
+      review_max_off_route_percent: bounded(rules.review_max_off_route_percent, 0, 80, 20),
+      max_continuous_off_route_km: bounded(rules.max_continuous_off_route_km, .1, 50, 1.5),
+      auto_validate_min_checkpoint_ratio: bounded(rules.auto_validate_min_checkpoint_ratio, 0, 1, .95),
+      review_min_checkpoint_ratio: bounded(rules.review_min_checkpoint_ratio, 0, 1, .8),
+      updated_at: new Date().toISOString(),
+    };
+    if (payload.review_min_coverage > payload.auto_validate_min_coverage) return NextResponse.json({ error: "A cobertura de revisão não pode ser maior que a cobertura automática." }, { status: 400 });
+    if (payload.auto_validate_max_off_route_percent > payload.review_max_off_route_percent) return NextResponse.json({ error: "O limite automático fora da rota não pode ser maior que o limite de revisão." }, { status: 400 });
+    if (payload.review_min_checkpoint_ratio > payload.auto_validate_min_checkpoint_ratio) return NextResponse.json({ error: "A exigência de checkpoints para revisão não pode superar a automática." }, { status: 400 });
+    const supabase = createSupabaseAdmin();
+    const { data, error } = await supabase.from("stages").update(payload).eq("id", stageId).select("id").single();
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute a migration 009_stage_validation_rules.sql no Supabase." }, { status: 409 });
+    if (error) throw error;
+    return NextResponse.json({ stage: data, rules: payload });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao salvar as regras." }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {

@@ -100,7 +100,12 @@ export async function POST(request: NextRequest) {
     const startedAt = trip.departed_at ?? trip.created_at ?? new Date().toISOString();
 
     const supabase = createSupabaseAdmin();
-    const { data: stage, error: stageError } = await supabase.from("stages").select("id, event_id").eq("id", stageId).single();
+    let { data: stage, error: stageError } = await supabase.from("stages").select("id, event_id, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage, route_tolerance_m, auto_validate_max_off_route_percent, review_max_off_route_percent, max_continuous_off_route_km, auto_validate_min_checkpoint_ratio, review_min_checkpoint_ratio").eq("id", stageId).single();
+    if (stageError?.code === "42703") {
+      const legacy = await supabase.from("stages").select("id, event_id, direction_required, start_radius_m, finish_radius_m, auto_validate_min_coverage, review_min_coverage").eq("id", stageId).single();
+      stage = legacy.data as typeof stage;
+      stageError = legacy.error;
+    }
     if (stageError || !stage) return NextResponse.json({ error: stageError?.message ?? "Etapa não encontrada." }, { status: 404 });
 
     const { data: route, error: routeError } = await supabase
@@ -125,6 +130,19 @@ export async function POST(request: NextRequest) {
       activityPoints,
       checkpoints: (checkpoints ?? []) as TimingCheckpoint[],
       toleranceM: Number.isFinite(toleranceM) ? Math.min(300, Math.max(40, toleranceM)) : 120,
+      rules: {
+        routeToleranceM: Number(stage.route_tolerance_m ?? toleranceM ?? 120),
+        startRadiusM: Number(stage.start_radius_m ?? 180),
+        finishRadiusM: Number(stage.finish_radius_m ?? 180),
+        directionRequired: stage.direction_required !== false,
+        autoValidateMinCoverage: Number(stage.auto_validate_min_coverage ?? 95),
+        reviewMinCoverage: Number(stage.review_min_coverage ?? 80),
+        autoValidateMaxOffRoutePercent: Number(stage.auto_validate_max_off_route_percent ?? 5),
+        reviewMaxOffRoutePercent: Number(stage.review_max_off_route_percent ?? 20),
+        maxContinuousOffRouteKm: Number(stage.max_continuous_off_route_km ?? 1.5),
+        autoValidateMinCheckpointRatio: Number(stage.auto_validate_min_checkpoint_ratio ?? .95),
+        reviewMinCheckpointRatio: Number(stage.review_min_checkpoint_ratio ?? .8),
+      },
     });
 
     const fullName = athleteCookie.name?.trim() || `Atleta Ride with GPS ${athleteCookie.id}`;

@@ -9,6 +9,20 @@ export type CheckpointInput = {
   radius_m: number;
 };
 
+export type ValidationRules = {
+  routeToleranceM?: number;
+  startRadiusM?: number;
+  finishRadiusM?: number;
+  directionRequired?: boolean;
+  autoValidateMinCoverage?: number;
+  reviewMinCoverage?: number;
+  autoValidateMaxOffRoutePercent?: number;
+  reviewMaxOffRoutePercent?: number;
+  maxContinuousOffRouteKm?: number;
+  autoValidateMinCheckpointRatio?: number;
+  reviewMinCheckpointRatio?: number;
+};
+
 export type ValidationReport = {
   status: "validated" | "manual_review" | "rejected";
   coverage_percent: number;
@@ -170,8 +184,17 @@ export function validateActivity(input: {
   activityPoints: GeoPoint[];
   checkpoints: CheckpointInput[];
   toleranceM?: number;
+  rules?: ValidationRules;
 }): ValidationReport {
-  const toleranceM = input.toleranceM ?? 120;
+  const toleranceM = input.rules?.routeToleranceM ?? input.toleranceM ?? 120;
+  const autoCoverage = input.rules?.autoValidateMinCoverage ?? 95;
+  const reviewCoverage = input.rules?.reviewMinCoverage ?? 80;
+  const autoMaxOffRoute = input.rules?.autoValidateMaxOffRoutePercent ?? 5;
+  const reviewMaxOffRoute = input.rules?.reviewMaxOffRoutePercent ?? 20;
+  const maxContinuousOffRouteKm = input.rules?.maxContinuousOffRouteKm ?? 1.5;
+  const autoCheckpointRatio = input.rules?.autoValidateMinCheckpointRatio ?? 0.95;
+  const reviewCheckpointRatio = input.rules?.reviewMinCheckpointRatio ?? 0.8;
+  const directionRequired = input.rules?.directionRequired ?? true;
   const official = samplePoints(input.officialPoints);
   const activity = samplePoints(input.activityPoints, 1400);
 
@@ -183,8 +206,8 @@ export function validateActivity(input: {
 
   const startDistance = nearestDistanceM(input.officialPoints[0], activity);
   const finishDistance = nearestDistanceM(input.officialPoints[input.officialPoints.length - 1], activity);
-  const startOk = startDistance <= Math.max(toleranceM, 180);
-  const finishOk = finishDistance <= Math.max(toleranceM, 180);
+  const startOk = startDistance <= (input.rules?.startRadiusM ?? Math.max(toleranceM, 180));
+  const finishOk = finishDistance <= (input.rules?.finishRadiusM ?? Math.max(toleranceM, 180));
 
   const directStart = distanceKm(input.officialPoints[0], input.activityPoints[0]);
   const directFinish = distanceKm(
@@ -197,9 +220,9 @@ export function validateActivity(input: {
     input.activityPoints[0],
   );
   const endpointDirectionOk = directStart + directFinish <= reverseStart + reverseFinish;
-  const directionOk = endpointDirectionOk && progress.forwardPercent >= 70;
+  const directionOk = !directionRequired || (endpointDirectionOk && progress.forwardPercent >= 70);
   const distanceRatio = routeDistance ? activityDistance / routeDistance : 1;
-  const shortcutSuspected = coverage < 92 || distanceRatio < 0.88 || progress.longestOffRouteKm >= Math.max(1.5, routeDistance * 0.04);
+  const shortcutSuspected = coverage < Math.min(autoCoverage, 92) || distanceRatio < 0.88 || progress.longestOffRouteKm >= Math.max(maxContinuousOffRouteKm, routeDistance * 0.04);
 
   const checkpointResults = input.checkpoints.map((checkpoint) => {
     const nearest = nearestDistanceM([checkpoint.latitude, checkpoint.longitude, null], activity);
@@ -209,9 +232,9 @@ export function validateActivity(input: {
   const checkpointRatio = checkpointResults.length ? checkpointsHit / checkpointResults.length : 1;
 
   let status: ValidationReport["status"] = "rejected";
-  if (coverage >= 95 && startOk && finishOk && directionOk && checkpointRatio >= 0.95 && !shortcutSuspected && progress.offRoutePercent <= 5) {
+  if (coverage >= autoCoverage && startOk && finishOk && directionOk && checkpointRatio >= autoCheckpointRatio && !shortcutSuspected && progress.offRoutePercent <= autoMaxOffRoute) {
     status = "validated";
-  } else if (coverage >= 80 && startOk && finishOk && directionOk && checkpointRatio >= 0.8 && progress.offRoutePercent <= 20) {
+  } else if (coverage >= reviewCoverage && startOk && finishOk && directionOk && checkpointRatio >= reviewCheckpointRatio && progress.offRoutePercent <= reviewMaxOffRoute) {
     status = "manual_review";
   }
 
@@ -219,8 +242,8 @@ export function validateActivity(input: {
   if (!startOk) notes.push(`Largada fora da tolerância (${Math.round(startDistance)} m).`);
   if (!finishOk) notes.push(`Chegada fora da tolerância (${Math.round(finishDistance)} m).`);
   if (!directionOk) notes.push("O sentido aparente da atividade está invertido.");
-  if (coverage < 95) notes.push(`Cobertura abaixo de 95% (${coverage.toFixed(1)}%).`);
-  if (progress.offRoutePercent > 5) notes.push(`${progress.offRoutePercent.toFixed(1)}% da atividade foi registrado fora da tolerância da rota.`);
+  if (coverage < autoCoverage) notes.push(`Cobertura abaixo do mínimo automático de ${autoCoverage}% (${coverage.toFixed(1)}%).`);
+  if (progress.offRoutePercent > autoMaxOffRoute) notes.push(`${progress.offRoutePercent.toFixed(1)}% da atividade foi registrado fora da tolerância; o limite automático é ${autoMaxOffRoute}%.`);
   if (progress.longestOffRouteKm >= 1) notes.push(`Maior trecho contínuo fora da rota: ${progress.longestOffRouteKm.toFixed(2)} km.`);
   if (shortcutSuspected) notes.push("Possível corte de percurso ou trecho oficial não percorrido; requer conferência do mapa.");
   if (checkpointRatio < 0.95) notes.push(`${checkpointsHit} de ${checkpointResults.length} checkpoints confirmados.`);

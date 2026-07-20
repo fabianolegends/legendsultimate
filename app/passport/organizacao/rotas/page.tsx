@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import ValidationRulesForm from "./ValidationRulesForm";
 
 type RouteVersion = {
   id: string;
@@ -23,6 +24,10 @@ type Stage = {
   elevation_m: number | null;
   events: { name: string } | { name: string }[] | null;
   routes: RouteVersion[];
+  direction_required?: boolean; route_tolerance_m?: number; start_radius_m?: number; finish_radius_m?: number;
+  auto_validate_min_coverage?: number; review_min_coverage?: number; auto_validate_max_off_route_percent?: number;
+  review_max_off_route_percent?: number; max_continuous_off_route_km?: number;
+  auto_validate_min_checkpoint_ratio?: number; review_min_checkpoint_ratio?: number;
 };
 
 export default function RouteManagerPage() {
@@ -34,6 +39,7 @@ export default function RouteManagerPage() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [rulesModuleReady,setRulesModuleReady]=useState(false);
 
   async function loadStages() {
     setLoading(true);
@@ -41,6 +47,7 @@ export default function RouteManagerPage() {
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error ?? "Não foi possível carregar as etapas.");
     setStages(payload.stages ?? []);
+    setRulesModuleReady(payload.rules_module_ready === true);
     setStageId((current) => current || payload.stages?.[0]?.id || "");
     setLoading(false);
   }
@@ -136,6 +143,7 @@ export default function RouteManagerPage() {
                   <div><strong>{selectedStage.elevation_m ?? "—"} m+</strong><br /><small>elevação cadastrada</small></div>
                 </div>
                 <a href="/passport/organizacao/checkpoints" style={{ display: "block", margin: "16px 0 24px", padding: 13, background: "#171a16", color: "#fff", textAlign: "center", textDecoration: "none", fontWeight: 900 }}>EDITAR CHECKPOINTS E SEGMENTOS</a>
+                <ValidationRulesForm stage={selectedStage} moduleReady={rulesModuleReady} onSaved={loadStages}/>
                 <h3 style={{ marginTop: 26 }}>Histórico de versões</h3>
                 <div style={{ display: "grid", gap: 10 }}>
                   {[...(selectedStage.routes ?? [])].sort((a, b) => b.version - a.version).map((route) => (
