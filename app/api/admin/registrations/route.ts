@@ -88,7 +88,7 @@ function normalizeInput(input: RegistrationInput, options?: { forcedEventId?: st
   return {
     event_id: eventId,
     registration_code: normalizeRegistrationCode(String(input.registration_code ?? "")) || makeRegistrationCode(),
-    bib_number: cleanNullable(input.bib_number),
+    bib_number: source === "windfit" ? null : cleanNullable(input.bib_number),
     full_name: fullName,
     email,
     birth_date: normalizeDate(input.birth_date),
@@ -164,7 +164,17 @@ export async function GET(request: NextRequest) {
       linked: items.filter((item) => Boolean(item.athlete_id)).length,
       last_sync: lastSync,
     };
-    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, events: events ?? [], registrations: items, summary, message: detailsReady ? undefined : "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." });
+    let numberingReady = true;
+    let sequences: unknown[] = [];
+    if (eventId) {
+      const sequenceQuery = await supabase.from("event_category_bib_sequences")
+        .select("id, event_id, category, start_number, next_number, padding, updated_at")
+        .eq("event_id", eventId).order("start_number", { ascending: true });
+      if (sequenceQuery.error?.code === "42P01") numberingReady = false;
+      else if (sequenceQuery.error) throw sequenceQuery.error;
+      else sequences = sequenceQuery.data ?? [];
+    }
+    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, numbering_ready: numberingReady, sequences, events: events ?? [], registrations: items, summary, message: detailsReady ? undefined : "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar inscritos Windfit." }, { status: 500 });
   }
@@ -173,8 +183,29 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
   try {
-    const body = await request.json() as { action?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput };
+    const body = await request.json() as { action?: string; eventId?: string; rows?: RegistrationInput[]; registration?: RegistrationInput; sequences?: Array<{ category?: string; start_number?: number; padding?: number }> };
     const supabase = createSupabaseAdmin();
+    if (body.action === "configure_bib_sequences") {
+      const eventId = String(body.eventId ?? "").trim();
+      const sequences = Array.isArray(body.sequences) ? body.sequences.slice(0, 50) : [];
+      if (!eventId || !sequences.length) return NextResponse.json({ error: "Selecione o evento e configure ao menos uma categoria." }, { status: 400 });
+      let assigned = 0;
+      for (const item of sequences) {
+        const category = String(item.category ?? "").trim();
+        const startNumber = Number(item.start_number);
+        const padding = Number(item.padding ?? 3);
+        if (!category || !Number.isInteger(startNumber) || startNumber < 1 || !Number.isInteger(padding) || padding < 1 || padding > 8) {
+          return NextResponse.json({ error: `Configuração inválida para a categoria ${category || "sem nome"}.` }, { status: 400 });
+        }
+        const { data, error } = await supabase.rpc("configure_event_category_bib_sequence", {
+          p_event_id: eventId, p_category: category, p_start_number: startNumber, p_padding: padding,
+        });
+        if (error?.code === "PGRST202" || error?.code === "42883") return NextResponse.json({ error: "Execute a migration 014_category_bib_sequences.sql no Supabase." }, { status: 409 });
+        if (error) throw error;
+        assigned += Number(data ?? 0);
+      }
+      return NextResponse.json({ configured: sequences.length, assigned });
+    }
     if (body.action === "import_windfit" || body.action === "import") {
       const eventId = String(body.eventId ?? "").trim();
       const rows = Array.isArray(body.rows) ? body.rows.slice(0, 3000) : [];
