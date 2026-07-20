@@ -9,6 +9,14 @@ function isMissingTableError(error: any) {
   return error?.code === "42P01" || String(error?.message ?? "").includes("registrations");
 }
 
+function isMissingColumnError(error: any) {
+  return error?.code === "42703" || String(error?.message ?? "").includes("payment_status");
+}
+
+function paymentAllowsAccess(paymentStatus: unknown) {
+  return ["paid", "courtesy"].includes(String(paymentStatus ?? ""));
+}
+
 export async function resolveRegistrationEligibility(
   supabase: any,
   input: { eventId: string; athleteId: string },
@@ -29,16 +37,30 @@ export async function resolveRegistrationEligibility(
   const required = (count ?? 0) > 0;
   if (!required) return { configured: true, required: false, eligible: true, registration: null };
 
-  const { data, error } = await supabase
+  const modernSelect = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
+  let { data, error } = await supabase
     .from("registrations")
-    .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
+    .select(modernSelect)
     .eq("event_id", input.eventId)
     .eq("athlete_id", input.athleteId)
     .eq("status", "confirmed")
     .maybeSingle();
 
+  if (error && isMissingColumnError(error)) {
+    const fallback = await supabase
+      .from("registrations")
+      .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
+      .eq("event_id", input.eventId)
+      .eq("athlete_id", input.athleteId)
+      .eq("status", "confirmed")
+      .maybeSingle();
+    data = fallback.data ? { ...fallback.data, source: "manual", payment_status: "courtesy" } : null;
+    error = fallback.error;
+  }
+
   if (error) throw error;
-  return { configured: true, required: true, eligible: Boolean(data), registration: data ?? null };
+  const eligible = Boolean(data) && paymentAllowsAccess(data?.payment_status);
+  return { configured: true, required: true, eligible, registration: eligible ? data ?? null : null };
 }
 
 export function normalizeRegistrationCode(value: string) {
@@ -47,4 +69,8 @@ export function normalizeRegistrationCode(value: string) {
 
 export function normalizeRegistrationEmail(value: string) {
   return value.trim().toLowerCase();
+}
+
+export function registrationPaymentAllowsAccess(value: unknown) {
+  return paymentAllowsAccess(value);
 }
