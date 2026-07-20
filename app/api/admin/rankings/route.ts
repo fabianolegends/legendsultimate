@@ -6,6 +6,10 @@ function unauthorized() {
   return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
 }
 
+function normalizeAthleteName(value: unknown) {
+  return String(value ?? "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ");
+}
+
 export async function GET(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized();
   try {
@@ -78,11 +82,7 @@ export async function GET(request: NextRequest) {
     const athleteMap = new Map((athletes ?? []).map((athlete) => [athlete.id, athlete]));
     const passageMap = new Map((passages ?? []).map((passage) => [passage.id, passage]));
     const registrationMap = new Map(registrations.map((registration) => [`${registration.event_id}:${registration.athlete_id}`, registration]));
-    const positionBySegment = new Map<string, number>();
-
-    const results = (segmentResults ?? []).map((result) => {
-      const position = (positionBySegment.get(result.segment_id) ?? 0) + 1;
-      positionBySegment.set(result.segment_id, position);
+    const enrichedResults = (segmentResults ?? []).map((result) => {
       const segment = segmentMap.get(result.segment_id);
       const stage: any = segment ? stageMap.get(segment.stage_id) : null;
       const activity = activityMap.get(result.activity_id);
@@ -98,7 +98,6 @@ export async function GET(request: NextRequest) {
       } : null;
       return {
         ...result,
-        position,
         segment,
         stage,
         activity,
@@ -108,6 +107,44 @@ export async function GET(request: NextRequest) {
         finish_passage: passageMap.get(result.finish_passage_id) ?? null,
       };
     });
+
+    // Uma atividade antiga pode continuar ligada a um cadastro técnico sem número,
+    // enquanto a atividade atual já está ligada à inscrição oficial. Quando isso
+    // acontecer, a inscrição oficial é a identidade válida para o ranking.
+    const officialNames = new Set(enrichedResults
+      .filter((result) => result.registration && result.athlete?.full_name)
+      .map((result) => `${result.segment_id}:${normalizeAthleteName(result.athlete.full_name)}`));
+    const eligibleResults = enrichedResults.filter((result) => {
+      if (result.registration || !result.athlete?.full_name) return true;
+      return !officialNames.has(`${result.segment_id}:${normalizeAthleteName(result.athlete.full_name)}`);
+    });
+
+    // O atleta ocupa apenas uma posição por segmento. Se ele enviou mais de uma
+    // atividade, fica o melhor resultado válido (ou o menor tempo em caso de empate).
+    const bestByAthlete = new Map<string, (typeof eligibleResults)[number]>();
+    for (const result of eligibleResults) {
+      const identity = result.registration?.id
+        ? `registration:${result.registration.id}`
+        : result.athlete?.ride_with_gps_user_id
+          ? `ridewithgps:${result.athlete.ride_with_gps_user_id}`
+          : `athlete:${result.activity?.athlete_id ?? result.activity_id}`;
+      const key = `${result.segment_id}:${identity}`;
+      const current = bestByAthlete.get(key);
+      const candidateIsValid = result.status === "valid";
+      const currentIsValid = current?.status === "valid";
+      if (!current || (candidateIsValid && !currentIsValid) || (candidateIsValid === currentIsValid && Number(result.elapsed_s) < Number(current.elapsed_s))) {
+        bestByAthlete.set(key, result);
+      }
+    }
+
+    const positionBySegment = new Map<string, number>();
+    const results = [...bestByAthlete.values()]
+      .sort((left, right) => Number(left.elapsed_s) - Number(right.elapsed_s))
+      .map((result) => {
+        const position = (positionBySegment.get(result.segment_id) ?? 0) + 1;
+        positionBySegment.set(result.segment_id, position);
+        return { ...result, position };
+      });
 
     return NextResponse.json({ module_ready: true, stages: stages ?? [], segments: segments ?? [], results });
   } catch (error) {
