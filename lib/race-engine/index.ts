@@ -18,6 +18,11 @@ export type ValidationReport = {
   start_ok: boolean;
   finish_ok: boolean;
   direction_ok: boolean;
+  forward_progress_percent: number;
+  off_route_percent: number;
+  longest_off_route_km: number;
+  max_deviation_m: number;
+  shortcut_suspected: boolean;
   checkpoints_hit: number;
   checkpoints_total: number;
   checkpoint_results: Array<CheckpointInput & { hit: boolean; nearest_distance_m: number }>;
@@ -75,10 +80,89 @@ function nearestDistanceM(point: GeoPoint, candidates: GeoPoint[]) {
   return nearest;
 }
 
+function nearestPoint(point: GeoPoint, candidates: GeoPoint[]) {
+  let distanceM = Number.POSITIVE_INFINITY;
+  let index = 0;
+  for (let candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+    const meters = distanceKm(point, candidates[candidateIndex]) * 1000;
+    if (meters < distanceM) {
+      distanceM = meters;
+      index = candidateIndex;
+    }
+    if (distanceM < 8) break;
+  }
+  return { distanceM, index };
+}
+
 function samplePoints(points: GeoPoint[], maxPoints = 900) {
   if (points.length <= maxPoints) return points;
   const step = (points.length - 1) / (maxPoints - 1);
   return Array.from({ length: maxPoints }, (_, index) => points[Math.round(index * step)]);
+}
+
+function cumulativeDistances(points: GeoPoint[]) {
+  const distances = [0];
+  for (let index = 1; index < points.length; index += 1) {
+    distances.push(distances[index - 1] + distanceKm(points[index - 1], points[index]));
+  }
+  return distances;
+}
+
+function routeCoverage(official: GeoPoint[], activity: GeoPoint[], toleranceM: number) {
+  let matchedKm = 0;
+  let routeKm = 0;
+  for (let index = 1; index < official.length; index += 1) {
+    const segmentKm = distanceKm(official[index - 1], official[index]);
+    routeKm += segmentKm;
+    const midpoint: GeoPoint = [
+      (official[index - 1][0] + official[index][0]) / 2,
+      (official[index - 1][1] + official[index][1]) / 2,
+      null,
+    ];
+    if (nearestDistanceM(midpoint, activity) <= toleranceM) matchedKm += segmentKm;
+  }
+  return { matchedKm, routeKm, percent: routeKm ? (matchedKm / routeKm) * 100 : 0 };
+}
+
+function analyzeActivityProgress(official: GeoPoint[], activity: GeoPoint[], toleranceM: number) {
+  const routeProgress = cumulativeDistances(official);
+  const matches = activity.map((point) => nearestPoint(point, official));
+  let forwardKm = 0;
+  let backwardKm = 0;
+  let offRouteKm = 0;
+  let longestOffRouteKm = 0;
+  let currentOffRouteKm = 0;
+  let maxDeviationM = 0;
+
+  for (let index = 0; index < matches.length; index += 1) {
+    maxDeviationM = Math.max(maxDeviationM, matches[index].distanceM);
+    if (index === 0) continue;
+    const activitySegmentKm = distanceKm(activity[index - 1], activity[index]);
+    const outside = matches[index - 1].distanceM > toleranceM && matches[index].distanceM > toleranceM;
+    if (outside) {
+      offRouteKm += activitySegmentKm;
+      currentOffRouteKm += activitySegmentKm;
+      longestOffRouteKm = Math.max(longestOffRouteKm, currentOffRouteKm);
+    } else {
+      currentOffRouteKm = 0;
+    }
+
+    if (matches[index - 1].distanceM > toleranceM * 1.5 || matches[index].distanceM > toleranceM * 1.5) continue;
+    const delta = routeProgress[matches[index].index] - routeProgress[matches[index - 1].index];
+    // Ignore large projection jumps caused by crossings or parallel portions of a route.
+    if (Math.abs(delta) > Math.max(2, activitySegmentKm * 8)) continue;
+    if (delta > 0.02) forwardKm += delta;
+    if (delta < -0.02) backwardKm += Math.abs(delta);
+  }
+
+  const directionalKm = forwardKm + backwardKm;
+  const activityKm = polylineDistanceKm(activity);
+  return {
+    forwardPercent: directionalKm ? (forwardKm / directionalKm) * 100 : 100,
+    offRoutePercent: activityKm ? (offRouteKm / activityKm) * 100 : 0,
+    longestOffRouteKm,
+    maxDeviationM,
+  };
 }
 
 export function validateActivity(input: {
@@ -91,10 +175,11 @@ export function validateActivity(input: {
   const official = samplePoints(input.officialPoints);
   const activity = samplePoints(input.activityPoints, 1400);
 
-  const matched = official.filter((point) => nearestDistanceM(point, activity) <= toleranceM).length;
-  const coverage = official.length ? (matched / official.length) * 100 : 0;
   const routeDistance = polylineDistanceKm(input.officialPoints);
   const activityDistance = polylineDistanceKm(input.activityPoints);
+  const coverageResult = routeCoverage(official, activity, toleranceM);
+  const coverage = coverageResult.percent;
+  const progress = analyzeActivityProgress(official, activity, toleranceM);
 
   const startDistance = nearestDistanceM(input.officialPoints[0], activity);
   const finishDistance = nearestDistanceM(input.officialPoints[input.officialPoints.length - 1], activity);
@@ -111,7 +196,10 @@ export function validateActivity(input: {
     input.officialPoints[input.officialPoints.length - 1],
     input.activityPoints[0],
   );
-  const directionOk = directStart + directFinish <= reverseStart + reverseFinish;
+  const endpointDirectionOk = directStart + directFinish <= reverseStart + reverseFinish;
+  const directionOk = endpointDirectionOk && progress.forwardPercent >= 70;
+  const distanceRatio = routeDistance ? activityDistance / routeDistance : 1;
+  const shortcutSuspected = coverage < 92 || distanceRatio < 0.88 || progress.longestOffRouteKm >= Math.max(1.5, routeDistance * 0.04);
 
   const checkpointResults = input.checkpoints.map((checkpoint) => {
     const nearest = nearestDistanceM([checkpoint.latitude, checkpoint.longitude, null], activity);
@@ -121,9 +209,9 @@ export function validateActivity(input: {
   const checkpointRatio = checkpointResults.length ? checkpointsHit / checkpointResults.length : 1;
 
   let status: ValidationReport["status"] = "rejected";
-  if (coverage >= 95 && startOk && finishOk && directionOk && checkpointRatio >= 0.95) {
+  if (coverage >= 95 && startOk && finishOk && directionOk && checkpointRatio >= 0.95 && !shortcutSuspected && progress.offRoutePercent <= 5) {
     status = "validated";
-  } else if (coverage >= 80 && startOk && finishOk && checkpointRatio >= 0.8) {
+  } else if (coverage >= 80 && startOk && finishOk && directionOk && checkpointRatio >= 0.8 && progress.offRoutePercent <= 20) {
     status = "manual_review";
   }
 
@@ -132,18 +220,26 @@ export function validateActivity(input: {
   if (!finishOk) notes.push(`Chegada fora da tolerância (${Math.round(finishDistance)} m).`);
   if (!directionOk) notes.push("O sentido aparente da atividade está invertido.");
   if (coverage < 95) notes.push(`Cobertura abaixo de 95% (${coverage.toFixed(1)}%).`);
+  if (progress.offRoutePercent > 5) notes.push(`${progress.offRoutePercent.toFixed(1)}% da atividade foi registrado fora da tolerância da rota.`);
+  if (progress.longestOffRouteKm >= 1) notes.push(`Maior trecho contínuo fora da rota: ${progress.longestOffRouteKm.toFixed(2)} km.`);
+  if (shortcutSuspected) notes.push("Possível corte de percurso ou trecho oficial não percorrido; requer conferência do mapa.");
   if (checkpointRatio < 0.95) notes.push(`${checkpointsHit} de ${checkpointResults.length} checkpoints confirmados.`);
   if (!notes.length) notes.push("Atividade compatível com a rota oficial dentro das tolerâncias configuradas.");
 
   return {
     status,
     coverage_percent: Number(coverage.toFixed(2)),
-    matched_route_km: Number(((coverage / 100) * routeDistance).toFixed(2)),
+    matched_route_km: Number(coverageResult.matchedKm.toFixed(2)),
     route_distance_km: Number(routeDistance.toFixed(2)),
     activity_distance_km: Number(activityDistance.toFixed(2)),
     start_ok: startOk,
     finish_ok: finishOk,
     direction_ok: directionOk,
+    forward_progress_percent: Number(progress.forwardPercent.toFixed(2)),
+    off_route_percent: Number(progress.offRoutePercent.toFixed(2)),
+    longest_off_route_km: Number(progress.longestOffRouteKm.toFixed(2)),
+    max_deviation_m: Math.round(progress.maxDeviationM),
+    shortcut_suspected: shortcutSuspected,
     checkpoints_hit: checkpointsHit,
     checkpoints_total: checkpointResults.length,
     checkpoint_results: checkpointResults,

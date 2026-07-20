@@ -181,7 +181,6 @@ export async function POST(request: NextRequest) {
     if (activityError) throw activityError;
 
     const status = report.status === "manual_review" ? "review" : report.status;
-    const maxDeviation = report.checkpoint_results.reduce((maximum, checkpoint) => Math.max(maximum, checkpoint.nearest_distance_m), 0);
     const { data: validation, error: validationError } = await supabase
       .from("validation_results")
       .upsert({
@@ -194,7 +193,7 @@ export async function POST(request: NextRequest) {
         direction_ok: report.direction_ok,
         checkpoints_passed: report.checkpoints_hit,
         checkpoints_total: report.checkpoints_total,
-        max_deviation_m: maxDeviation,
+        max_deviation_m: report.max_deviation_m,
         notes: report.notes.join("\n"),
         validated_at: new Date().toISOString(),
       }, { onConflict: "activity_id" })
