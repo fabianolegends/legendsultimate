@@ -156,7 +156,13 @@ export async function POST(request: NextRequest) {
       const eventId = String(body.eventId ?? "").trim();
       const rows = Array.isArray(body.rows) ? body.rows.slice(0, 3000) : [];
       if (!eventId || !rows.length) return NextResponse.json({ error: "Selecione o evento e envie ao menos uma linha da Windfit." }, { status: 400 });
-      const normalized = rows.map((row) => normalizeInput(row, { forcedEventId: eventId, forcedSource: "windfit" }));
+      const emails = [...new Set(rows.map((row) => normalizeRegistrationEmail(String(row.email ?? ""))).filter(Boolean))];
+      const { data: existing, error: existingError } = emails.length
+        ? await supabase.from("registrations").select("email, registration_code").eq("event_id", eventId).in("email", emails)
+        : { data: [], error: null };
+      if (existingError) throw existingError;
+      const codeByEmail = new Map((existing ?? []).map((registration) => [normalizeRegistrationEmail(registration.email), registration.registration_code]));
+      const normalized = rows.map((row) => normalizeInput({ ...row, registration_code: row.registration_code || codeByEmail.get(normalizeRegistrationEmail(String(row.email ?? ""))) }, { forcedEventId: eventId, forcedSource: "windfit" }));
       const { data, error } = await supabase.from("registrations").upsert(normalized, { onConflict: "event_id,email" }).select("*");
       if (error) throw error;
       for (const registration of data ?? []) await syncLinkedAthlete(supabase, registration);
