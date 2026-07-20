@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { registrationPaymentAllowsAccess } from "@/lib/registration-access";
 
 function readAthlete(request: NextRequest) {
   const raw = request.cookies.get("strava_athlete")?.value;
   if (!raw) return null;
   try { return JSON.parse(raw) as { id?: number; firstname?: string; lastname?: string; profile?: string }; } catch { return null; }
+}
+
+function isMissingWindfitColumn(error: any) {
+  return error?.code === "42703" || String(error?.message ?? "").includes("payment_status");
 }
 
 export async function GET(request: NextRequest) {
@@ -29,43 +34,58 @@ export async function GET(request: NextRequest) {
 
     const eventIds = [...new Set((stageRows ?? []).map((stage: any) => stage.event_id).filter(Boolean))];
     let registrationModuleReady = true;
+    let windfitReady = true;
     let registrationRequired = false;
     let openTestMode = false;
     let registrations: any[] = [];
 
     if (eventIds.length) {
-      const { data, error } = await supabase
+      const modernFields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, source, external_registration_id, payment_status, last_synced_at";
+      let result = await supabase
         .from("registrations")
-        .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
+        .select(modernFields)
         .in("event_id", eventIds)
         .eq("athlete_id", athlete.id)
         .order("created_at", { ascending: false });
 
-      if (error?.code === "42P01") {
+      if (result.error && isMissingWindfitColumn(result.error)) {
+        windfitReady = false;
+        const fallback = await supabase
+          .from("registrations")
+          .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
+          .in("event_id", eventIds)
+          .eq("athlete_id", athlete.id)
+          .order("created_at", { ascending: false });
+        result = { data: (fallback.data ?? []).map((item: any) => ({ ...item, source: "manual", payment_status: "courtesy" })), error: fallback.error } as any;
+      }
+
+      if (result.error?.code === "42P01") {
         registrationModuleReady = false;
         openTestMode = true;
-      } else if (error) {
-        throw error;
+      } else if (result.error) {
+        throw result.error;
       } else {
-        registrations = data ?? [];
+        registrations = result.data ?? [];
         const { count, error: countError } = await supabase
           .from("registrations")
           .select("id", { count: "exact", head: true })
           .in("event_id", eventIds)
           .neq("status", "cancelled");
         if (countError) throw countError;
-        registrationRequired = (count ?? 0) > 0 && !registrations.some((item) => item.status === "confirmed");
+        const hasEligibleRegistration = registrations.some((item) => item.status === "confirmed" && registrationPaymentAllowsAccess(item.payment_status));
+        registrationRequired = (count ?? 0) > 0 && !hasEligibleRegistration;
         openTestMode = (count ?? 0) === 0;
       }
     } else {
       openTestMode = true;
     }
 
-    const confirmedEventIds = new Set(registrations.filter((item) => item.status === "confirmed").map((item) => item.event_id));
+    const eligibleRegistrations = registrations.filter((item) => item.status === "confirmed" && registrationPaymentAllowsAccess(item.payment_status));
+    const eligibleEventIds = new Set(eligibleRegistrations.map((item) => item.event_id));
     const visibleStages = registrationRequired
       ? []
-      : confirmedEventIds.size
-        ? (stageRows ?? []).filter((stage: any) => confirmedEventIds.has(stage.event_id))
+      : eligibleEventIds.size
+        ? (stageRows ?? []).filter((stage: any) => eligibleEventIds.has(stage.event_id))
         : stageRows ?? [];
 
     const { data: activities, error: activityError } = await supabase
@@ -107,7 +127,6 @@ export async function GET(request: NextRequest) {
           const { data } = await supabase.from("checkpoints").select("id, stage_id, sequence, label, checkpoint_kind").in("id", checkpointIds);
           checkpointRows = data ?? [];
         }
-
         const { data: segmentResults } = await supabase
           .from("segment_results")
           .select("id, activity_id, segment_id, elapsed_s, status, created_at")
@@ -151,7 +170,7 @@ export async function GET(request: NextRequest) {
       event_name: Array.isArray(stage.events) ? stage.events[0]?.name : stage.events?.name,
       route_active: (stage.route_versions ?? []).some((route: any) => route.is_active),
     }));
-    const confirmedRegistration = registrations.find((item) => item.status === "confirmed") ?? null;
+    const confirmedRegistration = eligibleRegistrations[0] ?? null;
 
     return NextResponse.json({
       athlete: {
@@ -165,6 +184,7 @@ export async function GET(request: NextRequest) {
       },
       registration: confirmedRegistration,
       registration_module_ready: registrationModuleReady,
+      windfit_ready: windfitReady,
       registration_required: registrationRequired,
       open_test_mode: openTestMode,
       stages: normalizedStages,
