@@ -75,7 +75,7 @@ export async function PATCH(request: NextRequest) {
     const resultId = String(body.resultId ?? "").trim();
     const note = String(body.note ?? "").trim();
     const status = String(body.status ?? "provisional");
-    if (!resultId || note.length < 3) return NextResponse.json({ error: "Informe o resultado e registre o motivo da decisão." }, { status: 400 });
+    if (!resultId) return NextResponse.json({ error: "Informe o resultado." }, { status: 400 });
     if (!["provisional", "review", "disqualified", "dnf"].includes(status)) return NextResponse.json({ error: "Status inválido." }, { status: 400 });
     const supabase = createSupabaseAdmin();
     const { data: current, error: currentError } = await supabase.from("stage_results").select("*").eq("id", resultId).single();
@@ -85,18 +85,24 @@ export async function PATCH(request: NextRequest) {
     if (stage.results_locked) return NextResponse.json({ error: "A etapa está publicada e bloqueada. Reabra a apuração antes de alterar." }, { status: 423 });
     const timePenaltyS = Math.max(0, Math.round(Number(body.timePenaltyS ?? 0)));
     const pointsPenalty = Math.max(0, Number(body.pointsPenalty ?? 0));
+    const hasException = status !== "provisional" || timePenaltyS > 0 || pointsPenalty > 0
+      || (current.integrity_status === "duplicate" && body.acceptDuplicate);
+    if (hasException && note.length < 3) {
+      return NextResponse.json({ error: "Registre o motivo da revisão, penalidade ou exceção." }, { status: 400 });
+    }
+    const decisionNote = note || "Resultado conferido e aprovado sem ressalvas.";
     const baseTime = Number(current.manual_time_s ?? current.official_time_s);
     const update = {
       status, time_penalty_s: timePenaltyS, points_penalty: pointsPenalty,
       final_time_s: baseTime + timePenaltyS,
       integrity_status: body.acceptDuplicate ? "reviewed" : current.integrity_status,
-      admin_note: note, updated_at: new Date().toISOString(),
+      admin_note: decisionNote, updated_at: new Date().toISOString(),
     };
     const { data: saved, error: updateError } = await supabase.from("stage_results").update(update).eq("id", resultId).select("*").single();
     if (updateError) throw updateError;
     const { error: auditError } = await supabase.from("stage_result_audit_log").insert({
       event_id: current.event_id, stage_id: current.stage_id, result_id: current.id,
-      action: "adjust_result", note, previous_value: current, new_value: saved,
+      action: "adjust_result", note: decisionNote, previous_value: current, new_value: saved,
     });
     if (auditError) throw auditError;
     return NextResponse.json({ updated: true, result: saved });
@@ -111,7 +117,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as { stageId?: string; action?: "publish" | "reopen"; note?: string };
     const stageId = String(body.stageId ?? "").trim();
     const note = String(body.note ?? "").trim();
-    if (!stageId || !body.action || note.length < 3) return NextResponse.json({ error: "Selecione a etapa e registre o motivo." }, { status: 400 });
+    if (!stageId || !body.action) return NextResponse.json({ error: "Selecione a etapa e a ação." }, { status: 400 });
+    if (body.action === "reopen" && note.length < 3) return NextResponse.json({ error: "Registre o motivo para reabrir uma etapa publicada." }, { status: 400 });
     const supabase = createSupabaseAdmin();
     const { data: stage, error: stageError } = await supabase.from("stages").select("id, event_id, results_locked, results_published").eq("id", stageId).single();
     if (stageError || !stage) return NextResponse.json({ error: "Etapa não encontrada." }, { status: 404 });
@@ -133,7 +140,7 @@ export async function POST(request: NextRequest) {
     }
     const { error: auditError } = await supabase.from("stage_result_audit_log").insert({
       event_id: stage.event_id, stage_id: stage.id, action: body.action === "publish" ? "publish_stage" : "reopen_stage",
-      note, previous_value: stage, new_value: { results_published: body.action === "publish", results_locked: body.action === "publish" },
+      note: note || "Etapa conferida, aprovada e publicada sem ressalvas.", previous_value: stage, new_value: { results_published: body.action === "publish", results_locked: body.action === "publish" },
     });
     if (auditError) throw auditError;
     return NextResponse.json({ updated: true, action: body.action });
