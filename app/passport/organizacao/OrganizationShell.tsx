@@ -54,7 +54,7 @@ function ShellContent({ children }: { children: ReactNode }) {
             <a href="/passport/organizacao/checkpoints">Checkpoints</a>
             <a href="/passport/organizacao/rankings">Trechos</a>
             <a href="/passport/organizacao/classificacao">Classificação</a>
-            <a href="/passport/organizacao/apuracao">Apuração</a>
+            <a href="/passport/organizacao/apuracao">Central de apuração</a>
             <a href="/passport/organizacao/impressao">Impressão</a>
             <button onClick={logout}>Sair</button>
           </nav>

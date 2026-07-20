@@ -24,6 +24,35 @@ export async function GET(request: NextRequest) {
     if (migrationMissing(stageError)) return NextResponse.json({ module_ready: false, message: "Execute a migration 015_race_stewarding.sql no Supabase." });
     if (stageError) throw stageError;
     const stageIds = (stages ?? []).map((stage) => stage.id);
+    const [registrationsQuery, allActivitiesQuery, validationsQuery, routesQuery] = await Promise.all([
+      supabase
+        .from("registrations")
+        .select("id, athlete_id, status, payment_status")
+        .eq("event_id", eventId),
+      stageIds.length
+        ? supabase
+          .from("activities")
+          .select("id, stage_id, athlete_id, created_at")
+          .in("stage_id", stageIds)
+        : Promise.resolve({ data: [], error: null }),
+      stageIds.length
+        ? supabase
+          .from("validation_results")
+          .select("id, activity_id, stage_id, status, updated_at")
+          .in("stage_id", stageIds)
+        : Promise.resolve({ data: [], error: null }),
+      stageIds.length
+        ? supabase
+          .from("route_versions")
+          .select("id, stage_id, is_active")
+          .in("stage_id", stageIds)
+          .eq("is_active", true)
+        : Promise.resolve({ data: [], error: null }),
+    ]);
+    if (registrationsQuery.error) throw registrationsQuery.error;
+    if (allActivitiesQuery.error) throw allActivitiesQuery.error;
+    if (validationsQuery.error) throw validationsQuery.error;
+    if (routesQuery.error) throw routesQuery.error;
     const { data: results, error: resultError } = stageIds.length
       ? await supabase.from("stage_results")
         .select("id, event_id, stage_id, athlete_id, registration_id, activity_id, full_name, bib_number, category, official_time_s, manual_time_s, time_penalty_s, points_penalty, final_time_s, position, weighted_points, status, integrity_status, admin_note, updated_at")
@@ -58,10 +87,73 @@ export async function GET(request: NextRequest) {
       ? await supabase.from("stage_result_audit_log").select("id, stage_id, result_id, action, note, previous_value, new_value, created_at").in("stage_id", stageIds).order("created_at", { ascending: false }).limit(100)
       : { data: [], error: null };
     if (auditError) throw auditError;
+
+    const registrations = registrationsQuery.data ?? [];
+    const allActivities = allActivitiesQuery.data ?? [];
+    const validations = validationsQuery.data ?? [];
+    const activeRoutes = routesQuery.data ?? [];
+    const eligibleRegistrations = registrations.filter((registration) =>
+      registration.status === "confirmed"
+      && ["paid", "courtesy"].includes(registration.payment_status),
+    );
+    const linkedRegistrations = eligibleRegistrations.filter((registration) => Boolean(registration.athlete_id));
+    const activityIdsWithValidation = new Set(validations.map((validation) => validation.activity_id));
+    const unprocessedActivities = allActivities.filter((activity) => !activityIdsWithValidation.has(activity.id));
+    const pendingDecisions = (results ?? []).filter((result) =>
+      !result.admin_note
+      || result.status === "review"
+      || (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate",
+    );
+    const stagePipeline = (stages ?? []).map((stage) => {
+      const stageActivities = allActivities.filter((activity) => activity.stage_id === stage.id);
+      const stageValidations = validations.filter((validation) => validation.stage_id === stage.id);
+      const stageResults = (results ?? []).filter((result) => result.stage_id === stage.id);
+      const duplicateCount = stageResults.filter((result) =>
+        (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate",
+      ).length;
+      const decisionCount = stageResults.filter((result) =>
+        !result.admin_note || result.status === "review"
+        || (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate",
+      ).length;
+      return {
+        stage_id: stage.id,
+        route_ready: activeRoutes.some((route) => route.stage_id === stage.id),
+        activities: stageActivities.length,
+        unprocessed: stageActivities.filter((activity) => !activityIdsWithValidation.has(activity.id)).length,
+        validated: stageValidations.filter((validation) => validation.status === "validated").length,
+        review: stageValidations.filter((validation) => validation.status === "review").length,
+        rejected: stageValidations.filter((validation) => validation.status === "rejected").length,
+        pending_validation: stageValidations.filter((validation) => validation.status === "pending").length,
+        results: stageResults.length,
+        pending_decisions: decisionCount,
+        duplicates: duplicateCount,
+        published: Boolean(stage.results_published),
+        locked: Boolean(stage.results_locked),
+      };
+    });
+
     return NextResponse.json({
       module_ready: true, stages: stages ?? [],
       results: (results ?? []).map((result) => ({ ...result, integrity_status: staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status, activity: activityMap.get(result.activity_id) ?? null })),
       duplicate_groups: duplicateGroups, audit: audit ?? [],
+      generated_at: new Date().toISOString(),
+      pipeline: {
+        registrations: registrations.length,
+        eligible_registrations: eligibleRegistrations.length,
+        linked_registrations: linkedRegistrations.length,
+        activities: allActivities.length,
+        unprocessed_activities: unprocessedActivities.length,
+        validations: validations.length,
+        validated: validations.filter((validation) => validation.status === "validated").length,
+        review: validations.filter((validation) => validation.status === "review").length,
+        rejected: validations.filter((validation) => validation.status === "rejected").length,
+        pending_validation: validations.filter((validation) => validation.status === "pending").length,
+        results: (results ?? []).length,
+        pending_decisions: pendingDecisions.length,
+        published_stages: (stages ?? []).filter((stage) => stage.results_published).length,
+        total_stages: (stages ?? []).length,
+      },
+      stage_pipeline: stagePipeline,
     });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar a apuração." }, { status: 500 });
