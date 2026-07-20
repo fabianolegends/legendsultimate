@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationEmail } from "@/lib/registration-access";
 import { readRideWithGpsUser } from "@/lib/ridewithgps";
+import { categoryForRegistration } from "@/lib/category-rules";
 
 export const runtime = "nodejs";
 
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const supabase = createSupabaseAdmin();
     const { data: event, error: eventError } = await supabase.from("events")
-      .select("id, name, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url")
+      .select("id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url")
       .eq("slug", slug).eq("status", "published").maybeSingle();
     if (eventError?.code === "42703") return NextResponse.json({ error: "Execute a migration 013_public_event_registration.sql." }, { status: 503 });
     if (eventError) throw eventError;
@@ -49,7 +50,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       if ((count ?? 0) >= event.participant_limit) return NextResponse.json({ error: "As vagas deste evento estão esgotadas." }, { status: 409 });
     }
 
-    const category = modality === "experience" ? "Experience" : gender === "female" ? "Feminina livre" : gender === "male" ? "Masculina livre" : "Geral";
+    const categoryRule = categoryForRegistration({ birthDate, eventDate: event.starts_on, gender, modality });
+    if (categoryRule.error || !categoryRule.category) return NextResponse.json({ error: categoryRule.error ?? "Não foi possível definir sua categoria." }, { status: 400 });
+    const category = categoryRule.category;
     const now = new Date().toISOString();
     const rideWithGpsUser = readRideWithGpsUser(request);
     let linkedAthleteId: string | null = null;

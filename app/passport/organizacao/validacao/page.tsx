@@ -14,6 +14,7 @@ const ValidationMap = dynamic(() => import("./ValidationMap"), {
 });
 
 type Stage = { id: string; name: string; stage_date: string };
+type RegistrationOption = { id:string; full_name:string; email:string; bib_number:string|null; category:string|null; status:string; payment_status:string };
 type CheckpointResult = {
   id?: string;
   sequence: number;
@@ -103,6 +104,8 @@ export default function ValidationPage() {
   const { activeEventId } = useOrganizationEvent();
   const [stages, setStages] = useState<Stage[]>([]);
   const [stageId, setStageId] = useState("");
+  const [registrations, setRegistrations] = useState<RegistrationOption[]>([]);
+  const [registrationId, setRegistrationId] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [tolerance, setTolerance] = useState(120);
   const [loading, setLoading] = useState(true);
@@ -120,12 +123,16 @@ export default function ValidationPage() {
   useEffect(() => {
     if (!activeEventId) { setStages([]); setStageId(""); setLoading(false); return; }
     setLoading(true);
-    fetch(`/api/admin/routes?eventId=${encodeURIComponent(activeEventId)}`, { cache: "no-store" })
-      .then(async (response) => {
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error ?? "Falha ao carregar etapas.");
-        setStages(payload.stages ?? []);
-        setStageId(payload.stages?.[0]?.id ?? "");
+    Promise.all([
+      fetch(`/api/admin/routes?eventId=${encodeURIComponent(activeEventId)}`, { cache: "no-store" }),
+      fetch(`/api/admin/registrations?eventId=${encodeURIComponent(activeEventId)}`, { cache: "no-store" }),
+    ]).then(async ([stageResponse, registrationResponse]) => {
+        const [stagePayload, registrationPayload] = await Promise.all([stageResponse.json(), registrationResponse.json()]);
+        if (!stageResponse.ok) throw new Error(stagePayload.error ?? "Falha ao carregar etapas.");
+        if (!registrationResponse.ok) throw new Error(registrationPayload.error ?? "Falha ao carregar inscritos.");
+        const eligible=(registrationPayload.registrations??[]).filter((item:RegistrationOption)=>item.status==="confirmed"&&["paid","courtesy"].includes(item.payment_status));
+        setStages(stagePayload.stages ?? []); setStageId(stagePayload.stages?.[0]?.id ?? "");
+        setRegistrations(eligible); setRegistrationId(eligible[0]?.id??"");
       })
       .catch((error) => setMessage(error instanceof Error ? error.message : "Falha ao carregar etapas."))
       .finally(() => setLoading(false));
@@ -175,8 +182,8 @@ export default function ValidationPage() {
 
   async function submitManual(event: FormEvent) {
     event.preventDefault();
-    if (!stageId || !file) {
-      setMessage("Selecione uma etapa e o GPX da atividade.");
+    if (!stageId || !registrationId || !file) {
+      setMessage("Selecione uma etapa, o atleta e o GPX da atividade.");
       return;
     }
 
@@ -185,6 +192,7 @@ export default function ValidationPage() {
     setMessage("Comparando o GPX com a rota oficial...");
     const formData = new FormData();
     formData.append("stageId", stageId);
+    formData.append("registrationId", registrationId);
     formData.append("file", file);
     formData.append("toleranceM", String(tolerance));
 
@@ -267,8 +275,13 @@ export default function ValidationPage() {
             <details className="manual">
               <summary>Alternativa: enviar GPX manualmente</summary>
               <form onSubmit={submitManual} style={{ marginTop: 15 }}>
+                <label style={{ display:"block",marginBottom:8,fontWeight:700 }}>Atleta proprietário do GPX</label>
+                <select className="field" required value={registrationId} onChange={(event)=>setRegistrationId(event.target.value)} style={{marginBottom:12}}>
+                  <option value="">Selecione o inscrito</option>
+                  {registrations.map((registration)=><option key={registration.id} value={registration.id}>{registration.bib_number?`#${registration.bib_number} · `:""}{registration.full_name} · {registration.category??"Sem categoria"}</option>)}
+                </select>
                 <input className="field" type="file" accept=".gpx,application/gpx+xml,application/xml,text/xml" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
-                <button className="primary-button" type="submit" disabled={validating || !stageId || !file}>{validating ? "COMPARANDO..." : "VALIDAR GPX"}</button>
+                <button className="primary-button" type="submit" disabled={validating || !stageId || !registrationId || !file}>{validating ? "COMPARANDO..." : "VINCULAR E VALIDAR GPX"}</button>
               </form>
             </details>
 

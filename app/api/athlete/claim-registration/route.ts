@@ -70,34 +70,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Esta inscrição está ${paymentStatusText(registration.payment_status)} na Windfit. O Passport será liberado após a confirmação.` }, { status: 403 });
     }
 
-    const { data: athlete, error: athleteError } = await supabase
-      .from("athletes")
-      .upsert({
-        ride_with_gps_user_id: athleteCookie.id,
-        full_name: athleteCookie.name?.trim() || registration.full_name,
-        email: registration.email,
-        category: registration.category,
-        country_code: registration.country_code,
-        bib_number: registration.bib_number,
-        birth_date: registration.birth_date,
-        gender: registration.gender,
-        modality: registration.modality,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "ride_with_gps_user_id" })
-      .select("id, ride_with_gps_user_id, full_name")
-      .single();
-    if (athleteError) throw athleteError;
-
-    if (registration.athlete_id && registration.athlete_id !== athlete.id) {
-      const { data: existingAthlete, error: existingAthleteError } = await supabase
-        .from("athletes")
-        .select("ride_with_gps_user_id")
-        .eq("id", registration.athlete_id)
-        .maybeSingle();
-      if (existingAthleteError) throw existingAthleteError;
-      if (existingAthlete?.ride_with_gps_user_id) {
+    const athletePayload = {
+      ride_with_gps_user_id: athleteCookie.id, full_name: athleteCookie.name?.trim() || registration.full_name,
+      email: registration.email, category: registration.category, country_code: registration.country_code,
+      bib_number: registration.bib_number, birth_date: registration.birth_date, gender: registration.gender,
+      modality: registration.modality, updated_at: new Date().toISOString(),
+    };
+    const { data: rideAthlete, error: rideAthleteError } = await supabase.from("athletes")
+      .select("id, ride_with_gps_user_id, full_name").eq("ride_with_gps_user_id", athleteCookie.id).maybeSingle();
+    if (rideAthleteError) throw rideAthleteError;
+    let athlete = rideAthlete;
+    if (registration.athlete_id) {
+      const { data: registrationAthlete, error: registrationAthleteError } = await supabase.from("athletes")
+        .select("id, ride_with_gps_user_id, full_name").eq("id", registration.athlete_id).maybeSingle();
+      if (registrationAthleteError) throw registrationAthleteError;
+      if (registrationAthlete?.ride_with_gps_user_id && registrationAthlete.ride_with_gps_user_id !== athleteCookie.id) {
         return NextResponse.json({ error: "Esta inscrição já está vinculada a outra conta Ride with GPS. Fale com a organização." }, { status: 409 });
       }
+      if (rideAthlete && registrationAthlete && rideAthlete.id !== registrationAthlete.id) {
+        const { error: activityMoveError } = await supabase.from("activities").update({ athlete_id: rideAthlete.id }).eq("athlete_id", registrationAthlete.id);
+        if (activityMoveError) throw activityMoveError;
+        const { error: registrationMoveError } = await supabase.from("registrations").update({ athlete_id: rideAthlete.id, updated_at: new Date().toISOString() }).eq("athlete_id", registrationAthlete.id);
+        if (registrationMoveError) throw registrationMoveError;
+        const stageResultMove = await supabase.from("stage_results").update({ athlete_id: rideAthlete.id, updated_at: new Date().toISOString() }).eq("athlete_id", registrationAthlete.id);
+        if (stageResultMove.error && stageResultMove.error.code !== "42P01") throw stageResultMove.error;
+        athlete = rideAthlete;
+      } else if (registrationAthlete) {
+        const updated = await supabase.from("athletes").update(athletePayload).eq("id", registrationAthlete.id).select("id, ride_with_gps_user_id, full_name").single();
+        if (updated.error) throw updated.error;
+        athlete = updated.data;
+      }
+    }
+    if (!athlete) {
+      const created = await supabase.from("athletes").upsert(athletePayload, { onConflict: "ride_with_gps_user_id" }).select("id, ride_with_gps_user_id, full_name").single();
+      if (created.error) throw created.error;
+      athlete = created.data;
+    } else {
+      const updated = await supabase.from("athletes").update(athletePayload).eq("id", athlete.id).select("id, ride_with_gps_user_id, full_name").single();
+      if (updated.error) throw updated.error;
+      athlete = updated.data;
     }
 
     const { data: linked, error: linkError } = await supabase
