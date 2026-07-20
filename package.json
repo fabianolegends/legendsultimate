@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test:classification-engine": "node --import tsx --test lib/classification-engine/index.test.ts",
     "test:race-engine": "node --import tsx --test lib/race-engine/index.test.ts",
     "start": "next start",
     "lint": "next lint"
