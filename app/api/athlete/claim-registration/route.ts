@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationCode, normalizeRegistrationEmail, registrationPaymentAllowsAccess } from "@/lib/registration-access";
+import { readRideWithGpsUser } from "@/lib/ridewithgps";
 
 type RegistrationRow = {
   id: string;
@@ -25,13 +26,7 @@ type RegistrationRow = {
 };
 
 function readAthlete(request: NextRequest) {
-  const raw = request.cookies.get("strava_athlete")?.value;
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as { id?: number; firstname?: string; lastname?: string; profile?: string };
-  } catch {
-    return null;
-  }
+  return readRideWithGpsUser(request);
 }
 
 function paymentStatusText(value: unknown) {
@@ -44,7 +39,7 @@ function paymentStatusText(value: unknown) {
 export async function POST(request: NextRequest) {
   try {
     const athleteCookie = readAthlete(request);
-    if (!athleteCookie?.id) return NextResponse.json({ error: "Conecte sua conta Strava novamente." }, { status: 401 });
+    if (!athleteCookie?.id) return NextResponse.json({ error: "Conecte sua conta Ride with GPS novamente." }, { status: 401 });
 
     const body = await request.json() as { code?: string; email?: string };
     const code = normalizeRegistrationCode(String(body.code ?? ""));
@@ -57,7 +52,6 @@ export async function POST(request: NextRequest) {
       .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, source, external_registration_id, payment_status, last_synced_at")
       .eq("registration_code", code);
     if (email) query = query.eq("email", email);
-
     const registrationResult = await query.maybeSingle();
     if (registrationResult.error) {
       if (registrationResult.error.code === "42P01") {
@@ -79,8 +73,8 @@ export async function POST(request: NextRequest) {
     const { data: athlete, error: athleteError } = await supabase
       .from("athletes")
       .upsert({
-        strava_athlete_id: athleteCookie.id,
-        full_name: registration.full_name,
+        ride_with_gps_user_id: athleteCookie.id,
+        full_name: athleteCookie.name?.trim() || registration.full_name,
         email: registration.email,
         category: registration.category,
         country_code: registration.country_code,
@@ -89,13 +83,21 @@ export async function POST(request: NextRequest) {
         gender: registration.gender,
         modality: registration.modality,
         updated_at: new Date().toISOString(),
-      }, { onConflict: "strava_athlete_id" })
-      .select("id, strava_athlete_id, full_name")
+      }, { onConflict: "ride_with_gps_user_id" })
+      .select("id, ride_with_gps_user_id, full_name")
       .single();
     if (athleteError) throw athleteError;
 
     if (registration.athlete_id && registration.athlete_id !== athlete.id) {
-      return NextResponse.json({ error: "Esta inscrição já está vinculada a outra conta Strava. Fale com a organização." }, { status: 409 });
+      const { data: existingAthlete, error: existingAthleteError } = await supabase
+        .from("athletes")
+        .select("ride_with_gps_user_id")
+        .eq("id", registration.athlete_id)
+        .maybeSingle();
+      if (existingAthleteError) throw existingAthleteError;
+      if (existingAthlete?.ride_with_gps_user_id) {
+        return NextResponse.json({ error: "Esta inscrição já está vinculada a outra conta Ride with GPS. Fale com a organização." }, { status: 409 });
+      }
     }
 
     const { data: linked, error: linkError } = await supabase

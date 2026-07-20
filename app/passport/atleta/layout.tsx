@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function AthleteLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
-  if (!cookieStore.get("strava_athlete")?.value || !cookieStore.get("strava_refresh_token")?.value) {
+  if (!cookieStore.get("rwgps_user")?.value || !cookieStore.get("rwgps_access_token")?.value) {
     redirect("/passport/acesso");
   }
   return children;

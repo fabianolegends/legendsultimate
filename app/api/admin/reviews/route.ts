@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     const athleteIds = [...new Set((activities ?? []).map((activity) => activity.athlete_id))];
     const { data: athletes, error: athleteError } = athleteIds.length
-      ? await supabase.from("athletes").select("id, full_name, strava_athlete_id, category, country_code").in("id", athleteIds)
+      ? await supabase.from("athletes").select("id, full_name, ride_with_gps_user_id, category, country_code").in("id", athleteIds)
       : { data: [], error: null };
     if (athleteError) throw athleteError;
 

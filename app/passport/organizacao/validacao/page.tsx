@@ -62,7 +62,7 @@ type Result = {
   };
   saved?: boolean;
 };
-type StravaActivity = {
+type RideWithGpsActivity = {
   id: string;
   name: string;
   sportType: string;
@@ -75,11 +75,11 @@ type StravaActivity = {
   avgWatts: number | null;
   trainer: boolean;
 };
-type StravaState = {
+type RideWithGpsState = {
   configured: boolean;
   connected: boolean;
-  athlete: { firstname?: string; lastname?: string } | null;
-  activities: StravaActivity[];
+  athlete: { name?: string } | null;
+  activities: RideWithGpsActivity[];
   date?: string | null;
   error?: string;
 };
@@ -104,8 +104,8 @@ export default function ValidationPage() {
   const [file, setFile] = useState<File | null>(null);
   const [tolerance, setTolerance] = useState(120);
   const [loading, setLoading] = useState(true);
-  const [stravaLoading, setStravaLoading] = useState(false);
-  const [strava, setStrava] = useState<StravaState | null>(null);
+  const [rideLoading, setRideLoading] = useState(false);
+  const [ride, setRide] = useState<RideWithGpsState | null>(null);
   const [validating, setValidating] = useState(false);
   const [message, setMessage] = useState("");
   const [result, setResult] = useState<Result | null>(null);
@@ -127,16 +127,16 @@ export default function ValidationPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function loadStrava(date: string) {
-    setStravaLoading(true);
+  async function loadRideWithGps(date: string) {
+    setRideLoading(true);
     try {
-      const response = await fetch(`/api/strava/activities?date=${encodeURIComponent(date)}`, { cache: "no-store" });
-      const payload = (await response.json()) as StravaState;
-      setStrava(payload);
+      const response = await fetch(`/api/ridewithgps/trips?date=${encodeURIComponent(date)}`, { cache: "no-store" });
+      const payload = (await response.json()) as RideWithGpsState;
+      setRide(payload);
     } catch {
-      setStrava({ configured: false, connected: false, athlete: null, activities: [], error: "Falha ao consultar o Strava." });
+      setRide({ configured: false, connected: false, athlete: null, activities: [], error: "Falha ao consultar o Ride with GPS." });
     } finally {
-      setStravaLoading(false);
+      setRideLoading(false);
     }
   }
 
@@ -144,26 +144,26 @@ export default function ValidationPage() {
     if (!selectedStage) return;
     setResult(null);
     setMessage("");
-    void loadStrava(selectedStage.stage_date);
+    void loadRideWithGps(selectedStage.stage_date);
   }, [selectedStage]);
 
-  async function validateStrava(activityId: string) {
+  async function validateRideWithGps(activityId: string) {
     if (!stageId) return;
     setValidating(true);
     setResult(null);
-    setMessage("Buscando o traçado GPS no Strava e comparando com a rota oficial...");
+    setMessage("Buscando o traçado GPS no Ride with GPS e comparando com a rota oficial...");
     try {
-      const response = await fetch("/api/admin/validate-strava", {
+      const response = await fetch("/api/athlete/validate-ridewithgps", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stageId, activityId, toleranceM: tolerance }),
+        body: JSON.stringify({ stageId, tripId: activityId, toleranceM: tolerance }),
       });
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error ?? "Falha na validação pelo Strava.");
+      if (!response.ok) throw new Error(payload.error ?? "Falha na validação pelo Ride with GPS.");
       setResult(payload);
       setMessage(payload.saved ? "Validação concluída e resultado salvo no Supabase." : "Validação concluída.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Falha na validação pelo Strava.");
+      setMessage(error instanceof Error ? error.message : "Falha na validação pelo Ride with GPS.");
     } finally {
       setValidating(false);
     }
@@ -189,7 +189,7 @@ export default function ValidationPage() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Falha na validação.");
       setResult(payload);
-      setMessage("GPX validado. Este modo é a alternativa para quem não utiliza Strava.");
+      setMessage("GPX validado. Este modo é a alternativa para quem não utiliza Ride with GPS.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Falha na validação.");
     } finally {
@@ -205,7 +205,7 @@ export default function ValidationPage() {
         .validation-page{min-height:100vh;background:#0d100d;color:#f4eee4;padding:48px 20px;font-family:Arial,sans-serif}
         .validation-shell{max-width:1180px;margin:0 auto}.validation-grid{margin-top:36px;display:grid;grid-template-columns:minmax(330px,.9fr) minmax(0,1.25fr);gap:24px}
         .control-panel{border:1px solid #3a3d35;background:#171a16;padding:28px;align-self:start}.result-panel{border:1px solid #3a3d35;background:#f1e9dc;color:#161816;padding:28px;min-height:500px}
-        .field{width:100%;padding:14px;background:#0d100d;color:white;border:1px solid #55594d}.strava-list{display:grid;gap:10px;margin-top:12px}.activity-card{border:1px solid #44493f;background:#222620;padding:15px}
+        .field{width:100%;padding:14px;background:#0d100d;color:white;border:1px solid #55594d}.ride-list{display:grid;gap:10px;margin-top:12px}.activity-card{border:1px solid #44493f;background:#222620;padding:15px}
         .activity-card strong,.activity-card span{display:block}.activity-card span{margin-top:6px;color:#b8bcb4;font-size:13px}.activity-card button,.primary-button{width:100%;margin-top:12px;padding:14px;background:#fc4c02;color:white;border:0;font-weight:900;cursor:pointer}
         .activity-card button:disabled,.primary-button:disabled{opacity:.55;cursor:not-allowed}.manual{margin-top:20px;border-top:1px solid #44493f;padding-top:18px}.manual summary{cursor:pointer;font-weight:800;color:#d9d3c8}
         .metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.checks{display:grid;gap:10px;margin-top:18px}.empty-result{min-height:410px;display:grid;place-items:center;text-align:center;color:#6c685f}
@@ -215,7 +215,7 @@ export default function ValidationPage() {
         <p style={{ color: "#d47b2d", letterSpacing: 3, textTransform: "uppercase", fontWeight: 800 }}>Legends Core · Race Engine</p>
         <h1 style={{ fontSize: "clamp(38px, 6vw, 74px)", lineHeight: 0.95, margin: "12px 0 18px" }}>Validar atividade</h1>
         <p style={{ maxWidth: 780, color: "#bbb7ae", fontSize: 18 }}>
-          O atleta conecta o Strava e o sistema mostra somente as atividades realizadas no dia da etapa. O traçado GPS é comparado diretamente com a versão oficial ativa.
+          O atleta conecta o Ride with GPS e o sistema mostra somente as atividades realizadas no dia da etapa. O traçado GPS é comparado diretamente com a versão oficial ativa.
         </p>
 
         <section className="validation-grid">
@@ -235,25 +235,25 @@ export default function ValidationPage() {
                   <strong style={{ display: "block" }}>Atividades do dia</strong>
                   <span style={{ color: "#aaaFA7", fontSize: 13 }}>{selectedStage ? formatStageDate(selectedStage.stage_date) : "—"}</span>
                 </div>
-                {selectedStage && <button type="button" onClick={() => void loadStrava(selectedStage.stage_date)} style={{ background: "transparent", border: "1px solid #686d62", color: "white", padding: "9px 12px", cursor: "pointer" }}>Atualizar</button>}
+                {selectedStage && <button type="button" onClick={() => void loadRideWithGps(selectedStage.stage_date)} style={{ background: "transparent", border: "1px solid #686d62", color: "white", padding: "9px 12px", cursor: "pointer" }}>Atualizar</button>}
               </div>
 
-              {stravaLoading ? <p>Consultando o Strava...</p> : !strava?.configured ? (
-                <p style={{ color: "#efb078" }}>A integração do Strava não está configurada neste ambiente.</p>
-              ) : !strava.connected ? (
+              {rideLoading ? <p>Consultando o Ride with GPS...</p> : !ride?.configured ? (
+                <p style={{ color: "#efb078" }}>A integração do Ride with GPS não está configurada neste ambiente.</p>
+              ) : !ride.connected ? (
                 <div style={{ marginTop: 14 }}>
                   <p>Conecte sua conta para carregar a atividade sem baixar arquivos.</p>
-                  <a href="/api/strava/connect" style={{ display: "block", padding: 14, textAlign: "center", background: "#fc4c02", color: "white", fontWeight: 900, textDecoration: "none" }}>CONECTAR COM STRAVA</a>
+                  <a href="/api/ridewithgps/connect" style={{ display: "block", padding: 14, textAlign: "center", background: "#45755f", color: "white", fontWeight: 900, textDecoration: "none" }}>CONECTAR COM RIDE WITH GPS</a>
                 </div>
-              ) : strava.activities.length === 0 ? (
+              ) : ride.activities.length === 0 ? (
                 <p style={{ color: "#c9c4ba" }}>Nenhuma atividade de ciclismo encontrada na data desta etapa.</p>
               ) : (
-                <div className="strava-list">
-                  {strava.activities.map((activity) => (
+                <div className="ride-list">
+                  {ride.activities.map((activity) => (
                     <div className="activity-card" key={activity.id}>
                       <strong>{activity.name}</strong>
                       <span>{new Date(activity.startDateLocal).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })} · {activity.distanceKm.toFixed(1)} km · {Math.round(activity.elevationM)} m+ · {Math.round(activity.movingTimeMin)} min</span>
-                      <button type="button" disabled={validating} onClick={() => void validateStrava(activity.id)}>{validating ? "VALIDANDO..." : "VALIDAR ESTA ATIVIDADE"}</button>
+                      <button type="button" disabled={validating} onClick={() => void validateRideWithGps(activity.id)}>{validating ? "VALIDANDO..." : "VALIDAR ESTA ATIVIDADE"}</button>
                     </div>
                   ))}
                 </div>
@@ -274,7 +274,7 @@ export default function ValidationPage() {
           <div className="result-panel">
             {!result || !status ? (
               <div className="empty-result">
-                <div><div style={{ fontSize: 54 }}>⌖</div><h2>Homologação automática</h2><p>Selecione a atividade do dia da etapa. O sistema buscará os pontos GPS diretamente no Strava.</p></div>
+                <div><div style={{ fontSize: 54 }}>⌖</div><h2>Homologação automática</h2><p>Selecione a atividade do dia da etapa. O sistema buscará os pontos GPS diretamente no Ride with GPS.</p></div>
               </div>
             ) : (
               <>

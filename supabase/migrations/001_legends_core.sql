@@ -1,7 +1,7 @@
 create extension if not exists pgcrypto;
 
 create type public.event_status as enum ('draft', 'published', 'archived');
-create type public.activity_source as enum ('strava', 'gpx', 'fit', 'tcx');
+create type public.activity_source as enum ('ride_with_gps', 'gpx', 'fit', 'tcx');
 create type public.validation_status as enum ('pending', 'validated', 'review', 'rejected');
 
 create table public.events (
@@ -67,7 +67,7 @@ create table public.checkpoints (
 create table public.athletes (
   id uuid primary key default gen_random_uuid(),
   auth_user_id uuid unique references auth.users(id) on delete set null,
-  strava_athlete_id bigint unique,
+  ride_with_gps_user_id bigint unique,
   full_name text not null,
   email text,
   country_code text,

@@ -18,7 +18,7 @@ export default function AccessPage() {
         <section className="access-grid">
           <article className="access-card">
             <small>Participantes</small><h2>Portal do atleta</h2>
-            <p>Conecte o Strava, selecione a atividade do dia da etapa e acompanhe o resultado automático.</p>
+            <p>Conecte o Ride with GPS, selecione a atividade do dia da etapa e acompanhe o resultado automático.</p>
             <ul><li>Homologação automática</li><li>Histórico por etapa</li><li>Mapa dos desvios</li><li>Solicitação de revisão</li></ul>
             <a href="/passport/acesso">Entrar como atleta</a>
           </article>

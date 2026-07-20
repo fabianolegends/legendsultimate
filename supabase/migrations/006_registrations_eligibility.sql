@@ -1,5 +1,5 @@
 -- Legends Core
--- Migration 006: registrations, athlete eligibility and Strava account linking.
+-- Migration 006: registrations and athlete eligibility.
 
 alter table public.athletes
   add column if not exists bib_number text,

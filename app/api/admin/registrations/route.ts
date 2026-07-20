@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
     }
     const athleteIds = [...new Set((registrations ?? []).map((item) => item.athlete_id).filter(Boolean))];
     const { data: athletes, error: athleteError } = athleteIds.length
-      ? await supabase.from("athletes").select("id, strava_athlete_id, full_name, category, bib_number").in("id", athleteIds)
+      ? await supabase.from("athletes").select("id, ride_with_gps_user_id, full_name, category, bib_number").in("id", athleteIds)
       : { data: [], error: null };
     if (athleteError) throw athleteError;
     const athleteMap = new Map((athletes ?? []).map((athlete) => [athlete.id, athlete]));

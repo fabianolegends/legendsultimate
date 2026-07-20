@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { registrationPaymentAllowsAccess } from "@/lib/registration-access";
+import { readRideWithGpsUser } from "@/lib/ridewithgps";
 
 function readAthlete(request: NextRequest) {
-  const raw = request.cookies.get("strava_athlete")?.value;
-  if (!raw) return null;
-  try { return JSON.parse(raw) as { id?: number; firstname?: string; lastname?: string; profile?: string }; } catch { return null; }
+  return readRideWithGpsUser(request);
 }
 
 function isMissingWindfitColumn(error: any) {
@@ -18,11 +17,11 @@ export async function GET(request: NextRequest) {
     if (!athleteCookie?.id) return NextResponse.json({ error: "Sessão do atleta não encontrada." }, { status: 401 });
 
     const supabase = createSupabaseAdmin();
-    const fullName = `${athleteCookie.firstname ?? ""} ${athleteCookie.lastname ?? ""}`.trim() || `Atleta Strava ${athleteCookie.id}`;
+    const fullName = athleteCookie.name?.trim() || `Atleta Ride with GPS ${athleteCookie.id}`;
     const { data: athlete, error: athleteError } = await supabase
       .from("athletes")
-      .upsert({ strava_athlete_id: athleteCookie.id, full_name: fullName }, { onConflict: "strava_athlete_id" })
-      .select("id, full_name, strava_athlete_id, category, country_code")
+      .upsert({ ride_with_gps_user_id: athleteCookie.id, full_name: fullName }, { onConflict: "ride_with_gps_user_id" })
+      .select("id, full_name, ride_with_gps_user_id, category, country_code")
       .single();
     if (athleteError) throw athleteError;
 
