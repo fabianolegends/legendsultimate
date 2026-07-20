@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { registrationPaymentAllowsAccess } from "@/lib/registration-access";
 import { readRideWithGpsUser } from "@/lib/ridewithgps";
+import { buildOverallClassification } from "@/lib/classification-engine";
 
 function readAthlete(request: NextRequest) {
   return readRideWithGpsUser(request);
@@ -34,11 +35,19 @@ export async function GET(request: NextRequest) {
 
     const { data: stageRows, error: stageError } = await supabase
       .from("stages")
-      .select("id, event_id, name, route_label, stage_date, distance_km, elevation_m, stage_number, auto_validate_min_coverage, review_min_coverage, events(name), route_versions(id, version, file_name, is_active)")
+      .select("id, event_id, name, route_label, stage_date, distance_km, elevation_m, stage_number, auto_validate_min_coverage, review_min_coverage, results_published, events(name), route_versions(id, version, file_name, is_active)")
       .order("stage_date", { ascending: true });
     if (stageError) throw stageError;
 
     const eventIds = (eventRows ?? []).map((event) => event.id);
+    const certificateByEvent = new Map<string, any>();
+    if (eventIds.length) {
+      const { data: certificateRows } = await supabase
+        .from("events")
+        .select("id, certificate_enabled, certificate_template_path, certificate_text_color")
+        .in("id", eventIds);
+      for (const item of certificateRows ?? []) certificateByEvent.set(item.id, item);
+    }
     let registrationModuleReady = true;
     let windfitReady = true;
     let registrationRequired = false;
@@ -174,11 +183,55 @@ export async function GET(request: NextRequest) {
       route_active: (stage.route_versions ?? []).some((route: any) => route.is_active),
     }));
     const eventById = new Map((eventRows ?? []).map((event) => [event.id, event]));
-    const normalizedRegistrations = eligibleRegistrations.map((registration) => ({
-      ...registration,
-      event: eventById.get(registration.event_id) ?? null,
-      stage_count: normalizedStages.filter((stage: any) => stage.event_id === registration.event_id).length,
-    }));
+    const certificateResultByIdentity = new Map<string, any>();
+    if (eventIds.length && certificateByEvent.size) {
+      const { data: officialResults } = await supabase
+        .from("stage_results")
+        .select("event_id, stage_id, athlete_id, registration_id, full_name, bib_number, category, final_time_s, position, weighted_points, status")
+        .in("event_id", eventIds)
+        .in("status", ["official", "disqualified", "dnf"]);
+      for (const eventId of eventIds) {
+        const eventStages = normalizedStages.filter((stage: any) => stage.event_id === eventId);
+        if (!eventStages.length || !eventStages.every((stage: any) => stage.results_published === true)) continue;
+        const stageById = new Map(eventStages.map((stage: any) => [stage.id, stage]));
+        const source = (officialResults ?? []).filter((item: any) => item.event_id === eventId && stageById.has(item.stage_id));
+        const overall = buildOverallClassification(source.map((item: any) => ({
+          athlete_id: item.athlete_id, registration_id: item.registration_id, full_name: item.full_name,
+          bib_number: item.bib_number, category: item.category, stage_id: item.stage_id,
+          stage_number: Number((stageById.get(item.stage_id) as any)?.stage_number ?? 0), position: item.position,
+          final_time_s: Number(item.final_time_s), weighted_points: Number(item.weighted_points), status: item.status,
+        })), eventStages.length);
+        for (const item of overall) {
+          const value = { ...item, total_time_s: item.stage_results.reduce((total, result) => total + Number(result.final_time_s), 0) };
+          certificateResultByIdentity.set(`${eventId}:${item.registration_id || item.athlete_id}`, value);
+          certificateResultByIdentity.set(`${eventId}:${item.athlete_id}`, value);
+        }
+      }
+    }
+    const normalizedRegistrations = eligibleRegistrations.map((registration) => {
+      const event = eventById.get(registration.event_id) ?? null;
+      const config = certificateByEvent.get(registration.event_id);
+      const classification = certificateResultByIdentity.get(`${registration.event_id}:${registration.id}`)
+        ?? certificateResultByIdentity.get(`${registration.event_id}:${registration.athlete_id}`);
+      const templateUrl = config?.certificate_template_path
+        ? supabase.storage.from("certificate-templates").getPublicUrl(config.certificate_template_path).data.publicUrl
+        : null;
+      return {
+        ...registration,
+        event,
+        stage_count: normalizedStages.filter((stage: any) => stage.event_id === registration.event_id).length,
+        certificate: {
+          enabled: config?.certificate_enabled === true && Boolean(templateUrl),
+          available: config?.certificate_enabled === true && Boolean(templateUrl) && classification?.eligible_for_title === true,
+          template_url: templateUrl,
+          text_color: config?.certificate_text_color || "#171a16",
+          total_time_s: classification?.total_time_s ?? null,
+          total_points: classification?.total_points ?? null,
+          category_position: classification?.overall_position ?? null,
+          issued_at: classification ? new Date().toISOString() : null,
+        },
+      };
+    });
     const confirmedRegistration = eligibleRegistrations[0] ?? null;
 
     return NextResponse.json({
