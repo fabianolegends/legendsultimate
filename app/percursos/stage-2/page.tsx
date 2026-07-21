@@ -98,7 +98,7 @@ export default function StageTwo() {
               <em>São Francisco de Paula → Gramado</em>
             </div>
             <div className="profileChartWrap">
-              <img className="exactProfile" src="/stage-2-profile-rwgps-v2.jpg" alt="Perfil altimétrico oficial da Stage 2" />
+              <img className="exactProfile stageTwoProfileExact" src="/stage-2-profile-transparent.png" alt="Perfil altimétrico oficial da Stage 2" />
             </div>
             <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
