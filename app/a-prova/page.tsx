@@ -44,8 +44,11 @@ export default function AboutRace() {
           <div className="aboutNumbers">
             {numbers.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
           </div>
-          <RaceInfoMenu />
         </div>
+      </section>
+
+      <section className="raceInfoSection">
+        <div className="shell"><RaceInfoMenu /></div>
       </section>
 
       <section className="aboutConcept" id="conceito">
