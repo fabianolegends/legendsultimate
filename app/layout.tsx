@@ -18,7 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <style>{`.global-portal-access{position:fixed;right:20px;bottom:20px;z-index:5000;background:#e86619;color:#fff;text-decoration:none;padding:13px 18px;text-transform:uppercase;font:800 12px Arial,sans-serif;letter-spacing:.08em;box-shadow:0 8px 26px rgba(0,0,0,.25)}.global-portal-access:hover{background:#ff7825}@media(max-width:600px){.global-portal-access{right:12px;bottom:12px;padding:11px 14px}}`}</style>
+        <style>{`.global-portal-access{position:fixed;right:20px;bottom:20px;z-index:5000;background:#e86619;color:#fff;text-decoration:none;padding:13px 18px;text-transform:uppercase;font:800 12px Arial,sans-serif;letter-spacing:.08em;box-shadow:0 8px 26px rgba(0,0,0,.25)}.global-portal-access:hover{background:#ff7825}@media(min-width:641px){.global-portal-home{display:none}}@media(max-width:640px){.global-portal-access{right:12px;bottom:12px;padding:11px 14px}}`}</style>
         {children}
         <PortalAccess />
       </body>
