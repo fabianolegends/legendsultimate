@@ -1,0 +1,34 @@
+{
+  "name": "legends-ultimate",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "test:classification-engine": "node --import tsx --test lib/classification-engine/index.test.ts",
+    "test:race-engine": "node --import tsx --test lib/race-engine/index.test.ts",
+    "test:load": "node --import tsx tools/race-load-simulation.ts 500",
+    "test:race-day": "node --import tsx tools/race-load-simulation.ts 1000",
+    "test:complete-race": "node --import tsx tools/complete-race-simulation.ts 1000",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "leaflet": "^1.9.4",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-leaflet": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "tailwindcss": "4.2.1",
+    "tsx": "^4.23.1",
+    "typescript": "5.9.3"
+  }
+}
