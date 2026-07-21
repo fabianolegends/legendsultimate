@@ -624,16 +624,30 @@
   }
 
   .redesign .destinationNames a {
-    min-height: 230px !important;
-    padding: 22px 18px !important;
+    min-height: 185px !important;
+    padding: 14px 18px 16px !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
   }
 
   .redesign .destinationNames a .cityIcon {
-    height: 130px !important;
+    width: 100% !important;
+    height: 112px !important;
+    min-height: 112px !important;
+    overflow: hidden !important;
+  }
+
+  .redesign .destinationNames a .cityIcon img {
+    width: auto !important;
+    height: auto !important;
+    max-width: 58% !important;
+    max-height: 102px !important;
   }
 
   .redesign .destinationNames strong {
-    font-size: 34px !important;
+    width: 100%;
+    font-size: 29px !important;
+    line-height: .92 !important;
   }
 
   .redesign .kitCompactHead {
