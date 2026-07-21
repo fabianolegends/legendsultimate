@@ -406,15 +406,42 @@
 }
 
 @media (max-width: 760px) {
+  .redesign .manifestoRedesign > .wide.manifestoFeature {
+    min-height: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+  }
   .redesign .manifestoRedesign .manifestoContent {
     width: 100% !important;
+    max-width: none !important;
+    padding: 54px 22px 24px !important;
+  }
+  .redesign .manifestoRedesign .kicker {
+    margin-bottom: 22px !important;
+  }
+  .redesign .manifestoRedesign .manifestoQuote {
+    max-width: none !important;
+    font-size: clamp(31px, 9.4vw, 40px) !important;
+    line-height: 1.01 !important;
+    text-wrap: pretty !important;
+  }
+  .redesign .manifestoRedesign .manifestoButton {
+    width: 100% !important;
+    margin-top: 28px !important;
+    padding: 18px 20px !important;
   }
   .redesign .manifestoRedesign .manifestoKitVisual {
+    width: 100% !important;
     max-width: 760px !important;
-    padding: 4px 14px 46px !important;
+    margin: 0 auto !important;
+    padding: 10px 14px 46px !important;
+    justify-self: stretch !important;
   }
   .redesign .manifestoRedesign .manifestoKitVisual img {
-    transform: scale(1.09);
+    width: 100% !important;
+    transform: none !important;
   }
   .redesign .kitEditorial {
     margin-top: 48px;
