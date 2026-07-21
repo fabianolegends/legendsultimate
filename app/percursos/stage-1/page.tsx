@@ -45,7 +45,7 @@ export default function StageOne() {
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Canela → São Francisco de Paula</em></div>
             <div className="profileChartWrap">
-              <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1" />
+              <img className="exactProfile" src="/stage-1-profile-final.png" alt="Perfil altimétrico oficial da Stage 1" />
             </div>
             <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
