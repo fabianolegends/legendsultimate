@@ -97,8 +97,8 @@ export default function StageThree() {
             </div>
             <div className="profileChartWrap">
               <img
-                className="exactProfile"
-                src="/stage-3-profile-rwgps-v2.jpg"
+                className="exactProfile stageThreeProfileExact"
+                src="/stage-3-profile-transparent.png"
                 alt="Perfil altimétrico oficial da Stage 3"
               />
             </div>
