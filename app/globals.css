@@ -111,7 +111,7 @@
   height:auto;
   margin:0;
   border:0;
-  background:#000;
+  background:transparent;
   object-fit:contain;
   filter:none;
   mix-blend-mode:normal;
