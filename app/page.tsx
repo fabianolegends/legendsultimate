@@ -119,7 +119,7 @@ export default function Home() {
       <section className="heroRedesign" id="inicio">
         <nav className="nav wide" aria-label="Navegação principal">
           <a className="brand" href="#inicio"><Logo /></a>
-          <div className="navLinks"><a href="/a-prova">A prova</a><a href="#modalidades">Modalidades</a><a href="#percurso">Percurso</a><a href="/race-engine">Race Engine</a><a href="#faq">FAQ</a></div>
+          <div className="navLinks"><a href="/a-prova">A prova</a><a href="/#percurso">Percursos</a><a href="#modalidades">Modalidades</a><a href="/race-engine">Race Engine</a><a href="#faq">FAQ</a></div>
           <a className="navCta" href="/acesso">Atleta / Organizador</a>
         </nav>
         <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a diversão começa.</h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Quatro etapas, quatro cidades e uma travessia criada para quem procura muito mais do que uma prova.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
