@@ -61,22 +61,6 @@ export default function AboutRace() {
         </div>
       </section>
 
-      <section className="aboutGallery shell" aria-label="Experiência Legends">
-        <div className="galleryMain">
-          <img src="/about-gravel-modern-wide.webp" alt="Ciclistas de gravel percorrendo as estradas da Serra Gaúcha" />
-          <span>Quatro dias. Um território inesquecível.</span>
-        </div>
-        <div className="galleryStatement">
-          <p className="detailEyebrow">Mais que quilômetros</p>
-          <h2>O desafio termina.<br /><em>A história permanece.</em></h2>
-          <p>Cada chegada reúne esforço, território e pessoas. É essa experiência que transforma participantes em Legends.</p>
-        </div>
-        <div className="galleryPortrait">
-          <img src="/about-gravel-modern-portrait.webp" alt="Grupo de ciclistas em uma etapa de gravel na Serra Gaúcha" />
-          <span>Quem aceita o desafio escreve a própria lenda.</span>
-        </div>
-      </section>
-
       <section className="aboutNavigation shell" id="autonavegacao">
         <div>
           <p className="detailEyebrow">Autonavegação</p>
