@@ -44,14 +44,13 @@ export default function StageFour() {
           </div>
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Nova Petrópolis → Gramado</em></div>
-            <img className="exactProfile" src="/stage-4-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 4 extraído do Komoot" />
-            <p className="technicalSource">Perfil técnico oficial · Komoot</p>
+            <img className="exactProfile" src="/stage-4-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 4" />
+            <p className="technicalSource">Perfil técnico oficial</p>
           </div>
         </div>
         <div className="routeMapPanel">
           <div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Nova Petrópolis → Gramado · 70,0 km</p></div>
-          <img src="/stage-4-map-exact.jpg" alt="Mapa oficial do percurso da Stage 4 no Komoot" />
-          <a href="https://www.komoot.com/pt-br/tour/3089092095" target="_blank" rel="noreferrer">Explorar mapa no Komoot ↗</a>
+          <img src="/stage-4-map-exact.jpg" alt="Mapa oficial do percurso da Stage 4" />
         </div>
       </section>
       <section className="stageData">
@@ -69,7 +68,6 @@ export default function StageFour() {
           <div>
             <p className="detailEyebrow">Superfícies</p>
             <dl className="dataList">{surfaces.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-            <a className="button detailButton" href="https://www.komoot.com/pt-br/tour/3089092095" target="_blank" rel="noreferrer">Ver percurso no Komoot <span>↗</span></a>
           </div>
         </div>
       </section>
