@@ -8,10 +8,11 @@ const numbers = [
 ];
 
 const journey = [
-  ["01", "Antes da largada", "Recepção dos atletas, entrega do kit, orientações técnicas e disponibilização dos arquivos de navegação."],
-  ["02", "Durante a etapa", "Cada atleta percorre a rota por autonavegação, administrando ritmo, alimentação, hidratação e estratégia."],
-  ["03", "Ao cruzar a chegada", "A estrutura de chegada recebe os participantes para recuperação, convivência e preparação para o dia seguinte."],
-  ["04", "A consagração", "Quem completa a travessia vive a chegada final em Canela e passa a fazer parte da história da Legends."],
+  ["01", "Prepare", "Receba o GPX oficial, confira seu equipamento e participe do briefing."],
+  ["02", "Pedale", "Siga a rota por GPS e administre ritmo, hidratação e estratégia."],
+  ["03", "Sincronize", "Ao concluir, conecte sua atividade ao Legends Passport."],
+  ["04", "Valide", "O Race Engine confere percurso e passagens nos checkpoints digitais."],
+  ["05", "Acompanhe", "Veja sua etapa validada e, na Gravel Race, tempos, pontos e classificação."],
 ];
 
 const stagePoints = [
@@ -89,9 +90,15 @@ export default function AboutRace() {
 
       <section className="dailyJourney" id="como-funciona">
         <div className="shell">
-          <div className="journeyHead"><p className="detailEyebrow">Como funciona</p><h2>Um dia de cada vez.<br /><em>Uma história contínua.</em></h2></div>
+          <div className="journeyHead"><div><p className="detailEyebrow">Como funciona</p><h2>Do percurso<br /><em>ao resultado.</em></h2></div><p className="journeyIntro">Uma sequência simples para o participante. O sistema trabalha nos bastidores e apresenta apenas o que importa.</p></div>
           <div className="journeyGrid">
             {journey.map(([number, title, text]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}
+          </div>
+          <div className="journeyEngine">
+            <div className="journeyEngineCopy"><p className="detailEyebrow">Legends Race Engine</p><h3>Uma tecnologia.<br />Duas experiências.</h3><p>O mesmo sistema valida a jornada respeitando o objetivo escolhido por cada participante.</p></div>
+            <div className="journeyMode"><span>Competição</span><strong>Gravel Race</strong><p>Tempos, pontos e classificação por categoria.</p></div>
+            <div className="journeyMode journeyModeExperience"><span>Experiência</span><strong>MTB e E-bike</strong><p>Etapas validadas e certificado, sem ranking competitivo.</p></div>
+            <a className="journeyEngineLink" href="/race-engine">Conheça o Race Engine <span>→</span></a>
           </div>
         </div>
       </section>
