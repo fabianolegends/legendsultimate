@@ -31,6 +31,7 @@ const groups: Array<{ label: string; items: NavItem[] }> = [
   ] },
   { label: "Administração", items: [
     { href: "/passport/organizacao/seguranca", label: "Equipe e segurança", icon: "◫" },
+        { href: "/passport/organizacao/interessados", label: "Lista prioritária", icon: "✦" },
   ] },
 ];
 
