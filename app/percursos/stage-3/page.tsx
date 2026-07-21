@@ -98,9 +98,9 @@ export default function StageThree() {
             <img
               className="exactProfile"
               src="/stage-3-profile-exact.jpg"
-              alt="Perfil altimétrico oficial da Stage 3 extraído do Komoot"
+              alt="Perfil altimétrico oficial da Stage 3"
             />
-            <p className="technicalSource">Perfil técnico oficial · Komoot</p>
+            <p className="technicalSource">Perfil técnico oficial</p>
           </div>
         </div>
         <div className="routeMapPanel">
@@ -113,15 +113,8 @@ export default function StageThree() {
           </div>
           <img
             src="/stage-3-map-exact.jpg"
-            alt="Mapa oficial do percurso da Stage 3 no Komoot"
+            alt="Mapa oficial do percurso da Stage 3"
           />
-          <a
-            href="https://www.komoot.com/pt-br/tour/3089095978"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Explorar mapa no Komoot ↗
-          </a>
         </div>
       </section>
       <section className="stageData">
@@ -161,14 +154,6 @@ export default function StageThree() {
                 </div>
               ))}
             </dl>
-            <a
-              className="button detailButton"
-              href="https://www.komoot.com/pt-br/tour/3089095978"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Ver percurso no Komoot <span>↗</span>
-            </a>
           </div>
         </div>
       </section>
