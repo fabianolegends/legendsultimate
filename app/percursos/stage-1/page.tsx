@@ -1,15 +1,13 @@
 const facts = [
-  ["111 km", "Distância"],
-  ["1.420 m", "Ascensão"],
-  ["1.350 m", "Descida"],
-  ["78%", "Não pavimentado"],
+  ["111,9 km", "Distância"],
+  ["1.684 m", "Ascensão"],
+  ["1.621 m", "Descida"],
+  ["79%", "Não pavimentado"],
 ];
 
 const surfaces = [
-  ["Não pavimentado", "86,9 km"],
-  ["Asfalto", "11,6 km"],
-  ["Pavimentado", "11,2 km"],
-  ["Paralelepípedo", "1,14 km"],
+  ["Não pavimentado", "88 km"],
+  ["Pavimentado", "23,9 km"],
 ];
 
 export default function StageOne() {
@@ -37,9 +35,9 @@ export default function StageOne() {
         <div className="performancePanel">
           <div className="surfacePanel">
             <div className="panelTop"><span>01</span><p>Composição do terreno</p></div>
-            <strong className="terrainHero">78<small>%</small></strong>
+            <strong className="terrainHero">79<small>%</small></strong>
             <p className="terrainLabel">não pavimentado</p>
-            <div className="surfaceBar"><i /><i /><i /><i /></div>
+            <div className="surfaceBar surfaceBarTwo"><i /><i /></div>
             <div className="surfaceLegend">
               {surfaces.map(([label,value], index) => <div key={label}><span className={`surfaceDot dot${index + 1}`} /><p>{label}</p><strong>{value}</strong></div>)}
             </div>
@@ -47,15 +45,19 @@ export default function StageOne() {
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Canela → São Francisco de Paula</em></div>
             <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1" />
-            <p className="technicalSource">Perfil técnico oficial</p>
+            <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
         </div>
-        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Canela → São Francisco de Paula · 111 km</p></div><img src="/stage-1-map-exact.jpg" alt="Mapa oficial do percurso da Stage 1" /></div>
+        <div className="routeMapPanel">
+          <div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Canela → São Francisco de Paula · 111,9 km</p></div>
+          <img src="/stage-1-map-exact.jpg" alt="Mapa oficial do percurso da Stage 1" />
+          <a href="https://ridewithgps.com/routes/56232690" target="_blank" rel="noreferrer">Abrir rota no Ride with GPS ↗</a>
+        </div>
       </section>
 
       <section className="stageData">
         <div className="shell stageDataGrid">
-          <div><p className="detailEyebrow">Características</p><dl className="dataList"><div><dt>Largada</dt><dd>Canela</dd></div><div><dt>Chegada</dt><dd>São Francisco de Paula</dd></div><div><dt>Ponto mais alto</dt><dd>990 m</dd></div><div><dt>Ponto mais baixo</dt><dd>640 m</dd></div><div><dt>Tempo-limite</dt><dd>10 horas</dd></div></dl></div>
+          <div><p className="detailEyebrow">Características</p><dl className="dataList"><div><dt>Largada</dt><dd>Canela</dd></div><div><dt>Chegada</dt><dd>São Francisco de Paula</dd></div><div><dt>Ponto mais alto</dt><dd>990 m</dd></div><div><dt>Ponto mais baixo</dt><dd>650 m</dd></div><div><dt>Tempo estimado</dt><dd>5h24</dd></div><div><dt>Inclinação máxima</dt><dd>+10,8% / -11,0%</dd></div><div><dt>Tempo-limite</dt><dd>10 horas</dd></div></dl></div>
           <div><p className="detailEyebrow">Superfícies</p><dl className="dataList">{surfaces.map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div>
         </div>
       </section>
