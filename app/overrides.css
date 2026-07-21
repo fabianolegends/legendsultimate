@@ -433,11 +433,11 @@
     padding: 18px 20px !important;
   }
   .redesign .manifestoRedesign .manifestoKitVisual {
-    width: 100% !important;
+    width: calc(100% - 20px) !important;
     max-width: 760px !important;
     margin: 0 auto !important;
-    padding: 10px 14px 46px !important;
-    justify-self: stretch !important;
+    padding: 10px 0 46px !important;
+    justify-self: center !important;
   }
   .redesign .manifestoRedesign .manifestoKitVisual img {
     width: 100% !important;
