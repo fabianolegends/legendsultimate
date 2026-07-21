@@ -123,7 +123,8 @@ export default function AthletePassportPage() {
     try{
       const image=await new Promise<HTMLImageElement>((resolve,reject)=>{const item=new Image();item.crossOrigin="anonymous";item.onload=()=>resolve(item);item.onerror=()=>reject(new Error("Não foi possível carregar a arte do certificado."));item.src=certificate.template_url!;});
       const canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
-      const context=canvas.getContext("2d");if(!context)throw new Error("Seu navegador não conseguiu gerar o certificado.");
+      const canvasContext=canvas.getContext("2d");if(!canvasContext)throw new Error("Seu navegador não conseguiu gerar o certificado.");
+      const context:CanvasRenderingContext2D=canvasContext;
       context.drawImage(image,0,0);context.textAlign="center";context.textBaseline="middle";context.fillStyle=certificate.text_color||"#171a16";
       const unit=canvas.width/3508;context.shadowColor="rgba(255,255,255,.55)";context.shadowBlur=2*unit;
       function line(text:string,y:number,size:number,weight=700,maxWidth=.78){
