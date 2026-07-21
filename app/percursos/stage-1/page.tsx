@@ -44,13 +44,15 @@ export default function StageOne() {
           </div>
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Canela → São Francisco de Paula</em></div>
-            <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1" />
+            <div className="profileChartWrap">
+              <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1" />
+            </div>
             <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
         </div>
         <div className="routeMapPanel">
           <div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Canela → São Francisco de Paula · 111,9 km</p></div>
-          <img src="/stage-1-map-exact.jpg" alt="Mapa oficial do percurso da Stage 1" />
+          <img src="/stage-1-map-rwgps-v2.jpg" alt="Mapa oficial do percurso da Stage 1" />
           <a href="https://ridewithgps.com/routes/56232690" target="_blank" rel="noreferrer">Abrir rota no Ride with GPS ↗</a>
         </div>
       </section>

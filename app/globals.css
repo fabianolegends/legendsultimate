@@ -96,3 +96,8 @@
 
 /* Stage 1 official Ride with GPS data */
 .surfaceBar.surfaceBarTwo{grid-template-columns:79fr 21fr}
+.elevationPanel:has(.profileChartWrap){display:flex;flex-direction:column;justify-content:stretch}
+.profileChartWrap{display:flex;flex:1;min-height:270px;align-items:center;justify-content:center;overflow:hidden}
+.profileChartWrap .exactProfile{width:108%;max-width:none;margin:0 -4%;border:0;background:#0d100e;filter:invert(1) hue-rotate(180deg) brightness(.94) contrast(1.08) saturate(.9);mix-blend-mode:screen;clip-path:inset(0 0 5% 0)}
+.elevationPanel:has(.profileChartWrap) .technicalSource{flex:0 0 auto;margin-top:0}
+@media(max-width:600px){.profileChartWrap{min-height:190px}.profileChartWrap .exactProfile{width:114%;margin:0 -7%}}
