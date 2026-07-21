@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
 const ALLOWED_STATUS = new Set(["new", "contacted", "archived"]);
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   if (!(await isAdminRequest(request, "registrations.manage"))) {
     return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 });
   }
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
   if (!(await isAdminRequest(request, "registrations.manage"))) {
     return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 });
   }
