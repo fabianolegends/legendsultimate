@@ -97,11 +97,11 @@ export default function StageTwo() {
               <p>Perfil de elevação</p>
               <em>São Francisco de Paula → Gramado</em>
             </div>
-            <img className="exactProfile" src="/stage-2-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 2 extraído do Komoot" />
-            <p className="technicalSource">Perfil técnico oficial · Komoot</p>
+            <img className="exactProfile" src="/stage-2-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 2" />
+            <p className="technicalSource">Perfil técnico oficial</p>
           </div>
         </div>
-        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>São Francisco de Paula → Gramado · 89,1 km</p></div><img src="/stage-2-map-exact.jpg" alt="Mapa oficial do percurso da Stage 2 no Komoot" /><a href="https://www.komoot.com/pt-br/tour/3089094539" target="_blank" rel="noreferrer">Explorar mapa no Komoot ↗</a></div>
+        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>São Francisco de Paula → Gramado · 89,1 km</p></div><img src="/stage-2-map-exact.jpg" alt="Mapa oficial do percurso da Stage 2" /></div>
       </section>
       <section className="stageData">
         <div className="shell stageDataGrid">
@@ -140,14 +140,6 @@ export default function StageTwo() {
                 </div>
               ))}
             </dl>
-            <a
-              className="button detailButton"
-              href="https://www.komoot.com/pt-br/tour/3089094539"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Ver percurso no Komoot <span>↗</span>
-            </a>
           </div>
         </div>
       </section>
