@@ -44,7 +44,7 @@ export default function StageFour() {
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Nova Petrópolis → Canela</em></div>
             <div className="profileChartWrap">
-              <img className="exactProfile" src="/stage-4-profile-rwgps-v2.jpg" alt="Perfil altimétrico oficial da Stage 4" />
+              <img className="exactProfile stageFourProfileExact" src="/stage-4-profile-transparent.png" alt="Perfil altimétrico oficial da Stage 4" />
             </div>
             <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
