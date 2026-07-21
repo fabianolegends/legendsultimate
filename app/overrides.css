@@ -461,3 +461,63 @@
     height: 270px;
   }
 }
+
+/* Home — diferenciais mais compactos no mobile */
+@media (max-width: 640px) {
+  .redesign .factsBand {
+    padding: 54px 0 !important;
+  }
+
+  .redesign .factsBand .sectionHead {
+    gap: 20px !important;
+    margin-bottom: 34px !important;
+  }
+
+  .redesign .factsBand .kicker {
+    margin-bottom: 14px !important;
+    font-size: 12px !important;
+    letter-spacing: .18em !important;
+  }
+
+  .redesign .factsBand .sectionHead h2 {
+    font-size: clamp(39px, 11.2vw, 46px) !important;
+    line-height: .94 !important;
+  }
+
+  .redesign .factsBand .sectionHead > p {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .redesign .factsGrid {
+    border-bottom: 0 !important;
+  }
+
+  .redesign .factsGrid .fact {
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    column-gap: 12px !important;
+    row-gap: 7px !important;
+    align-items: start !important;
+    padding: 22px 2px !important;
+  }
+
+  .redesign .factsGrid .fact span {
+    grid-row: 1 / 3;
+    padding-top: 3px;
+    font-size: 12px !important;
+  }
+
+  .redesign .factsGrid .fact h3 {
+    margin: 0 !important;
+    font-size: 27px !important;
+    line-height: 1 !important;
+  }
+
+  .redesign .factsGrid .fact p {
+    margin: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+}
