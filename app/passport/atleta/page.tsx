@@ -138,7 +138,7 @@ export default function AthletePassportPage() {
       line(`Tempo oficial: ${formatDuration(certificate.total_time_s)}  ·  ${certificate.category_position}º lugar na categoria`,0.75,34,700,.80);
       line(`${Math.round(Number(certificate.total_points??0))} pontos  ·  Nº ${registration.bib_number??"—"}`,0.81,27,500,.72);
       line(`Emitido pelo Legends Core em ${new Date(certificate.issued_at??Date.now()).toLocaleDateString("pt-BR")}`,0.91,18,400,.76);
-      const link=document.createElement("a");link.download=`certificado-${eventName.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}.png`;link.href=canvas.toDataURL("image/png");link.click();
+      const link=document.createElement("a");link.download=`certificado-${eventName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}.png`;link.href=canvas.toDataURL("image/png");link.click();
       setMessage("Certificado gerado com sucesso.");
     }catch(error){setMessage(error instanceof Error?error.message:"Não foi possível gerar o certificado.");}
     finally{setCertificateDownloading(false);}
