@@ -101,3 +101,26 @@
 .profileChartWrap .exactProfile{width:108%;max-width:none;margin:0 -4%;border:0;background:#0d100e;filter:invert(1) hue-rotate(180deg) brightness(.94) contrast(1.08) saturate(.9);mix-blend-mode:screen;clip-path:inset(0 0 5% 0)}
 .elevationPanel:has(.profileChartWrap) .technicalSource{flex:0 0 auto;margin-top:0}
 @media(max-width:600px){.profileChartWrap{min-height:190px}.profileChartWrap .exactProfile{width:114%;margin:0 -7%}}
+
+
+/* Stage 1: preserve the supplied black PNG exactly, without the legacy profile treatment */
+.profileChartWrap .exactProfile.stageOneProfileExact{
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+  margin:0;
+  border:0;
+  background:#000;
+  object-fit:contain;
+  filter:none;
+  mix-blend-mode:normal;
+  clip-path:none;
+}
+@media(max-width:600px){
+  .profileChartWrap .exactProfile.stageOneProfileExact{
+    width:100%;
+    max-width:100%;
+    margin:0;
+  }
+}
