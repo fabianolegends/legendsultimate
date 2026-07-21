@@ -135,6 +135,10 @@ export default function Home() {
           <h2 className="manifestoQuote">A Legends não foi criada para quem procura apenas uma medalha. Foi criada para quem acredita que a bicicleta é o melhor passaporte para <em>descobrir lugares, pessoas e histórias.</em></h2>
           <a className="manifestoButton" href="/a-prova"><span>Entenda como funciona a Legends</span><span>→</span></a>
         </div>
+        <figure className="manifestoKitVisual">
+          <img src="/kit-legends-ultimate.webp" alt="Kit oficial da prova Legends Ultimate com vestuário e acessórios" />
+          <figcaption>Kit oficial Legends Ultimate</figcaption>
+        </figure>
       </div></section>
 
       <section className="modes" id="modalidades"><div className="wide"><div className="sectionHead"><div><p className="kicker">Escolha como viver a Legends</p><h2>Competir ou experimentar.<br /><em>A jornada é a mesma.</em></h2></div><p>O participante escolhe o propósito: disputar a classificação no gravel ou realizar a travessia em modo turismo.</p></div><div className="modeGrid"><div className="modeCard dark"><span className="tag">Modalidade competitiva</span><h3>Legends Gravel Race</h3><p>Para ciclistas de gravel ou cyclocross que desejam disputar as quatro etapas com tempo registrado, classificação por pontos, categorias e premiação final.</p><ul><li>Classificação oficial</li><li>Pontuação por etapa</li><li>Categorias por idade</li><li>Troféus ao final da travessia</li></ul></div><div className="modeCard"><span className="tag">Modalidade turismo</span><h3>Legends Experience</h3><p>Para participantes de MTB e E-bike que desejam viver o mesmo percurso e a mesma estrutura, sem pressão por tempo, ranking ou resultado competitivo.</p><ul><li>Sem classificação</li><li>MTB e E-bike permitidas</li><li>Mesma logística e segurança</li><li>Foco em turismo e desafio pessoal</li></ul></div></div></div></section>
