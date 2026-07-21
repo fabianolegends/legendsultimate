@@ -521,3 +521,625 @@
     line-height: 1.5 !important;
   }
 }
+
+/* Revisão geral — ritmo e proporções harmonizados no mobile */
+@media (max-width: 640px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .redesign .heroRedesign {
+    min-height: 780px !important;
+  }
+
+  .redesign .heroMain {
+    padding: 34px 0 26px !important;
+  }
+
+  .redesign .heroCopy h1 {
+    max-width: 350px;
+    font-size: clamp(46px, 13.8vw, 56px) !important;
+    line-height: .88 !important;
+  }
+
+  .redesign .heroIntro {
+    max-width: 355px;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .redesign .heroCtas {
+    gap: 16px !important;
+  }
+
+  .redesign .heroCtas .button,
+  .redesign .manifestoButton,
+  .redesign .engineLink {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .redesign .routePreview,
+  .redesign .modes,
+  .redesign .destinationStory,
+  .redesign .includedSection,
+  .redesign .safetySection,
+  .redesign .profileSection,
+  .redesign .faqSection,
+  .redesign .engineHome {
+    padding: 58px 0 !important;
+  }
+
+  .redesign .sectionHead {
+    gap: 20px !important;
+    margin-bottom: 32px !important;
+  }
+
+  .redesign .sectionHead h2,
+  .redesign .kitCompactHead h2,
+  .redesign .engineHome h2 {
+    font-size: clamp(39px, 11vw, 46px) !important;
+    line-height: .94 !important;
+  }
+
+  .redesign .sectionHead > p,
+  .redesign .kitCompactHead > p,
+  .redesign .engineIntroSide > p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .redesign .routeSummary span {
+    padding: 12px 14px !important;
+  }
+
+  .redesign .stageNew {
+    min-height: 250px !important;
+    padding: 20px !important;
+  }
+
+  .redesign .stageNew img {
+    height: 108px !important;
+  }
+
+  .redesign .stageNew h3 {
+    font-size: 30px !important;
+  }
+
+  .redesign .modeCard {
+    padding: 24px 22px !important;
+  }
+
+  .redesign .modeCard h3 {
+    font-size: 32px !important;
+  }
+
+  .redesign .modeCard p,
+  .redesign .modeCard li {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .redesign .destinationNames a {
+    min-height: 230px !important;
+    padding: 22px 18px !important;
+  }
+
+  .redesign .destinationNames a .cityIcon {
+    height: 130px !important;
+  }
+
+  .redesign .destinationNames strong {
+    font-size: 34px !important;
+  }
+
+  .redesign .kitCompactHead {
+    margin-bottom: 22px !important;
+  }
+
+  .redesign .kitDetailMedia {
+    height: 255px !important;
+  }
+
+  .redesign .supportGroup,
+  .redesign .safetyCard,
+  .redesign .engineCard {
+    padding: 18px !important;
+  }
+
+  .redesign .profileBox {
+    gap: 25px !important;
+  }
+
+  .redesign .profileBox blockquote {
+    font-size: 39px !important;
+  }
+
+  .redesign .faqList summary {
+    padding: 18px 0 !important;
+    font-size: 20px !important;
+  }
+
+  .redesign .priorityCta {
+    padding: 76px 0 !important;
+  }
+
+  .redesign .priorityCta h2 {
+    font-size: 52px !important;
+  }
+
+  /* Página A prova */
+  .aboutRacePage .aboutHero {
+    padding-top: 58px !important;
+  }
+
+  .aboutRacePage .aboutHero h1 {
+    margin: 22px 0 !important;
+    font-size: 48px !important;
+    line-height: .88 !important;
+  }
+
+  .aboutRacePage .aboutLead {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .aboutRacePage .aboutNumbers {
+    margin-top: 42px !important;
+  }
+
+  .aboutRacePage .aboutNumbers div {
+    padding: 18px 14px !important;
+  }
+
+  .aboutRacePage .aboutNumbers strong {
+    font-size: 35px !important;
+  }
+
+  .aboutRacePage .raceInfoSection .raceInfoMenu,
+  .aboutRacePage .aboutConcept,
+  .aboutRacePage .aboutNavigation,
+  .aboutRacePage .dailyJourney,
+  .aboutRacePage .aboutAudience,
+  .aboutRacePage .classificationSection {
+    padding-block: 58px !important;
+  }
+
+  .aboutRacePage .raceInfoHead h2,
+  .aboutRacePage .aboutConcept h2,
+  .aboutRacePage .aboutNavigation h2,
+  .aboutRacePage .dailyJourney h2,
+  .aboutRacePage .aboutAudience h2,
+  .aboutRacePage .classificationIntro h2 {
+    margin-bottom: 28px !important;
+    font-size: 40px !important;
+    line-height: .92 !important;
+  }
+
+  .aboutRacePage .raceInfoTrigger {
+    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
+    gap: 10px !important;
+    padding: 18px 2px !important;
+  }
+
+  .aboutRacePage .raceInfoTitle {
+    font-size: 21px !important;
+  }
+
+  .aboutRacePage .raceInfoSummary,
+  .aboutRacePage .raceInfoPanel p {
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+  }
+
+  .aboutRacePage .journeyGrid article {
+    min-height: 0 !important;
+    padding: 20px !important;
+  }
+
+  .aboutRacePage .journeyGrid h3 {
+    margin-top: 28px !important;
+  }
+
+  .aboutRacePage .journeyEngineCopy,
+  .aboutRacePage .journeyMode,
+  .aboutRacePage .journeyEngineLink {
+    padding: 22px !important;
+  }
+
+  .aboutRacePage .stageWeights {
+    margin-top: 42px !important;
+  }
+
+  .aboutRacePage .stageWeights article {
+    padding: 20px !important;
+  }
+
+  .aboutRacePage .stageWeights strong {
+    margin-top: 20px !important;
+    font-size: 46px !important;
+  }
+
+  .aboutRacePage .pointsTableWrap,
+  .aboutRacePage .classificationBottom,
+  .aboutRacePage .tieBreak {
+    margin-top: 58px !important;
+  }
+
+  .aboutRacePage .classificationBottom {
+    gap: 48px !important;
+  }
+
+  .aboutRacePage .tieBreak li {
+    padding: 20px !important;
+  }
+
+  /* Páginas das quatro etapas */
+  .stagePage .stageDetailNav {
+    height: 76px !important;
+  }
+
+  .stagePage .detailLogo {
+    height: 50px !important;
+  }
+
+  .stagePage .stageDetailHero {
+    min-height: 650px !important;
+  }
+
+  .stagePage .stageHeroInner {
+    padding-top: 54px !important;
+    padding-bottom: 22px !important;
+  }
+
+  .stagePage .stageKicker {
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  .stagePage .stageDetailHero h1 {
+    margin: 22px 0 !important;
+    font-size: 50px !important;
+  }
+
+  .stagePage .stageDetailHero > p,
+  .stagePage .stageHeroInner > p {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .stagePage .stageDetailHero .stageFacts {
+    margin-top: 32px !important;
+  }
+
+  .stagePage .stageFacts div {
+    padding: 15px 12px !important;
+  }
+
+  .stagePage .stageFacts strong {
+    font-size: 32px !important;
+  }
+
+  .stagePage .stageProfile,
+  .stagePage .stageData {
+    padding: 58px 0 !important;
+  }
+
+  .stagePage .profileIntro {
+    gap: 20px !important;
+    margin-bottom: 32px !important;
+  }
+
+  .stagePage .profileIntro h2 {
+    font-size: 39px !important;
+  }
+
+  .stagePage .profileIntro > p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .stagePage .surfacePanel {
+    padding: 25px 20px !important;
+  }
+
+  .stagePage .terrainHero {
+    margin-top: 34px !important;
+    font-size: 76px !important;
+  }
+
+  .stagePage .terrainLabel {
+    margin-bottom: 24px !important;
+  }
+
+  .stagePage .elevationPanel {
+    padding: 24px 10px !important;
+  }
+
+  .stagePage .routeMapPanel {
+    margin-top: 24px !important;
+    padding: 16px !important;
+  }
+
+  .stagePage .mapPanelHead {
+    display: grid !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .stagePage .mapPanelHead > p {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  .stagePage .stageDataGrid {
+    gap: 42px !important;
+  }
+
+  .stagePage .dataList {
+    margin-top: 20px !important;
+  }
+
+  .stagePage .dataList div {
+    gap: 16px !important;
+    padding: 15px 0 !important;
+  }
+
+  .stagePage .dataList dt {
+    font-size: 12px !important;
+  }
+
+  .stagePage .dataList dd {
+    font-size: 17px !important;
+  }
+
+  /* Destino */
+  .destinationPage .hero {
+    min-height: 460px !important;
+    padding: 58px 0 !important;
+  }
+
+  .destinationPage .hero h1 {
+    font-size: 50px !important;
+  }
+
+  .destinationPage .lead {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .destinationPage .story,
+  .destinationPage .cities,
+  .destinationPage .close {
+    padding: 58px 0 !important;
+  }
+
+  .destinationPage h2 {
+    font-size: 42px !important;
+  }
+
+  .destinationPage .story p,
+  .destinationPage .city p {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  .destinationPage .city {
+    min-height: 170px !important;
+    padding: 22px 18px !important;
+  }
+
+  .destinationPage .city h3 {
+    font-size: 32px !important;
+  }
+
+  .destinationPage .close blockquote {
+    font-size: 44px !important;
+  }
+
+  /* FAQ */
+  .faqPage .hero {
+    padding: 54px 0 !important;
+  }
+
+  .faqPage .hero h1 {
+    font-size: 52px !important;
+  }
+
+  .faqPage .lead {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .faqPage .group {
+    padding: 34px 0 !important;
+  }
+
+  .faqPage .group h2,
+  .faqPage .cta h2 {
+    font-size: 38px !important;
+  }
+
+  .faqPage details {
+    padding: 17px 0 !important;
+  }
+
+  .faqPage summary {
+    padding-right: 28px;
+    font-size: 19px !important;
+    line-height: 1.15 !important;
+  }
+
+  .faqPage details p {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  .faqPage .cta {
+    padding: 62px 0 !important;
+  }
+
+  /* Lista prioritária */
+  .priorityPage .content {
+    gap: 32px !important;
+    padding: 42px 0 58px !important;
+  }
+
+  .priorityPage .headline {
+    margin: 17px 0 20px !important;
+    font-size: 50px !important;
+    line-height: .88 !important;
+  }
+
+  .priorityPage .lead {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .priorityPage .facts {
+    margin-top: 24px !important;
+  }
+
+  .priorityPage .fact {
+    padding: 14px !important;
+  }
+
+  .priorityPage .fact strong {
+    font-size: 27px !important;
+  }
+
+  .priorityPage .panel {
+    padding: 25px 18px !important;
+  }
+
+  .priorityPage .panelTitle {
+    font-size: 34px !important;
+  }
+
+  .priorityPage .panelIntro {
+    font-size: 14px !important;
+  }
+
+  .priorityPage .field input,
+  .priorityPage .field textarea {
+    padding: 12px 13px !important;
+  }
+
+  .priorityPage .field textarea {
+    min-height: 96px !important;
+  }
+
+  /* Race Engine */
+  .enginePage .engineHero {
+    padding: 58px 0 48px !important;
+  }
+
+  .enginePage .engineHero h1 {
+    font-size: 50px !important;
+  }
+
+  .enginePage .engineLead {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .enginePage .enginePromise {
+    gap: 16px !important;
+    margin-top: 38px !important;
+    padding: 18px !important;
+  }
+
+  .enginePage .enginePromise strong {
+    font-size: 22px !important;
+  }
+
+  .enginePage .journey,
+  .enginePage .capabilities,
+  .enginePage .modesCompare,
+  .enginePage .integrity {
+    padding: 58px 0 !important;
+  }
+
+  .enginePage .sectionHead,
+  .enginePage .modeIntro {
+    gap: 20px !important;
+    margin-bottom: 32px !important;
+  }
+
+  .enginePage .sectionHead h2,
+  .enginePage .modeIntro h2,
+  .enginePage .integrity h2 {
+    font-size: 40px !important;
+  }
+
+  .enginePage .step,
+  .enginePage .cap {
+    padding: 20px !important;
+  }
+
+  .enginePage .step h3,
+  .enginePage .cap h3 {
+    margin: 24px 0 9px !important;
+    font-size: 26px !important;
+  }
+
+  .enginePage .mode {
+    padding: 24px 20px !important;
+  }
+
+  .enginePage .mode h3 {
+    font-size: 32px !important;
+  }
+
+  .enginePage .integrityList article {
+    grid-template-columns: 34px 1fr !important;
+    gap: 12px !important;
+    padding: 18px 0 !important;
+  }
+
+  .enginePage .engineCta {
+    padding: 72px 0 !important;
+  }
+
+  .enginePage .engineCta h2 {
+    font-size: 44px !important;
+  }
+
+  .enginePage .engineButton {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Portais públicos de acesso */
+  .access-page {
+    padding: 16px !important;
+  }
+
+  .access-page .access-top {
+    margin-bottom: 42px !important;
+  }
+
+  .access-page .access-hero {
+    margin-bottom: 32px !important;
+  }
+
+  .access-page .access-hero h1 {
+    font-size: 44px !important;
+  }
+
+  .access-page .access-hero p {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .access-page .access-card {
+    padding: 22px !important;
+  }
+
+  .access-page .access-card h2 {
+    font-size: 31px !important;
+  }
+}
