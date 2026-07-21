@@ -46,17 +46,17 @@ export default function StageOne() {
           </div>
           <div className="elevationPanel">
             <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Canela → São Francisco de Paula</em></div>
-            <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1 extraído do Komoot" />
-            <p className="technicalSource">Perfil técnico oficial · Komoot</p>
+            <img className="exactProfile" src="/stage-1-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 1" />
+            <p className="technicalSource">Perfil técnico oficial</p>
           </div>
         </div>
-        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Canela → São Francisco de Paula · 111 km</p></div><img src="/stage-1-map-exact.jpg" alt="Mapa oficial do percurso da Stage 1 no Komoot" /><a href="https://www.komoot.com/pt-br/tour/3089098231" target="_blank" rel="noreferrer">Explorar mapa no Komoot ↗</a></div>
+        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Canela → São Francisco de Paula · 111 km</p></div><img src="/stage-1-map-exact.jpg" alt="Mapa oficial do percurso da Stage 1" /></div>
       </section>
 
       <section className="stageData">
         <div className="shell stageDataGrid">
           <div><p className="detailEyebrow">Características</p><dl className="dataList"><div><dt>Largada</dt><dd>Canela</dd></div><div><dt>Chegada</dt><dd>São Francisco de Paula</dd></div><div><dt>Ponto mais alto</dt><dd>990 m</dd></div><div><dt>Ponto mais baixo</dt><dd>640 m</dd></div><div><dt>Tempo-limite</dt><dd>10 horas</dd></div></dl></div>
-          <div><p className="detailEyebrow">Superfícies</p><dl className="dataList">{surfaces.map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><a className="button detailButton" href="https://www.komoot.com/pt-br/tour/3089098231" target="_blank" rel="noreferrer">Ver percurso no Komoot <span>↗</span></a></div>
+          <div><p className="detailEyebrow">Superfícies</p><dl className="dataList">{surfaces.map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div>
         </div>
       </section>
 
