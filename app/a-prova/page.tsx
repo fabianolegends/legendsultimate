@@ -2,8 +2,8 @@ import RaceInfoMenu from "./RaceInfoMenu";
 
 const numbers = [
   ["04", "dias de prova"],
-  ["370 km", "de percurso"],
-  ["6.000 m", "de ascensão"],
+  ["370,3 km", "de percurso"],
+  ["6.302 m", "de ascensão"],
   ["75%", "em estradas de terra"],
 ];
 

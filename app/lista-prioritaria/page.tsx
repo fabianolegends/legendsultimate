@@ -86,8 +86,8 @@ export default function ListaPrioritaria() {
           <div className="facts">
             <div className="fact"><strong>100</strong><span>vagas previstas</span></div>
             <div className="fact"><strong>04</strong><span>dias de travessia</span></div>
-            <div className="fact"><strong>360</strong><span>quilômetros</span></div>
-            <div className="fact"><strong>6.000</strong><span>metros de ascensão</span></div>
+            <div className="fact"><strong>370,3</strong><span>quilômetros</span></div>
+            <div className="fact"><strong>6.302</strong><span>metros de ascensão</span></div>
           </div>
         </div>
 

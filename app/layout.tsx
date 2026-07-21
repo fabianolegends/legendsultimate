@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "Legends Ultimate Gravel Race",
-  description: "Quatro dias, 370 km e 6.000 m+ pelas estradas da Serra Gaúcha.",
+  description: "Quatro dias, 370,3 km e 6.302 m+ pelas estradas da Serra Gaúcha.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
