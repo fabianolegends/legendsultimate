@@ -97,11 +97,13 @@ export default function StageTwo() {
               <p>Perfil de elevação</p>
               <em>São Francisco de Paula → Gramado</em>
             </div>
-            <img className="exactProfile" src="/stage-2-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 2" />
-            <p className="technicalSource">Perfil técnico oficial</p>
+            <div className="profileChartWrap">
+              <img className="exactProfile" src="/stage-2-profile-rwgps-v2.jpg" alt="Perfil altimétrico oficial da Stage 2" />
+            </div>
+            <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
         </div>
-        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>São Francisco de Paula → Gramado · 89,1 km</p></div><img src="/stage-2-map-exact.jpg" alt="Mapa oficial do percurso da Stage 2" /></div>
+        <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>São Francisco de Paula → Gramado · 89,1 km</p></div><img src="/stage-2-map-rwgps-v2.jpg" alt="Mapa oficial do percurso da Stage 2" /></div>
       </section>
       <section className="stageData">
         <div className="shell stageDataGrid">

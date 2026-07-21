@@ -1,11 +1,11 @@
 const facts = [
-  ["99,7 km", "Distância"],
-  ["1.530 m", "Ascensão"],
-  ["1.800 m", "Descida"],
+  ["99,3 km", "Distância"],
+  ["1.522 m", "Ascensão"],
+  ["1.798 m", "Descida"],
   ["79%", "Não pavimentado"],
 ];
 const surfaces = [
-  ["Não pavimentado", "78,9 km"],
+  ["Não pavimentado", "78,5 km"],
   ["Asfalto", "17,5 km"],
   ["Pavimentado", "3,33 km"],
 ];
@@ -95,12 +95,14 @@ export default function StageThree() {
               <p>Perfil de elevação</p>
               <em>Gramado → Nova Petrópolis</em>
             </div>
-            <img
-              className="exactProfile"
-              src="/stage-3-profile-exact.jpg"
-              alt="Perfil altimétrico oficial da Stage 3"
-            />
-            <p className="technicalSource">Perfil técnico oficial</p>
+            <div className="profileChartWrap">
+              <img
+                className="exactProfile"
+                src="/stage-3-profile-rwgps-v2.jpg"
+                alt="Perfil altimétrico oficial da Stage 3"
+              />
+            </div>
+            <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
         </div>
         <div className="routeMapPanel">
@@ -109,10 +111,10 @@ export default function StageThree() {
               <span>03</span>
               <p>Mapa do trajeto</p>
             </div>
-            <p>Gramado → Nova Petrópolis · 99,7 km</p>
+            <p>Gramado → Nova Petrópolis · 99,3 km</p>
           </div>
           <img
-            src="/stage-3-map-exact.jpg"
+            src="/stage-3-map-rwgps-v2.jpg"
             alt="Mapa oficial do percurso da Stage 3"
           />
         </div>
@@ -137,6 +139,14 @@ export default function StageThree() {
               <div>
                 <dt>Ponto mais baixo</dt>
                 <dd>60 m</dd>
+              </div>
+              <div>
+                <dt>Tempo estimado</dt>
+                <dd>4h50</dd>
+              </div>
+              <div>
+                <dt>Inclinação máxima</dt>
+                <dd>+14,2% / -23,3%</dd>
               </div>
               <div>
                 <dt>Tempo-limite</dt>

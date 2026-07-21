@@ -1,13 +1,12 @@
 const facts = [
   ["70,0 km", "Distância"],
-  ["1.530 m", "Ascensão"],
-  ["1.270 m", "Descida"],
-  ["47%", "Não pavimentado"],
+  ["1.576 m", "Ascensão"],
+  ["1.316 m", "Descida"],
+  ["62%", "Não pavimentado"],
 ];
 const surfaces = [
-  ["Não pavimentado", "33,0 km"],
-  ["Asfalto", "28,7 km"],
-  ["Pavimentado", "8,43 km"],
+  ["Não pavimentado", "43,1 km"],
+  ["Pavimentado", "26,9 km"],
 ];
 
 export default function StageFour() {
@@ -19,9 +18,9 @@ export default function StageFour() {
       </header>
       <section className="stageDetailHero stage4Hero">
         <div className="shell stageHeroInner">
-          <div className="stageKicker"><span>Stage 04</span> Nova Petrópolis → Gramado</div>
+          <div className="stageKicker"><span>Stage 04</span> Nova Petrópolis → Canela</div>
           <h1>A chegada<br />da lenda.</h1>
-          <p>O capítulo final parte da tradição de Nova Petrópolis e cruza vales, colônias e caminhos de terra até a chegada em Gramado.</p>
+          <p>O capítulo final parte da tradição de Nova Petrópolis e cruza vales, colônias e caminhos de terra até a chegada em Canela.</p>
           <div className="stageFacts">
             {facts.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
           </div>
@@ -35,22 +34,24 @@ export default function StageFour() {
         <div className="performancePanel">
           <div className="surfacePanel">
             <div className="panelTop"><span>01</span><p>Composição do terreno</p></div>
-            <strong className="terrainHero">47<small>%</small></strong>
+            <strong className="terrainHero">62<small>%</small></strong>
             <p className="terrainLabel">não pavimentado</p>
-            <div className="surfaceBar stage4Surface"><i /><i /><i /></div>
+            <div className="surfaceBar surfaceBarTwo"><i /><i /></div>
             <div className="surfaceLegend">
               {surfaces.map(([label, value], index) => <div key={label}><span className={`surfaceDot dot${index + 1}`} /><p>{label}</p><strong>{value}</strong></div>)}
             </div>
           </div>
           <div className="elevationPanel">
-            <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Nova Petrópolis → Gramado</em></div>
-            <img className="exactProfile" src="/stage-4-profile-exact.jpg" alt="Perfil altimétrico oficial da Stage 4" />
-            <p className="technicalSource">Perfil técnico oficial</p>
+            <div className="panelTop"><span>02</span><p>Perfil de elevação</p><em>Nova Petrópolis → Canela</em></div>
+            <div className="profileChartWrap">
+              <img className="exactProfile" src="/stage-4-profile-rwgps-v2.jpg" alt="Perfil altimétrico oficial da Stage 4" />
+            </div>
+            <p className="technicalSource">Dados técnicos · Ride with GPS</p>
           </div>
         </div>
         <div className="routeMapPanel">
-          <div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Nova Petrópolis → Gramado · 70,0 km</p></div>
-          <img src="/stage-4-map-exact.jpg" alt="Mapa oficial do percurso da Stage 4" />
+          <div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Nova Petrópolis → Canela · 70,0 km</p></div>
+          <img src="/stage-4-map-rwgps-v2.jpg" alt="Mapa oficial do percurso da Stage 4" />
         </div>
       </section>
       <section className="stageData">
@@ -59,9 +60,11 @@ export default function StageFour() {
             <p className="detailEyebrow">Características</p>
             <dl className="dataList">
               <div><dt>Largada</dt><dd>Nova Petrópolis</dd></div>
-              <div><dt>Chegada</dt><dd>Gramado</dd></div>
+              <div><dt>Chegada</dt><dd>Canela</dd></div>
               <div><dt>Ponto mais alto</dt><dd>850 m</dd></div>
               <div><dt>Ponto mais baixo</dt><dd>500 m</dd></div>
+              <div><dt>Tempo estimado</dt><dd>3h41</dd></div>
+              <div><dt>Inclinação máxima</dt><dd>+12,2% / -13,1%</dd></div>
               <div><dt>Tempo-limite</dt><dd>6 horas</dd></div>
             </dl>
           </div>

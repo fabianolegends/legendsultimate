@@ -8,8 +8,8 @@ const metrics = [
 const stages = [
   { n: "STAGE 01", city: "Canela", stats: "111 km · 1.420 m+", route: "/stage-route-1.png", href: "/percursos/stage-1" },
   { n: "STAGE 02", city: "São Francisco de Paula", stats: "89,1 km · 1.520 m+", route: "/stage-route-2.png", href: "/percursos/stage-2" },
-  { n: "STAGE 03", city: "Gramado", stats: "99,7 km · 1.530 m+", route: "/stage-route-3.png", href: "/percursos/stage-3" },
-  { n: "STAGE 04", city: "Nova Petrópolis", stats: "70 km · 1.530 m+", route: "/stage-route-4.png", href: "/percursos/stage-4" },
+  { n: "STAGE 03", city: "Gramado", stats: "99,3 km · 1.522 m+", route: "/stage-route-3.png", href: "/percursos/stage-3" },
+  { n: "STAGE 04", city: "Nova Petrópolis", stats: "70 km · 1.576 m+", route: "/stage-route-4.png", href: "/percursos/stage-4" },
 ];
 
 const destinations = [
