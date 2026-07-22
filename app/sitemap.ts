@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 const baseUrl = "https://www.legendsbikerace.com.br";
+const lastContentUpdate = new Date("2026-07-21T00:00:00-03:00");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages = [
@@ -17,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return pages.map(({ path, priority, changeFrequency }) => ({
     url: `${baseUrl}${path}`,
-    lastModified: new Date(),
+    lastModified: lastContentUpdate,
     changeFrequency,
     priority,
   }));
