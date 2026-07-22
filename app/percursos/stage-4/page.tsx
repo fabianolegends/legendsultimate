@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stage 04: Nova Petrópolis a Canela",
+  description: "Conheça a etapa final da Legends Ultimate: 70 km e 1.576 m+ entre Nova Petrópolis e Canela.",
+  alternates: { canonical: "/percursos/stage-4" },
+  openGraph: { url: "/percursos/stage-4", title: "Stage 04: Nova Petrópolis a Canela", description: "70 km e 1.576 m+ na etapa final da Legends Ultimate." },
+};
+
 const facts = [
   ["70,0 km", "Distância"],
   ["1.576 m", "Ascensão"],
