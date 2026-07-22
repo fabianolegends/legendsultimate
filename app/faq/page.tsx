@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Perguntas Frequentes",
+  description: "Tire suas dúvidas sobre participação, bicicletas, navegação por GPS, percurso, logística e inscrições da Legends Ultimate Gravel Race.",
+  alternates: { canonical: "/faq" },
+  openGraph: { url: "/faq", title: "Perguntas Frequentes | Legends Bike Race", description: "Respostas sobre participação, percurso, logística e inscrições da Legends Ultimate." },
+};
+
 const groups = [
   ["Participação", [
     ["A Legends é indicada para iniciantes?", "Não. Não é necessário ser atleta profissional, mas é indispensável estar preparado para quatro dias consecutivos, longa distância e aproximadamente 1.500 metros de ascensão por etapa."],
