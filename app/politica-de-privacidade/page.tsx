@@ -24,7 +24,7 @@ export default function PrivacyPolicyPage() {
         <h2>Como usamos os dados</h2>
         <p>Usamos os dados para administrar a lista prioritária, enviar informações sobre o evento, melhorar o site, medir campanhas e entender o interesse do público. Não comercializamos seus dados pessoais.</p>
         <h2>Cookies e sua escolha</h2>
-        <p>Cookies essenciais permitem o funcionamento do site. Cookies de análise e marketing são ativados somente após sua autorização. Você pode revisar sua escolha pelo botão “Privacidade” exibido no site.</p>
+        <p>Cookies essenciais permitem o funcionamento do site. Cookies de análise e marketing são ativados somente após sua autorização. Você pode revisar sua escolha pelo link “Privacidade” disponível no rodapé do site.</p>
         <h2>Compartilhamento e armazenamento</h2>
         <p>Os dados podem ser processados por fornecedores necessários à operação do site, da lista de interessados e das métricas, sempre dentro das finalidades descritas nesta política.</p>
         <h2>Seus direitos</h2>
