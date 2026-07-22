@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import KitCarousel from "./KitCarousel";
-import MobileMenu from "./MobileMenu";
+
+export const metadata: Metadata = {
+  title: "Legends Ultimate Gravel Race",
+  description: "Uma stage race de gravel em quatro dias, com 370,3 km e 6.302 m+ pelas estradas da Serra Gaúcha.",
+  alternates: { canonical: "/" },
+  openGraph: { url: "/", title: "Legends Ultimate Gravel Race", description: "Quatro dias, quatro destinos e uma travessia de gravel pela Serra Gaúcha." },
+};
 
 const metrics = [
   ["04", "dias"],
@@ -123,7 +130,7 @@ export default function Home() {
         <nav className="nav wide" aria-label="Navegação principal">
           <a className="brand" href="#inicio"><Logo /></a>
           <div className="navLinks"><a href="/a-prova">A prova</a><a href="/#percurso">Percursos</a><a href="#modalidades">Modalidades</a><a href="/race-engine">Race Engine</a><a href="#faq">FAQ</a></div>
-          <div className="mobileNavActions"><a className="navCta" href="/acesso">Atleta / Organizador</a><MobileMenu /></div>
+          <a className="navCta" href="/acesso">Atleta / Organizador</a>
         </nav>
         <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a diversão começa.</h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Quatro etapas, quatro cidades e uma travessia criada para quem procura muito mais do que uma prova.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
         <div className="wide"><div className="heroStats">{metrics.map(([value,label]) => <div className="heroStat" key={label}><strong>{value}</strong><span>{label}</span></div>)}</div></div>
