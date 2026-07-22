@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stage 02: São Francisco de Paula a Gramado",
+  description: "Conheça a segunda etapa da Legends Ultimate: 89,1 km e 1.520 m+ entre São Francisco de Paula e Gramado.",
+  alternates: { canonical: "/percursos/stage-2" },
+  openGraph: { url: "/percursos/stage-2", title: "Stage 02: São Francisco de Paula a Gramado", description: "89,1 km e 1.520 m+ na segunda etapa da Legends Ultimate." },
+};
+
 const facts = [
   ["89,1 km", "Distância"],
   ["1.520 m", "Ascensão"],
