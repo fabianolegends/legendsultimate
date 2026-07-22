@@ -89,6 +89,16 @@ export default function Home() {
         .heroRedesign .nav{border-bottom:1px solid rgba(241,236,227,.12)}
         .heroRedesign .navCta{display:inline-flex;align-items:center;justify-content:center;background:var(--copper);border:0;color:#fff;padding:11px 17px;font-size:13px;letter-spacing:.09em;white-space:nowrap}
         .heroRedesign .navCta:hover{background:#df8b45;color:#fff}
+        .desktopNavCluster{display:flex;align-items:center;justify-content:flex-end;gap:22px;margin-left:auto}
+        .desktopNavCluster .navLinks{gap:28px;align-items:center;white-space:nowrap}
+        .navDivider{width:1px;height:30px;flex:0 0 1px;background:var(--copper);opacity:.72}
+        .headerSocials{display:flex;align-items:center;gap:14px}
+        .headerSocials a{display:grid;place-items:center;width:20px;height:24px;color:#f1ece3;opacity:.82;transition:.2s}
+        .headerSocials a:hover{color:var(--copper);opacity:1;transform:translateY(-1px)}
+        .headerSocials svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        .headerSocials .fillIcon{fill:currentColor;stroke:none}
+        .mobileNavActions{display:none;align-items:center}
+        @media(max-width:1120px){.desktopNavCluster{display:none}.mobileNavActions{display:flex}}
         .heroMain{display:flex;align-items:center;padding:70px 0}.heroCopy{max-width:790px}
         .heroCopy h1{font:700 clamp(64px,7.2vw,116px) 'Barlow Condensed';text-transform:uppercase;line-height:.84;margin:18px 0 28px}
         .heroIntro{font-size:20px;line-height:1.55;color:#ddd5c9;max-width:680px}.heroCtas{display:flex;gap:20px;align-items:center;margin-top:34px;flex-wrap:wrap}
@@ -131,8 +141,14 @@ export default function Home() {
       <section className="heroRedesign" id="inicio">
         <nav className="nav wide" aria-label="Navegação principal">
           <a className="brand" href="#inicio"><Logo /></a>
-          <div className="navLinks"><a href="/a-prova">A prova</a><a href="/#percurso">Percursos</a><a href="#modalidades">Modalidades</a><a href="/race-engine">Race Engine</a><a href="#faq">FAQ</a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">Contato</a></div>
-          <div className="mobileNavActions"><div className="navActionStack"><div className="headerSocials" aria-label="Redes sociais da Legends"><a href="https://www.instagram.com/legends.race/" target="_blank" rel="noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" className="fillIcon"/></svg></a><a href="https://www.facebook.com/1272724699251164" target="_blank" rel="noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.7.3-1 1-1Z" className="fillIcon"/></svg></a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.8A8 8 0 0 1 8.1 18.8L4 20l1.2-4A8 8 0 1 1 20 11.8Z"/><path d="M9 8.5c.3 2.5 2 4.2 4.5 5l1.2-1.2c.3-.3.6-.3.9-.1l2 1c.3.2.4.5.3.8-.5 1.5-1.7 2.2-3.2 2-4.2-.7-7-3.5-7.7-7.7-.2-1.5.5-2.7 2-3.2.3-.1.6 0 .8.3l1 2c.2.3.2.6-.1.9L9 8.5Z" className="fillIcon"/></svg></a><a href="https://www.youtube.com/@legendsbikerace" target="_blank" rel="noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" className="fillIcon"/></svg></a></div><a className="navCta" href="/acesso">Atleta / Organizador</a></div><MobileMenu /></div>
+          <div className="desktopNavCluster">
+            <div className="navLinks"><a href="/a-prova">A prova</a><a href="/#percurso">Percursos</a><a href="#modalidades">Modalidades</a><a href="/race-engine">Race Engine</a><a href="#faq">FAQ</a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">Contato</a></div>
+            <span className="navDivider" aria-hidden="true" />
+            <div className="headerSocials" aria-label="Redes sociais da Legends"><a href="https://www.instagram.com/legends.race/" target="_blank" rel="noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" className="fillIcon"/></svg></a><a href="https://www.facebook.com/1272724699251164" target="_blank" rel="noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.7.3-1 1-1Z" className="fillIcon"/></svg></a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.8A8 8 0 0 1 8.1 18.8L4 20l1.2-4A8 8 0 1 1 20 11.8Z"/><path d="M9 8.5c.3 2.5 2 4.2 4.5 5l1.2-1.2c.3-.3.6-.3.9-.1l2 1c.3.2.4.5.3.8-.5 1.5-1.7 2.2-3.2 2-4.2-.7-7-3.5-7.7-7.7-.2-1.5.5-2.7 2-3.2.3-.1.6 0 .8.3l1 2c.2.3.2.6-.1.9L9 8.5Z" className="fillIcon"/></svg></a><a href="https://www.youtube.com/@legendsbikerace" target="_blank" rel="noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" className="fillIcon"/></svg></a></div>
+            <span className="navDivider" aria-hidden="true" />
+            <a className="navCta" href="/acesso">Atleta / Organizador</a>
+          </div>
+          <div className="mobileNavActions"><MobileMenu /></div>
         </nav>
         <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a diversão começa.</h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Quatro etapas, quatro cidades e uma travessia criada para quem procura muito mais do que uma prova.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
         <div className="wide"><div className="heroStats">{metrics.map(([value,label]) => <div className="heroStat" key={label}><strong>{value}</strong><span>{label}</span></div>)}</div></div>
