@@ -1203,13 +1203,12 @@
 
 @media (max-width: 640px) {
   .redesign .heroRedesign > .nav {
-    position: fixed !important;
+    position: sticky !important;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 1800;
     width: 100% !important;
     height: 76px !important;
+    margin: 0 !important;
     padding: 0 16px;
     border-bottom: 1px solid rgba(241,236,227,.11);
     background: rgba(8,10,9,.9);
@@ -1220,6 +1219,15 @@
     display: flex;
     align-items: center;
     gap: 9px;
+    flex: 0 0 auto;
+  }
+
+  .redesign .heroRedesign > .nav .brand {
+    flex: 0 0 auto;
+  }
+
+  .redesign .heroRedesign > .nav .officialLogo {
+    height: 56px !important;
   }
 
   .redesign .mobileNavActions .navCta {
@@ -1234,7 +1242,9 @@
     width: 42px;
     height: 42px;
     flex: 0 0 42px;
-    display: grid;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     place-content: center;
     gap: 5px;
     padding: 0;
