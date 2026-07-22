@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import RaceInfoMenu from "./RaceInfoMenu";
+
+export const metadata: Metadata = {
+  title: "A Prova",
+  description: "Entenda como funciona a Legends Ultimate: quatro etapas de gravel, autonavegação, categorias, classificação e estrutura na Serra Gaúcha.",
+  alternates: { canonical: "/a-prova" },
+  openGraph: { url: "/a-prova", title: "A Prova | Legends Ultimate Gravel Race", description: "Conheça a jornada, as regras e a estrutura da Legends Ultimate Gravel Race." },
+};
 
 const numbers = [
   ["04", "dias de prova"],
