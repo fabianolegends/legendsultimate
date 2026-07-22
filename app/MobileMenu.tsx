@@ -10,6 +10,7 @@ const links = [
   ["Race Engine", "/race-engine"],
   ["Destino", "/destino"],
   ["Perguntas frequentes", "/faq"],
+  ["Contato", "https://wa.me/5554996329164"],
 ];
 
 export default function MobileMenu() {
