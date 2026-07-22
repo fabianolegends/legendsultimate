@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const links = [
   ["A prova", "/a-prova"],
@@ -13,6 +14,9 @@ const links = [
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -36,7 +40,7 @@ export default function MobileMenu() {
         <i /><i /><i />
       </button>
 
-      {open && (
+      {mounted && open && createPortal(
         <div className="mobileMenuOverlay" id="mobile-site-menu">
           <div className="mobileMenuTop">
             <img src="/legends-logo-official.png" alt="Legends Bike Race" />
@@ -55,7 +59,8 @@ export default function MobileMenu() {
             <a href="/lista-prioritaria" onClick={() => setOpen(false)}>Lista prioritária <span>→</span></a>
             <a href="/acesso" onClick={() => setOpen(false)}>Atleta / Organizador</a>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
