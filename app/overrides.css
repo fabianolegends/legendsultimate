@@ -1365,3 +1365,15 @@
     box-shadow: none !important;
   }
 }
+
+/* Paleta oficial Legends — CMYK convertido para tela */
+:root{--legends-terracotta:#ba7049;--legends-cream:#f5f0dc;--legends-black:#000;--legends-line:rgba(186,112,73,.34)}
+.redesign,.destinationPage,.faqPage,.priorityPage{--paper:var(--legends-cream)!important;--ink:var(--legends-black)!important;--copper:var(--legends-terracotta)!important;--line:var(--legends-line)!important}
+.enginePage{--ink:var(--legends-black)!important;--panel:#090909!important;--paper:var(--legends-cream)!important;--orange:var(--legends-terracotta)!important;--line:var(--legends-line)!important}
+.redesign .manifestoRedesign,.redesign .modes,.redesign .routePreview,.redesign .destinationStory,.enginePage .capabilities,.destinationPage,.faqPage,.priorityPage{background-color:var(--legends-cream)!important}
+.redesign .factsBand,.redesign .engineHome,.redesign .includedSection,.redesign .safetySection,.redesign .profileSection,.redesign .priorityCta,.enginePage,.enginePage .journey,.enginePage .modesCompare,.enginePage .integrity,.aboutRacePage,.stagePage,.access-page,.mobileMenuOverlay{background-color:var(--legends-black)!important}
+.redesign .navCta,.redesign .button.primary,.redesign .manifestoButton,.redesign .engineLink,.redesign .priorityButton,.enginePage .engineButton,.priorityPage button,.access-page .access-button,.mobileMenuActions a:first-child{background:var(--legends-terracotta)!important}
+.redesign .kicker,.redesign .manifestoQuote em,.redesign .tag,.redesign .fact>span,.enginePage .eyebrow,.enginePage em,.enginePage .tag,.destinationPage .eyebrow,.faqPage .eyebrow,.priorityPage .eyebrow,.aboutRacePage .kicker,.stagePage .stageKicker,.access-page .access-kicker,.mobileMenuTop button,.mobileMenuLinks small,.mobileMenuLinks b{color:var(--legends-terracotta)!important}
+.mobileMenuOverlay{color:var(--legends-cream)!important}
+.mobileMenuTop,.mobileMenuLinks,.mobileMenuLinks a,.mobileMenuActions a{border-color:var(--legends-line)!important}
+.mobileMenuActions a{color:var(--legends-cream)!important}
