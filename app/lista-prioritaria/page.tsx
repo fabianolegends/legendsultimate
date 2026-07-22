@@ -53,6 +53,9 @@ export default function ListaPrioritaria() {
         lead_source: "lista_prioritaria",
         form_name: "lista_prioritaria_legends",
       });
+      window.fbq?.("track", "Lead", {
+        content_name: "lista_prioritaria_legends",
+      });
       setForm(emptyForm);
     } catch (error) {
       setStatus("error");
