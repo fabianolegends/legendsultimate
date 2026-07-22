@@ -1294,7 +1294,7 @@
     width: 42px;
     height: 42px;
     padding: 0 0 4px;
-    border: 1px solid rgba(198,122,59,.72);
+    border: 0;
     background: transparent;
     color: #c67a3b;
     font: 300 32px/1 Arial, sans-serif;
