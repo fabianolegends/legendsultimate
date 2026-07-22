@@ -21,6 +21,14 @@ export default function CookieConsent() {
     setReady(true);
   }, []);
 
+  useEffect(() => {
+    function openPreferences() {
+      setIsOpen(true);
+    }
+    window.addEventListener("legends:open-privacy", openPreferences);
+    return () => window.removeEventListener("legends:open-privacy", openPreferences);
+  }, []);
+
   function saveConsent(value: Exclude<Consent, null>) {
     window.localStorage.setItem(STORAGE_KEY, value);
     setConsent(value);
@@ -82,11 +90,7 @@ export default function CookieConsent() {
             </button>
           </div>
         </section>
-      ) : (
-        <button className={styles.settings} type="button" onClick={() => setIsOpen(true)}>
-          Privacidade
-        </button>
-      )}
+      ) : null}
     </>
   );
 }
