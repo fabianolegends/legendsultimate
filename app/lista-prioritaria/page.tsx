@@ -49,6 +49,10 @@ export default function ListaPrioritaria() {
 
       setStatus("success");
       setMessage("Cadastro confirmado. Você agora faz parte da lista prioritária da Legends.");
+      window.gtag?.("event", "generate_lead", {
+        lead_source: "lista_prioritaria",
+        form_name: "lista_prioritaria_legends",
+      });
       setForm(emptyForm);
     } catch (error) {
       setStatus("error");
