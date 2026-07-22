@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stage 01: Canela a São Francisco de Paula",
+  description: "Conheça a primeira etapa da Legends Ultimate: 111,9 km e 1.684 m+ entre Canela e São Francisco de Paula.",
+  alternates: { canonical: "/percursos/stage-1" },
+  openGraph: { url: "/percursos/stage-1", title: "Stage 01: Canela a São Francisco de Paula", description: "111,9 km e 1.684 m+ na primeira etapa da Legends Ultimate." },
+};
+
 const facts = [
   ["111,9 km", "Distância"],
   ["1.684 m", "Ascensão"],
