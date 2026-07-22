@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Legends Race Engine | Do GPS ao resultado",
+  title: "Race Engine: do GPS ao resultado",
   description: "Conheça a tecnologia própria da Legends para validar percursos, checkpoints, tempos e resultados da Gravel Race e a jornada do modo Experience.",
+  alternates: { canonical: "/race-engine" },
+  openGraph: { url: "/race-engine", title: "Legends Race Engine: do GPS ao resultado", description: "Tecnologia própria para validar percursos, checkpoints, tempos e resultados." },
 };
 
 const steps = [
