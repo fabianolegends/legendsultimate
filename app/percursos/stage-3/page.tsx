@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stage 03: Gramado a Nova Petrópolis",
+  description: "Conheça a terceira etapa da Legends Ultimate: 99,3 km e 1.522 m+ entre Gramado e Nova Petrópolis.",
+  alternates: { canonical: "/percursos/stage-3" },
+  openGraph: { url: "/percursos/stage-3", title: "Stage 03: Gramado a Nova Petrópolis", description: "99,3 km e 1.522 m+ na terceira etapa da Legends Ultimate." },
+};
+
 const facts = [
   ["99,3 km", "Distância"],
   ["1.522 m", "Ascensão"],
