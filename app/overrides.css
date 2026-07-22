@@ -646,8 +646,13 @@
 
   .redesign .destinationNames strong {
     width: 100%;
-    font-size: 29px !important;
+    font-size: clamp(25px, 7.2vw, 29px) !important;
     line-height: .92 !important;
+    white-space: nowrap !important;
+  }
+
+  .redesign .destinationNames strong br {
+    display: none !important;
   }
 
   .redesign .kitCompactHead {
