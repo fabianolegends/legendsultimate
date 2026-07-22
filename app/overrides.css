@@ -1196,9 +1196,10 @@
     place-content: center;
     gap: 5px;
     padding: 0;
-    border: 1px solid rgba(198,122,59,.72);
+    border: 0;
     background: rgba(8,10,9,.72);
     color: #f1ece3;
+    box-shadow: none;
   }
 
   .mobileMenuTrigger i {
@@ -1305,5 +1306,10 @@
   .mobileMenuActions a:first-child {
     background: #c9681c;
     color: #fff;
+  }
+
+  .redesign .backToTop {
+    border: 0 !important;
+    box-shadow: none !important;
   }
 }
