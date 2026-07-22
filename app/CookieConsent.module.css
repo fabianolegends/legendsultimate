@@ -23,13 +23,11 @@
 .copy a { color: #d08145; text-decoration: underline; text-underline-offset: 3px; }
 
 .actions { display: flex; flex-shrink: 0; gap: 10px; }
-.actions button, .settings { min-height: 44px; padding: 0 18px; border: 1px solid #b86934; font: inherit; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.actions button { min-height: 44px; padding: 0 18px; border: 1px solid #b86934; font: inherit; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
 .primary { color: #0b0f0d; background: #c77b3c; }
 .secondary { color: #eee8dd; background: transparent; }
 .primary:hover { background: #d88a48; }
 .secondary:hover { background: rgba(199, 123, 60, 0.1); }
-
-.settings { position: fixed; z-index: 9998; right: 18px; bottom: 18px; min-height: 38px; padding: 0 13px; color: #cfc8bb; background: rgba(8, 12, 10, 0.92); border-color: rgba(184, 105, 52, 0.55); font-size: 0.68rem; }
 
 @media (max-width: 720px) {
   .banner { right: 12px; bottom: 12px; left: 12px; display: block; padding: 20px; }
