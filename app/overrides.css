@@ -1377,3 +1377,6 @@
 .mobileMenuOverlay{color:var(--legends-cream)!important}
 .mobileMenuTop,.mobileMenuLinks,.mobileMenuLinks a,.mobileMenuActions a{border-color:var(--legends-line)!important}
 .mobileMenuActions a{color:var(--legends-cream)!important}
+
+/* Correção de contraste — perfil do participante */
+.redesign .profileSection{background:var(--legends-cream)!important;color:var(--legends-black)!important}
