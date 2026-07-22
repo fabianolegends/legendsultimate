@@ -1366,6 +1366,8 @@
   }
 }
 
+.headerSocials{display:flex;align-items:center;gap:7px;margin-left:3px}.headerSocials a{display:grid;place-items:center;width:28px;height:28px;color:#f1ece3;opacity:.78;transition:opacity .2s,color .2s,transform .2s}.headerSocials a:hover{color:var(--copper);opacity:1;transform:translateY(-1px)}.headerSocials svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}.headerSocials .fillIcon{fill:currentColor;stroke:none}@media(max-width:900px){.headerSocials{display:none}}
+
 /* Paleta oficial Legends — CMYK convertido para tela */
 :root{--legends-terracotta:#ba7049;--legends-cream:#f5f0dc;--legends-black:#000;--legends-line:rgba(186,112,73,.34)}
 .redesign,.destinationPage,.faqPage,.priorityPage{--paper:var(--legends-cream)!important;--ink:var(--legends-black)!important;--copper:var(--legends-terracotta)!important;--line:var(--legends-line)!important}
