@@ -128,18 +128,28 @@ export async function GET(request: NextRequest) {
     if (eventError) throw eventError;
     const eventId = request.nextUrl.searchParams.get("eventId")?.trim();
     const baseFields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
-    const fields = `${baseFields}, phone, location, registered_at`;
+    const detailFields = `${baseFields}, phone, location, registered_at`;
+    const fields = `${detailFields}, payment_provider, payment_amount_cents, payment_checkout_id, payment_checkout_url, payment_checkout_status, payment_expires_at, payment_confirmed_at, payment_refunded_at, last_payment_event_at`;
     let query = supabase.from("registrations").select(fields).order("full_name", { ascending: true });
     if (eventId) query = query.eq("event_id", eventId);
     let { data: registrations, error } = await query;
     let detailsReady = true;
+    let paymentReady = true;
     if (error?.code === "42703") {
-      detailsReady = false;
-      let fallbackQuery = supabase.from("registrations").select(baseFields).order("full_name", { ascending: true });
+      paymentReady = false;
+      let fallbackQuery = supabase.from("registrations").select(detailFields).order("full_name", { ascending: true });
       if (eventId) fallbackQuery = fallbackQuery.eq("event_id", eventId);
       const fallback = await fallbackQuery;
       registrations = fallback.data as typeof registrations;
       error = fallback.error;
+      if (error?.code === "42703") {
+        detailsReady = false;
+        let legacyQuery = supabase.from("registrations").select(baseFields).order("full_name", { ascending: true });
+        if (eventId) legacyQuery = legacyQuery.eq("event_id", eventId);
+        const legacy = await legacyQuery;
+        registrations = legacy.data as typeof registrations;
+        error = legacy.error;
+      }
     }
     if (error) {
       if (error.code === "42P01") return NextResponse.json({ module_ready: false, windfit_ready: false, events: events ?? [], registrations: [], summary: null });
@@ -184,9 +194,13 @@ export async function GET(request: NextRequest) {
       else if (sequenceQuery.error) throw sequenceQuery.error;
       else sequences = sequenceQuery.data ?? [];
     }
-    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, numbering_ready: numberingReady, identity_ready: identityReady, link_audit: linkAudit, sequences, events: events ?? [], registrations: items, summary, message: detailsReady ? undefined : "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." });
+    const setupMessages = [
+      !detailsReady ? "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição." : null,
+      !paymentReady ? "Execute a migration 022_asaas_checkout.sql para ativar os pagamentos Asaas." : null,
+    ].filter(Boolean);
+    return NextResponse.json({ module_ready: true, windfit_ready: true, details_ready: detailsReady, payment_ready: paymentReady, numbering_ready: numberingReady, identity_ready: identityReady, link_audit: linkAudit, sequences, events: events ?? [], registrations: items, summary, message: setupMessages.join(" ") || undefined });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar inscritos Windfit." }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao carregar inscritos." }, { status: 500 });
   }
 }
 

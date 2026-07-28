@@ -3,7 +3,7 @@ import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { recordAdminAudit } from "@/lib/admin-audit";
 
-const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, created_at, updated_at";
+const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, created_at, updated_at";
 const baseFields = "id, slug, name, timezone, status, starts_on, ends_on, created_at, updated_at";
 
 function unauthorized() {
@@ -29,6 +29,17 @@ function dateAtOffset(date: string, offset: number) {
   const value = new Date(`${date}T12:00:00.000Z`);
   value.setUTCDate(value.getUTCDate() + offset);
   return value.toISOString().slice(0, 10);
+}
+
+function optionalPositiveInteger(value: unknown) {
+  if (value == null || value === "") return null;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function boundedInteger(value: unknown, fallback: number, min: number, max: number) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= min && parsed <= max ? parsed : fallback;
 }
 
 async function eventCounts(supabase: ReturnType<typeof createSupabaseAdmin>) {
@@ -86,6 +97,12 @@ export async function POST(request: NextRequest) {
     if (!slug) return NextResponse.json({ error: "Informe um nome válido para gerar o endereço do evento." }, { status: 400 });
 
     const participantLimit = body.participant_limit ? Number(body.participant_limit) : null;
+    const registrationSource = String(body.registration_source ?? "mixed");
+    const registrationFeeCents = optionalPositiveInteger(body.registration_fee_cents);
+    const experienceFeeCents = optionalPositiveInteger(body.experience_fee_cents);
+    if (registrationSource === "asaas" && !registrationFeeCents) {
+      return NextResponse.json({ error: "Informe o valor da inscrição para ativar o checkout Asaas." }, { status: 400 });
+    }
     const supabase = createSupabaseAdmin();
     const { data: event, error } = await supabase.from("events").insert({
       name,
@@ -98,7 +115,7 @@ export async function POST(request: NextRequest) {
       location: String(body.location ?? "").trim() || null,
       event_type: String(body.event_type ?? "adventure"),
       scoring_mode: String(body.scoring_mode ?? "weighted_points"),
-      registration_source: String(body.registration_source ?? "mixed"),
+      registration_source: registrationSource,
       access_mode: String(body.access_mode ?? "invite"),
       participant_limit: Number.isFinite(participantLimit) ? participantLimit : null,
       is_test: body.is_test === true,
@@ -106,8 +123,12 @@ export async function POST(request: NextRequest) {
       registration_closes_at: String(body.registration_closes_at ?? "").trim() || null,
       windfit_registration_url: String(body.windfit_registration_url ?? "").trim() || null,
       terms_url: String(body.terms_url ?? "").trim() || null,
+      registration_fee_cents: registrationFeeCents,
+      experience_fee_cents: experienceFeeCents,
+      asaas_checkout_expires_minutes: boundedInteger(body.asaas_checkout_expires_minutes, 120, 10, 1440),
+      asaas_max_installments: boundedInteger(body.asaas_max_installments, 1, 1, 21),
     }).select(extendedFields).single();
-    if (error?.code === "42703") return NextResponse.json({ error: "Execute a migration 012_multi_event_management.sql no Supabase." }, { status: 409 });
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012_multi_event_management.sql e 022_asaas_checkout.sql no Supabase." }, { status: 409 });
     if (error?.code === "23505") return NextResponse.json({ error: "Já existe um evento com esse identificador." }, { status: 409 });
     if (error) throw error;
 
@@ -134,12 +155,24 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json() as Record<string, unknown>;
     const eventId = String(body.event_id ?? "").trim();
     if (!eventId) return NextResponse.json({ error: "Evento não informado." }, { status: 400 });
-    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "windfit_registration_url", "terms_url"] as const;
+    const requestedSource = "registration_source" in body ? String(body.registration_source ?? "") : null;
+    const requestedFee = "registration_fee_cents" in body ? optionalPositiveInteger(body.registration_fee_cents) : undefined;
+    if (requestedSource === "asaas" && !requestedFee) {
+      return NextResponse.json({ error: "Informe o valor da inscrição para ativar o checkout Asaas." }, { status: 400 });
+    }
+    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "windfit_registration_url", "terms_url", "registration_fee_cents", "experience_fee_cents", "asaas_checkout_expires_minutes", "asaas_max_installments"] as const;
     const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
-    for (const field of fields) if (field in body) payload[field] = field === "slug" ? slugify(String(body[field] ?? "")) : body[field];
+    for (const field of fields) {
+      if (!(field in body)) continue;
+      if (field === "slug") payload[field] = slugify(String(body[field] ?? ""));
+      else if (field === "registration_fee_cents" || field === "experience_fee_cents") payload[field] = optionalPositiveInteger(body[field]);
+      else if (field === "asaas_checkout_expires_minutes") payload[field] = boundedInteger(body[field], 120, 10, 1440);
+      else if (field === "asaas_max_installments") payload[field] = boundedInteger(body[field], 1, 1, 21);
+      else payload[field] = body[field];
+    }
     const supabase = createSupabaseAdmin();
     const { data, error } = await supabase.from("events").update(payload).eq("id", eventId).select(extendedFields).single();
-    if (error?.code === "42703") return NextResponse.json({ error: "Execute a migration 012_multi_event_management.sql no Supabase." }, { status: 409 });
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012_multi_event_management.sql e 022_asaas_checkout.sql no Supabase." }, { status: 409 });
     if (error) throw error;
     await recordAdminAudit(request, { action: "event.updated", resourceType: "event", resourceId: eventId, eventId, details: { fields: Object.keys(payload).filter((field) => field !== "updated_at") } });
     return NextResponse.json({ event: data });

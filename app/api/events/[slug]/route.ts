@@ -6,7 +6,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const { slug } = await params;
     const supabase = createSupabaseAdmin();
     const { data: event, error } = await supabase.from("events")
-      .select("id, slug, name, description, location, starts_on, ends_on, event_type, scoring_mode, registration_source, access_mode, participant_limit, registration_open, registration_closes_at, windfit_registration_url, terms_url, is_test, status")
+      .select("id, slug, name, description, location, starts_on, ends_on, event_type, scoring_mode, registration_source, access_mode, participant_limit, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_max_installments, is_test, status")
       .eq("slug", slug).eq("status", "published").maybeSingle();
     if (error?.code === "42703") return NextResponse.json({ error: "A inscrição online ainda não foi ativada." }, { status: 503 });
     if (error) throw error;

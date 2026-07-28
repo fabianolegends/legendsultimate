@@ -13,6 +13,7 @@ type EventForm = {
   location: string; description: string; participant_limit: string; event_type: string;
   scoring_mode: string; registration_source: string; access_mode: string; status: string; is_test: boolean;
   registration_open: boolean; registration_closes_at: string; windfit_registration_url: string; terms_url: string;
+  registration_fee: string; experience_fee: string; asaas_checkout_expires_minutes: string; asaas_max_installments: string;
 };
 
 const initialForm: EventForm = {
@@ -20,7 +21,19 @@ const initialForm: EventForm = {
   participant_limit: "10", event_type: "adventure", scoring_mode: "weighted_points", registration_source: "mixed",
   access_mode: "invite", status: "draft", is_test: true,
   registration_open: false, registration_closes_at: "", windfit_registration_url: "", terms_url: "",
+  registration_fee: "", experience_fee: "", asaas_checkout_expires_minutes: "120", asaas_max_installments: "1",
 };
+
+function centsToInput(value: number | null | undefined) {
+  return value == null ? "" : (value / 100).toFixed(2);
+}
+
+function inputToCents(value: string) {
+  const normalized = value.trim().replace(",", ".");
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed * 100) : null;
+}
 
 function eventToForm(event: OrganizationEvent): EventForm {
   return {
@@ -31,6 +44,10 @@ function eventToForm(event: OrganizationEvent): EventForm {
     access_mode: event.access_mode ?? "invite", status: event.status, is_test: event.is_test === true,
     registration_open: event.registration_open === true, registration_closes_at: event.registration_closes_at?.slice(0,16) ?? "",
     windfit_registration_url: event.windfit_registration_url ?? "", terms_url: event.terms_url ?? "",
+    registration_fee: centsToInput(event.registration_fee_cents),
+    experience_fee: centsToInput(event.experience_fee_cents),
+    asaas_checkout_expires_minutes: String(event.asaas_checkout_expires_minutes ?? 120),
+    asaas_max_installments: String(event.asaas_max_installments ?? 1),
   };
 }
 
@@ -98,6 +115,8 @@ export default function EventsPage() {
         method: drawer === "edit" ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, event_id: editingId || undefined, participant_limit: form.participant_limit ? Number(form.participant_limit) : null,
+          registration_fee_cents: inputToCents(form.registration_fee), experience_fee_cents: inputToCents(form.experience_fee),
+          asaas_checkout_expires_minutes: Number(form.asaas_checkout_expires_minutes), asaas_max_installments: Number(form.asaas_max_installments),
           registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null }),
       });
       const payload = await response.json();
@@ -178,7 +197,7 @@ export default function EventsPage() {
         <label className="wide">Local<input value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Cidade / Estado / País"/></label>
         <label>Formato<select value={form.event_type} onChange={(e) => update("event_type", e.target.value)}><option value="adventure">Aventura</option><option value="stage_race">Prova por etapas</option><option value="challenge">Desafio</option></select></label>
         <label>Classificação<select value={form.scoring_mode} onChange={(e) => update("scoring_mode", e.target.value)}><option value="weighted_points">Pontos ponderados</option><option value="elapsed_time">Menor tempo</option><option value="completion">Conclusão</option></select></label>
-        <label>Inscrições<select value={form.registration_source} onChange={(e) => update("registration_source", e.target.value)}><option value="mixed">Windfit + manual</option><option value="windfit">Somente Windfit</option><option value="manual">Convite/manual</option></select></label>
+        <label>Inscrições<select value={form.registration_source} onChange={(e) => update("registration_source", e.target.value)}><option value="asaas">Legends + checkout Asaas</option><option value="mixed">Legends online + manual</option><option value="windfit">Somente Windfit</option><option value="manual">Convite/manual</option></select></label>
         <label>Acesso<select value={form.access_mode} onChange={(e) => update("access_mode", e.target.value)}><option value="invite">Somente convidados</option><option value="public">Público</option></select></label>
         <label>Status<select value={form.status} onChange={(e) => update("status", e.target.value)}><option value="draft">Rascunho</option><option value="published">Publicado</option><option value="archived">Arquivado</option></select></label>
         <label className="check"><input type="checkbox" checked={form.is_test} onChange={(e) => update("is_test", e.target.checked)}/><span>Este é um evento de teste</span></label>
@@ -186,6 +205,13 @@ export default function EventsPage() {
         <label className="check wide"><input type="checkbox" checked={form.registration_open} onChange={(e) => update("registration_open", e.target.checked)}/><span>Inscrições abertas neste evento</span></label>
         <label>Encerramento das inscrições<input type="datetime-local" value={form.registration_closes_at} onChange={(e) => update("registration_closes_at", e.target.value)}/></label>
         <label>Link da Windfit<input type="url" value={form.windfit_registration_url} onChange={(e) => update("windfit_registration_url", e.target.value)} placeholder="Opcional"/></label>
+        {form.registration_source === "asaas" && <>
+          <div className="wide" style={{borderTop:"1px solid #41463e",paddingTop:18,marginTop:6}}><strong style={{color:"#ef8a43"}}>CHECKOUT ASAAS</strong><p className="muted">O atleta preenche a inscrição no Legends e paga no ambiente externo do Asaas. A vaga só é confirmada pelo webhook.</p></div>
+          <label>Valor da inscrição (R$)<input required min="0.01" step="0.01" type="number" value={form.registration_fee} onChange={(e) => update("registration_fee", e.target.value)} placeholder="2490,00"/></label>
+          <label>Valor Experience (R$)<input min="0.01" step="0.01" type="number" value={form.experience_fee} onChange={(e) => update("experience_fee", e.target.value)} placeholder="Opcional — usa o valor principal"/></label>
+          <label>Validade do checkout (minutos)<input required min={10} max={1440} type="number" value={form.asaas_checkout_expires_minutes} onChange={(e) => update("asaas_checkout_expires_minutes", e.target.value)}/></label>
+          <label>Máximo de parcelas<input required min={1} max={21} type="number" value={form.asaas_max_installments} onChange={(e) => update("asaas_max_installments", e.target.value)}/></label>
+        </>}
         <label className="wide">Link do regulamento/termo<input type="url" value={form.terms_url} onChange={(e) => update("terms_url", e.target.value)} placeholder="Opcional"/></label>
         <label className="wide">Descrição<textarea rows={4} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Objetivo, regras gerais e observações do evento."/></label>
         {drawer === "edit" && <section className="wide certificate-config">

@@ -22,6 +22,10 @@ export type OrganizationEvent = {
   registration_closes_at?: string | null;
   windfit_registration_url?: string | null;
   terms_url?: string | null;
+  registration_fee_cents?: number | null;
+  experience_fee_cents?: number | null;
+  asaas_checkout_expires_minutes?: number;
+  asaas_max_installments?: number;
   stage_count?: number;
   registration_count?: number;
   stages?: OrganizationStage[];

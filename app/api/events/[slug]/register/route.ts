@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationEmail } from "@/lib/registration-access";
 import { readRideWithGpsUser } from "@/lib/ridewithgps";
 import { categoryForRegistration } from "@/lib/category-rules";
+import { cancelAsaasCheckout, createAsaasCheckout } from "@/lib/asaas";
 
 export const runtime = "nodejs";
 
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const supabase = createSupabaseAdmin();
     const { data: event, error: eventError } = await supabase.from("events")
-      .select("id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url")
+      .select("id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments")
       .eq("slug", slug).eq("status", "published").maybeSingle();
     if (eventError?.code === "42703") return NextResponse.json({ error: "Execute a migration 013_public_event_registration.sql." }, { status: 503 });
     if (eventError) throw eventError;
@@ -41,9 +42,65 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (event.registration_closes_at && new Date(event.registration_closes_at).getTime() < Date.now()) return NextResponse.json({ error: "O período de inscrições foi encerrado." }, { status: 409 });
     if (event.registration_source === "windfit") return NextResponse.json({ error: "Esta inscrição deve ser concluída pela Windfit.", redirect_url: event.windfit_registration_url }, { status: 409 });
 
-    const { data: existing, error: existingError } = await supabase.from("registrations").select("id, registration_code, status, payment_status").eq("event_id", event.id).eq("email", email).maybeSingle();
+    const asaasEnabled = event.registration_source === "asaas";
+    const amountCents = modality === "experience"
+      ? (event.experience_fee_cents ?? event.registration_fee_cents)
+      : event.registration_fee_cents;
+    if (asaasEnabled && (!Number.isInteger(amountCents) || Number(amountCents) <= 0)) {
+      return NextResponse.json({ error: "O valor da inscrição ainda não foi configurado pela organização." }, { status: 503 });
+    }
+    if (asaasEnabled) {
+      const expirationCleanup = await supabase.from("registrations").update({
+        status: "cancelled",
+        payment_status: "cancelled",
+        payment_checkout_status: "EXPIRED",
+        updated_at: new Date().toISOString(),
+      })
+        .eq("event_id", event.id)
+        .eq("payment_provider", "asaas")
+        .eq("payment_status", "pending")
+        .lt("payment_expires_at", new Date().toISOString());
+      if (expirationCleanup.error?.code === "42703") {
+        return NextResponse.json({ error: "Execute a migration 022_asaas_checkout.sql." }, { status: 503 });
+      }
+      if (expirationCleanup.error) throw expirationCleanup.error;
+    }
+
+    const { data: existing, error: existingError } = await supabase.from("registrations")
+      .select("id, registration_code, status, payment_status, payment_provider, payment_checkout_url, payment_checkout_status, payment_expires_at, updated_at")
+      .eq("event_id", event.id)
+      .eq("email", email)
+      .maybeSingle();
     if (existingError) throw existingError;
-    if (existing) return NextResponse.json({ error: "Este e-mail já está inscrito no evento.", already_registered: true }, { status: 409 });
+    if (existing?.status === "confirmed" && ["paid", "courtesy"].includes(existing.payment_status)) {
+      return NextResponse.json({ error: "Este e-mail já está inscrito no evento.", already_registered: true }, { status: 409 });
+    }
+    const existingCheckoutActive = existing?.payment_provider === "asaas"
+      && existing.payment_checkout_url
+      && !["CANCELED", "EXPIRED", "PAID"].includes(existing.payment_checkout_status ?? "")
+      && (!existing.payment_expires_at || new Date(existing.payment_expires_at).getTime() > Date.now());
+    if (existingCheckoutActive) {
+      return NextResponse.json({
+        registered: true,
+        resumed: true,
+        checkout_url: existing.payment_checkout_url,
+        registration: {
+          registration_code: existing.registration_code,
+          email,
+          status: existing.status,
+          payment_status: existing.payment_status,
+        },
+      });
+    }
+    const checkoutBeingCreated = existing?.payment_provider === "asaas"
+      && existing.payment_checkout_status === "CREATING"
+      && Date.now() - new Date(existing.updated_at).getTime() < 120_000;
+    if (checkoutBeingCreated) {
+      return NextResponse.json({ error: "Seu checkout já está sendo preparado. Aguarde alguns segundos e tente novamente." }, { status: 409 });
+    }
+    if (existing && !asaasEnabled) {
+      return NextResponse.json({ error: "Este e-mail já está inscrito no evento.", already_registered: true }, { status: 409 });
+    }
     if (event.participant_limit != null) {
       const { count, error: countError } = await supabase.from("registrations").select("id", { count: "exact", head: true }).eq("event_id", event.id).neq("status", "cancelled");
       if (countError) throw countError;
@@ -63,18 +120,71 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       if (linkedAthleteError) throw linkedAthleteError;
       linkedAthleteId = linkedAthlete?.id ?? null;
     }
-    const { data: registration, error } = await supabase.from("registrations").insert({
-      event_id: event.id, registration_code: code(), full_name: fullName, email, phone, birth_date: birthDate,
+    const registrationPayload = {
+      event_id: event.id, registration_code: existing?.registration_code ?? code(), full_name: fullName, email, phone, birth_date: birthDate,
       gender: ["male", "female", "other"].includes(gender) ? gender : "other", category, modality,
-      country_code: country.toLowerCase().includes("brasil") ? "BR" : null, city,
-      location: [city, state, country].filter(Boolean).join(" / "), status: "confirmed", source: "online",
-      payment_status: "courtesy", registered_at: now, terms_accepted_at: now, privacy_accepted_at: now,
-      athlete_id: null, claimed_at: null, updated_at: now,
-    }).select("id, registration_code, full_name, email, category, modality, status").single();
+      country_code: country.toLowerCase().includes("brasil") ? "BR" : null, city, location: [city, state, country].filter(Boolean).join(" / "),
+      status: asaasEnabled ? "pending" : "confirmed", source: "online",
+      payment_status: asaasEnabled ? "pending" : "courtesy",
+      payment_provider: asaasEnabled ? "asaas" : null,
+      payment_amount_cents: asaasEnabled ? amountCents : null,
+      payment_checkout_id: null,
+      payment_checkout_url: null,
+      payment_checkout_status: asaasEnabled ? "CREATING" : null,
+      payment_expires_at: null,
+      registered_at: now, terms_accepted_at: now, privacy_accepted_at: now,
+      updated_at: now,
+    };
+    const registrationResult = existing
+      ? await supabase.from("registrations").update(registrationPayload).eq("id", existing.id)
+        .select("id, registration_code, full_name, email, category, modality, status, payment_status").single()
+      : await supabase.from("registrations").insert(registrationPayload)
+        .select("id, registration_code, full_name, email, category, modality, status, payment_status").single();
+    const { data: registration, error } = registrationResult;
     if (error?.code === "23505") return NextResponse.json({ error: "Este e-mail já está inscrito no evento." }, { status: 409 });
     if (error?.code === "P0001") return NextResponse.json({ error: error.message }, { status: 409 });
-    if (error?.code === "23514" || error?.code === "42703") return NextResponse.json({ error: "Execute a migration 013_public_event_registration.sql." }, { status: 503 });
+    if (error?.code === "23514" || error?.code === "42703") return NextResponse.json({ error: asaasEnabled ? "Execute a migration 022_asaas_checkout.sql." : "Execute a migration 013_public_event_registration.sql." }, { status: 503 });
     if (error) throw error;
+
+    let checkoutUrl: string | null = null;
+    if (asaasEnabled) {
+      try {
+        const checkout = await createAsaasCheckout({
+          registrationId: registration.id,
+          eventSlug: slug,
+          eventName: event.name,
+          modality,
+          amountCents: Number(amountCents),
+          expiresMinutes: event.asaas_checkout_expires_minutes ?? 120,
+          maxInstallments: event.asaas_max_installments ?? 1,
+          customer: { name: fullName, email, phone },
+        });
+        checkoutUrl = checkout.url;
+        const { error: checkoutSaveError } = await supabase.from("registrations").update({
+          payment_checkout_id: checkout.id,
+          payment_checkout_url: checkout.url,
+          payment_checkout_status: checkout.status,
+          payment_expires_at: checkout.expiresAt,
+          updated_at: new Date().toISOString(),
+        }).eq("id", registration.id);
+        if (checkoutSaveError) {
+          await cancelAsaasCheckout(checkout.id).catch((cancelError) => {
+            console.error("Falha ao cancelar checkout Asaas órfão.", cancelError);
+          });
+          throw checkoutSaveError;
+        }
+      } catch (checkoutError) {
+        // Preserve a referência interna mesmo em timeout: o Asaas pode ter
+        // criado o checkout e entregar o webhook depois da falha de rede.
+        await supabase.from("registrations").update({
+          status: "cancelled",
+          payment_status: "failed",
+          payment_checkout_status: "FAILED",
+          updated_at: new Date().toISOString(),
+        }).eq("id", registration.id);
+        throw checkoutError;
+      }
+    }
     let linked = false;
     let linkWarning: string | null = null;
     if (linkedAthleteId && rideWithGpsUser?.id) {
@@ -96,7 +206,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         linked = true;
       }
     }
-    return NextResponse.json({ registered: true, linked, link_warning: linkWarning, event: { name: event.name }, registration }, { status: 201 });
+    return NextResponse.json({
+      registered: true,
+      linked,
+      link_warning: linkWarning,
+      checkout_url: checkoutUrl,
+      event: { name: event.name },
+      registration,
+    }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Não foi possível concluir a inscrição." }, { status: 500 });
   }
