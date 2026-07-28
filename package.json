@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test:payments": "node --import tsx --test lib/asaas-webhook.test.ts",
+    "test:payments": "node --import tsx --test lib/asaas-webhook.test.ts lib/brazilian-document.test.ts",
     "test:classification-engine": "node --import tsx --test lib/classification-engine/index.test.ts",
     "test:race-engine": "node --import tsx --test lib/race-engine/index.test.ts",
     "test:load": "node --import tsx tools/race-load-simulation.ts 500",
