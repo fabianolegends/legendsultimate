@@ -2,6 +2,7 @@ import { ageOnDate } from "@/lib/category-rules";
 
 export const APPAREL_SIZES = ["PP", "P", "M", "G", "GG"] as const;
 export type ApparelSize = (typeof APPAREL_SIZES)[number];
+export const REGISTRATION_SERVICE_FEE_PERCENT = 7.5;
 
 export type RegistrationLot = {
   id: string;
@@ -63,6 +64,15 @@ export function registrationLotForMode(
   );
 }
 
+export function calculateServiceFeeCents(
+  amountCents: number,
+  percent = REGISTRATION_SERVICE_FEE_PERCENT,
+) {
+  const boundedAmount = Math.max(0, Math.round(amountCents));
+  const boundedPercent = Math.min(100, Math.max(0, percent));
+  return Math.round((boundedAmount * boundedPercent) / 100);
+}
+
 export function calculateRegistrationPricing(input: {
   baseFeeCents: number;
   birthDate: string;
@@ -88,6 +98,9 @@ export function calculateRegistrationPricing(input: {
     : 0;
   const discountedRegistrationFeeCents =
     input.baseFeeCents - seniorDiscountCents;
+  const subtotalCents =
+    discountedRegistrationFeeCents + premiumKitFeeCents;
+  const serviceFeeCents = calculateServiceFeeCents(subtotalCents);
   return {
     age,
     seniorEligible,
@@ -96,6 +109,9 @@ export function calculateRegistrationPricing(input: {
     seniorDiscountCents,
     discountedRegistrationFeeCents,
     premiumKitFeeCents,
-    totalCents: discountedRegistrationFeeCents + premiumKitFeeCents,
+    subtotalCents,
+    serviceFeePercent: REGISTRATION_SERVICE_FEE_PERCENT,
+    serviceFeeCents,
+    totalCents: subtotalCents + serviceFeeCents,
   };
 }
