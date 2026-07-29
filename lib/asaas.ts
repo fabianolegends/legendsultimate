@@ -5,7 +5,12 @@ type CheckoutInput = {
   eventSlug: string;
   eventName: string;
   modality: "gravel_race" | "experience";
-  amountCents: number;
+  registrationFeeCents: number;
+  seniorDiscountApplied?: boolean;
+  premiumKit?: {
+    feeCents: number;
+    jerseySize: string;
+  } | null;
   expiresMinutes: number;
   maxInstallments: number;
   customer: {
@@ -97,14 +102,27 @@ export async function createAsaasCheckout(
     items: [
       {
         externalReference: `registration-${input.registrationId}`,
-        name: `Inscrição ${input.eventName}`,
+        name: input.seniorDiscountApplied
+          ? `Inscrição ${input.eventName} — benefício 60+`
+          : `Inscrição ${input.eventName}`,
         description:
           input.modality === "experience"
             ? "Modalidade Experience"
             : "Modalidade Gravel Race",
         quantity: 1,
-        value: input.amountCents / 100,
+        value: input.registrationFeeCents / 100,
       },
+      ...(input.premiumKit
+        ? [
+            {
+              externalReference: `premium-kit-${input.registrationId}`,
+              name: `Kit Premium ${input.eventName}`,
+              description: `Jersey de ciclismo — tamanho ${input.premiumKit.jerseySize}`,
+              quantity: 1,
+              value: input.premiumKit.feeCents / 100,
+            },
+          ]
+        : []),
     ],
     customerData: {
       name: input.customer.name,
