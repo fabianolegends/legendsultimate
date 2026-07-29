@@ -26,9 +26,26 @@ export type OrganizationEvent = {
   experience_fee_cents?: number | null;
   asaas_checkout_expires_minutes?: number;
   asaas_max_installments?: number;
+  premium_kit_enabled?: boolean;
+  premium_kit_fee_cents?: number | null;
+  casual_shirt_required?: boolean;
+  senior_discount_enabled?: boolean;
+  senior_discount_percent?: number;
+  regulation_version?: string | null;
+  registration_lots?: OrganizationRegistrationLot[];
   stage_count?: number;
   registration_count?: number;
   stages?: OrganizationStage[];
+};
+
+export type OrganizationRegistrationLot = {
+  id?: string;
+  event_id?: string;
+  name: string;
+  starts_at: string;
+  ends_at: string;
+  registration_fee_cents: number;
+  display_order: number;
 };
 
 export type OrganizationStage = {
