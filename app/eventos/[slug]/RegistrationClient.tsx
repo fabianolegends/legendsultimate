@@ -2,6 +2,11 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { categoryForRegistration } from "@/lib/category-rules";
+import {
+  APPAREL_SIZES,
+  calculateRegistrationPricing,
+  type RegistrationLot,
+} from "@/lib/registration-pricing";
 
 type EventData = {
   event: {
@@ -20,6 +25,12 @@ type EventData = {
     registration_fee_cents: number | null;
     experience_fee_cents: number | null;
     asaas_max_installments: number | null;
+    premium_kit_enabled: boolean;
+    premium_kit_fee_cents: number | null;
+    casual_shirt_required: boolean;
+    senior_discount_enabled: boolean;
+    senior_discount_percent: number;
+    regulation_version: string | null;
   };
   stages: Array<{
     id: string;
@@ -30,12 +41,19 @@ type EventData = {
     distance_km: number | null;
     elevation_m: number | null;
   }>;
+  pricing: {
+    lots: RegistrationLot[];
+    current_lot: RegistrationLot | null;
+    next_lot: RegistrationLot | null;
+  };
   availability: {
     registered: number;
     remaining: number | null;
     available: boolean;
     closed_by_date: boolean;
     full: boolean;
+    awaiting_lot: boolean;
+    lots_ended: boolean;
   };
 };
 type Success = {
@@ -88,6 +106,9 @@ export default function RegistrationClient({ slug }: { slug: string }) {
     city: "",
     state: "",
     country: "Brasil",
+    casual_shirt_size: "",
+    premium_kit_selected: false,
+    jersey_size: "",
     terms_accepted: false,
     privacy_accepted: false,
     website: "",
@@ -104,6 +125,49 @@ export default function RegistrationClient({ slug }: { slug: string }) {
         : null,
     [data, form.birth_date, form.gender, form.modality],
   );
+  const pricingPreview = useMemo(() => {
+    if (!data || data.event.registration_source !== "asaas") return null;
+    const baseFeeCents =
+      data.pricing.current_lot?.registration_fee_cents ??
+      (form.modality === "experience"
+        ? (data.event.experience_fee_cents ??
+          data.event.registration_fee_cents)
+        : data.event.registration_fee_cents);
+    if (baseFeeCents == null) return null;
+    if (!form.birth_date)
+      return {
+        seniorEligible: false,
+        seniorDiscountCents: 0,
+        registrationBaseFeeCents: baseFeeCents,
+        discountedRegistrationFeeCents: baseFeeCents,
+        premiumKitFeeCents: form.premium_kit_selected
+          ? (data.event.premium_kit_fee_cents ?? 0)
+          : 0,
+        totalCents:
+          baseFeeCents +
+          (form.premium_kit_selected
+            ? (data.event.premium_kit_fee_cents ?? 0)
+            : 0),
+      };
+    try {
+      return calculateRegistrationPricing({
+        baseFeeCents,
+        birthDate: form.birth_date,
+        eventDate: data.event.starts_on,
+        seniorDiscountEnabled: data.event.senior_discount_enabled,
+        seniorDiscountPercent: data.event.senior_discount_percent,
+        premiumKitSelected: form.premium_kit_selected,
+        premiumKitFeeCents: data.event.premium_kit_fee_cents,
+      });
+    } catch {
+      return null;
+    }
+  }, [
+    data,
+    form.birth_date,
+    form.modality,
+    form.premium_kit_selected,
+  ]);
 
   useEffect(() => {
     fetch(`/api/events/${encodeURIComponent(slug)}`, { cache: "no-store" })
@@ -198,9 +262,10 @@ export default function RegistrationClient({ slug }: { slug: string }) {
   const windfitOnly = event.registration_source === "windfit";
   const asaasCheckout = event.registration_source === "asaas";
   const selectedFee =
-    form.modality === "experience"
+    data.pricing.current_lot?.registration_fee_cents ??
+    (form.modality === "experience"
       ? (event.experience_fee_cents ?? event.registration_fee_cents)
-      : event.registration_fee_cents;
+      : event.registration_fee_cents);
   return (
     <main className="public-event">
       <style>{`
@@ -247,7 +312,9 @@ export default function RegistrationClient({ slug }: { slug: string }) {
             {asaasCheckout ? (
               <div>
                 <strong>{money(selectedFee)}</strong>
-                <span>Inscrição</span>
+                <span>
+                  {data.pricing.current_lot?.name ?? "Inscrição"}
+                </span>
               </div>
             ) : null}
           </div>
@@ -334,6 +401,11 @@ export default function RegistrationClient({ slug }: { slug: string }) {
                   ? "As vagas estão esgotadas."
                   : availability.closed_by_date
                     ? "O período de inscrições foi encerrado."
+                    : availability.awaiting_lot &&
+                        data.pricing.next_lot
+                      ? `O ${data.pricing.next_lot.name} abre em ${new Date(data.pricing.next_lot.starts_at).toLocaleDateString("pt-BR")}.`
+                      : availability.lots_ended
+                        ? "Todos os lotes de inscrição foram encerrados."
                     : "As inscrições ainda não estão abertas ao público."}
               </div>
             </>
@@ -439,14 +511,128 @@ export default function RegistrationClient({ slug }: { slug: string }) {
                       background: "#fff7ec",
                     }}
                   >
-                    <strong>Valor: {money(selectedFee)}</strong>
+                    <strong>
+                      {data.pricing.current_lot?.name ?? "Inscrição"}:{" "}
+                      {money(pricingPreview?.registrationBaseFeeCents)}
+                    </strong>
+                    {pricingPreview?.seniorEligible ? (
+                      <>
+                        <br />
+                        <span style={{ color: "#9a4313" }}>
+                          Benefício 60+ na inscrição: −{" "}
+                          {money(pricingPreview.seniorDiscountCents)}
+                        </span>
+                      </>
+                    ) : null}
+                    {form.premium_kit_selected ? (
+                      <>
+                        <br />
+                        <span>
+                          Kit Premium:{" "}
+                          {money(pricingPreview?.premiumKitFeeCents)}
+                        </span>
+                      </>
+                    ) : null}
+                    <br />
+                    <strong>
+                      Total: {money(pricingPreview?.totalCents)}
+                    </strong>
                     <br />
                     <span style={{ fontSize: 12, color: "#666" }}>
                       O pagamento será realizado fora do Legends Engine, no
                       checkout hospedado pelo Asaas. CPF e endereço serão usados
                       na inscrição e enviados ao checkout seguro.
                     </span>
+                    {pricingPreview?.seniorEligible ? (
+                      <span
+                        style={{
+                          display: "block",
+                          marginTop: 8,
+                          fontSize: 12,
+                          color: "#666",
+                        }}
+                      >
+                        O desconto de 50% incide somente sobre a inscrição. O Kit
+                        Premium mantém o valor integral. Poderá ser solicitado
+                        documento com foto para comprovação da idade.
+                      </span>
+                    ) : null}
                   </div>
+                ) : null}
+                {event.casual_shirt_required ? (
+                  <label>
+                    Tamanho da camiseta casual inclusa
+                    <select
+                      style={fieldStyle}
+                      required
+                      value={form.casual_shirt_size}
+                      onChange={(e) =>
+                        update("casual_shirt_size", e.target.value)
+                      }
+                    >
+                      <option value="">Selecione</option>
+                      {APPAREL_SIZES.map((size) => (
+                        <option value={size} key={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+                {event.premium_kit_enabled ? (
+                  <div
+                    className="wide"
+                    style={{
+                      padding: 16,
+                      border: "1px solid #c8bcac",
+                      background: "#f5ecdf",
+                    }}
+                  >
+                    <label
+                      style={{
+                        display: "flex",
+                        gridTemplateColumns: "auto 1fr",
+                        alignItems: "start",
+                        gap: 10,
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.premium_kit_selected}
+                        onChange={(e) => {
+                          update("premium_kit_selected", e.target.checked);
+                          if (!e.target.checked) update("jersey_size", "");
+                        }}
+                      />
+                      <span>
+                        <strong>
+                          Adicionar Kit Premium —{" "}
+                          {money(event.premium_kit_fee_cents)}
+                        </strong>
+                        <br />
+                        Compra opcional, cobrada separadamente e sem incidência
+                        do desconto da inscrição.
+                      </span>
+                    </label>
+                  </div>
+                ) : null}
+                {form.premium_kit_selected ? (
+                  <label>
+                    Tamanho da jersey de ciclismo
+                    <select
+                      style={fieldStyle}
+                      required
+                      value={form.jersey_size}
+                      onChange={(e) => update("jersey_size", e.target.value)}
+                    >
+                      <option value="">Selecione</option>
+                      {APPAREL_SIZES.map((size) => (
+                        <option value={size} key={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 ) : null}
                 {asaasCheckout ? (
                   <>
@@ -558,26 +744,30 @@ export default function RegistrationClient({ slug }: { slug: string }) {
                   <label>
                     <input
                       type="checkbox"
+                      required
                       checked={form.terms_accepted}
                       onChange={(e) =>
                         update("terms_accepted", e.target.checked)
                       }
                     />
                     <span>
-                      Li e aceito o{" "}
+                      Li e aceito integralmente todas as cláusulas do{" "}
                       {event.terms_url ? (
                         <a href={event.terms_url} target="_blank">
-                          regulamento e termo de responsabilidade
+                          Regulamento Oficial e do Termo de Responsabilidade
                         </a>
                       ) : (
-                        "regulamento e termo de responsabilidade do evento"
+                        "Regulamento Oficial e do Termo de Responsabilidade do evento"
                       )}
-                      .
+                      {event.regulation_version
+                        ? ` — versão ${event.regulation_version}.`
+                        : "."}
                     </span>
                   </label>
                   <label>
                     <input
                       type="checkbox"
+                      required
                       checked={form.privacy_accepted}
                       onChange={(e) =>
                         update("privacy_accepted", e.target.checked)
@@ -597,6 +787,9 @@ export default function RegistrationClient({ slug }: { slug: string }) {
                     saving ||
                     !form.terms_accepted ||
                     !form.privacy_accepted ||
+                    (event.casual_shirt_required &&
+                      !form.casual_shirt_size) ||
+                    (form.premium_kit_selected && !form.jersey_size) ||
                     Boolean(categoryPreview?.error)
                   }
                 >
