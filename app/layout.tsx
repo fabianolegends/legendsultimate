@@ -43,7 +43,14 @@ export const metadata: Metadata = {
     images: ["/hero-production.jpg"],
   },
   verification: { google: "k19CAmVOUMQYOrntyfphOwhL37S_pH76H-oS83Yf8FI" },
-  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 const structuredData = {
@@ -54,14 +61,26 @@ const structuredData = {
       "@id": "https://www.legendsbikerace.com.br/#organization",
       name: "Legends Bike Race",
       url: "https://www.legendsbikerace.com.br",
-      logo: "https://www.legendsbikerace.com.br/legends-logo-official.png",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.legendsbikerace.com.br/icon.png",
+        contentUrl: "https://www.legendsbikerace.com.br/icon.png",
+        width: 512,
+        height: 512,
+      },
       email: "contato@legendsbikerace.com.br",
+      sameAs: [
+        "https://www.instagram.com/legends.race/",
+        "https://www.facebook.com/1272724699251164",
+        "https://www.youtube.com/@legendsbikerace",
+      ],
     },
     {
       "@type": "WebSite",
       "@id": "https://www.legendsbikerace.com.br/#website",
       url: "https://www.legendsbikerace.com.br",
       name: "Legends Bike Race",
+      alternateName: ["Legends Ultimate Gravel Race", "Legends"],
       inLanguage: "pt-BR",
       publisher: { "@id": "https://www.legendsbikerace.com.br/#organization" },
     },

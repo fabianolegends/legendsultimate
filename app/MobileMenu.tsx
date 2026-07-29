@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 
 const links = [
   ["A prova", "/a-prova"],
-  ["Percursos", "/#percurso"],
+  ["Percursos", "/percursos"],
   ["Modalidades", "/#modalidades"],
   ["Race Engine", "/race-engine"],
   ["Perguntas frequentes", "/faq"],

@@ -22,7 +22,7 @@ export default function StageFour() {
   return (
     <main className="stagePage">
       <header className="stageDetailNav shell">
-        <a href="/#percurso" className="backLink">← Voltar aos percursos</a>
+        <a href="/percursos" className="backLink">← Voltar aos percursos</a>
         <img src="/legends-logo-official.png" alt="Legends Bike Race" className="detailLogo" />
       </header>
       <section className="stageDetailHero stage4Hero">
@@ -83,7 +83,7 @@ export default function StageFour() {
           </div>
         </div>
       </section>
-      <footer className="stageDetailFooter shell"><a href="/#percurso">← Todas as etapas</a><p>Legends Ultimate · Serra Gaúcha</p></footer>
+      <footer className="stageDetailFooter shell"><a href="/percursos">← Todas as etapas</a><p>Legends Ultimate · Serra Gaúcha</p></footer>
     </main>
   );
 }

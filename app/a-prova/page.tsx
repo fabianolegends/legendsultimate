@@ -168,7 +168,7 @@ export default function AboutRace() {
         <div>
           <h2>Para quem entende que<br /><em>chegar é parte da jornada.</em></h2>
           <p>A Legends foi criada para ciclistas de gravel e mountain bike com preparo para longas distâncias, que valorizam desafio, paisagem, cultura local e uma experiência esportiva premium. Não é necessário ser atleta profissional, mas treinamento, planejamento e autonomia são essenciais.</p>
-          <a className="button aboutButton" href="/#percurso">Conheça as etapas <span>→</span></a>
+          <a className="button aboutButton" href="/percursos">Conheça as etapas <span>→</span></a>
         </div>
       </section>
 

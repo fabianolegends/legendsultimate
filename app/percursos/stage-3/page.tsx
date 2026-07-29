@@ -23,7 +23,7 @@ export default function StageThree() {
   return (
     <main className="stagePage">
       <header className="stageDetailNav shell">
-        <a href="/#percurso" className="backLink">
+        <a href="/percursos" className="backLink">
           ← Voltar aos percursos
         </a>
         <img
@@ -177,7 +177,7 @@ export default function StageThree() {
         </div>
       </section>
       <footer className="stageDetailFooter shell">
-        <a href="/#percurso">← Todas as etapas</a>
+        <a href="/percursos">← Todas as etapas</a>
         <p>Legends Ultimate · Serra Gaúcha</p>
       </footer>
     </main>
