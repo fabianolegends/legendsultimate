@@ -5,6 +5,8 @@ import { categoryForRegistration } from "@/lib/category-rules";
 import {
   APPAREL_SIZES,
   calculateRegistrationPricing,
+  calculateServiceFeeCents,
+  REGISTRATION_SERVICE_FEE_PERCENT,
   type RegistrationLot,
 } from "@/lib/registration-pricing";
 import {
@@ -152,21 +154,24 @@ export default function RegistrationClient({
           data.event.registration_fee_cents)
         : data.event.registration_fee_cents);
     if (baseFeeCents == null) return null;
-    if (!form.birth_date)
+    if (!form.birth_date) {
+      const premiumKitFeeCents = form.premium_kit_selected
+        ? (data.event.premium_kit_fee_cents ?? 0)
+        : 0;
+      const subtotalCents = baseFeeCents + premiumKitFeeCents;
+      const serviceFeeCents = calculateServiceFeeCents(subtotalCents);
       return {
         seniorEligible: false,
         seniorDiscountCents: 0,
         registrationBaseFeeCents: baseFeeCents,
         discountedRegistrationFeeCents: baseFeeCents,
-        premiumKitFeeCents: form.premium_kit_selected
-          ? (data.event.premium_kit_fee_cents ?? 0)
-          : 0,
-        totalCents:
-          baseFeeCents +
-          (form.premium_kit_selected
-            ? (data.event.premium_kit_fee_cents ?? 0)
-            : 0),
+        premiumKitFeeCents,
+        subtotalCents,
+        serviceFeePercent: REGISTRATION_SERVICE_FEE_PERCENT,
+        serviceFeeCents,
+        totalCents: subtotalCents + serviceFeeCents,
       };
+    }
     try {
       return calculateRegistrationPricing({
         baseFeeCents,
@@ -797,6 +802,10 @@ export default function RegistrationClient({
                               {money(pricingPreview?.premiumKitFeeCents)}
                             </span>
                           ) : null}
+                          <span>
+                            Taxa de serviço (7,5%) ·{" "}
+                            {money(pricingPreview?.serviceFeeCents)}
+                          </span>
                         </div>
                       </div>
                       <div className="price-total">
@@ -808,7 +817,8 @@ export default function RegistrationClient({
                       O pagamento será realizado no checkout seguro do Asaas. O
                       desconto de 50% para atletas elegíveis incide somente
                       sobre a inscrição; itens opcionais permanecem com valor
-                      integral.
+                      integral. A taxa de serviço de 7,5% é calculada sobre o
+                      subtotal efetivamente adquirido.
                     </p>
                   </>
                 ) : null}
