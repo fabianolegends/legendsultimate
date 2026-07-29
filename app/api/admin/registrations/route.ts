@@ -287,7 +287,7 @@ export async function GET(request: NextRequest) {
     const eventId = request.nextUrl.searchParams.get("eventId")?.trim();
     const baseFields =
       "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
-    const detailFields = `${baseFields}, phone, location, registered_at`;
+    const detailFields = `${baseFields}, phone, location, registered_at, terms_accepted_at, privacy_accepted_at`;
     const paymentFields = `${detailFields}, payment_provider, payment_amount_cents, payment_checkout_id, payment_checkout_url, payment_checkout_status, payment_expires_at, payment_confirmed_at, payment_refunded_at, last_payment_event_at`;
     const billingFields = `${paymentFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
     const fields = `${billingFields}, registration_lot_id, registration_lot_name, registration_base_fee_cents, senior_discount_applied, senior_discount_cents, premium_kit_selected, premium_kit_fee_cents, casual_shirt_size, jersey_size, regulation_version`;
