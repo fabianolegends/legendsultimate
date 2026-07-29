@@ -397,4 +397,3 @@ begin
     classification_weight = excluded.classification_weight,
     updated_at = now();
 end $$;
-
