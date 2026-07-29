@@ -6,10 +6,34 @@ export type CategoryInput = {
 };
 
 export function ageOnDate(birthDate: string, eventDate: string) {
-  const birthYear = Number(birthDate.slice(0, 4));
-  const eventYear = Number(eventDate.slice(0, 4));
-  if (!Number.isInteger(birthYear) || !Number.isInteger(eventYear) || birthYear < 1900 || birthYear > eventYear) return null;
-  return eventYear - birthYear;
+  const birthMatch = birthDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const eventMatch = eventDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!birthMatch || !eventMatch) return null;
+  const [, birthYearText, birthMonthText, birthDayText] = birthMatch;
+  const [, eventYearText, eventMonthText, eventDayText] = eventMatch;
+  const birthYear = Number(birthYearText);
+  const birthMonth = Number(birthMonthText);
+  const birthDay = Number(birthDayText);
+  const eventYear = Number(eventYearText);
+  const eventMonth = Number(eventMonthText);
+  const eventDay = Number(eventDayText);
+  const validBirth =
+    birthYear >= 1900 &&
+    birthMonth >= 1 &&
+    birthMonth <= 12 &&
+    birthDay >= 1 &&
+    birthDay <= 31;
+  const validEvent =
+    eventYear >= birthYear &&
+    eventMonth >= 1 &&
+    eventMonth <= 12 &&
+    eventDay >= 1 &&
+    eventDay <= 31;
+  if (!validBirth || !validEvent) return null;
+  const birthdayOccurred =
+    eventMonth > birthMonth ||
+    (eventMonth === birthMonth && eventDay >= birthDay);
+  return eventYear - birthYear - (birthdayOccurred ? 0 : 1);
 }
 
 export function categoryForRegistration(input: CategoryInput) {
