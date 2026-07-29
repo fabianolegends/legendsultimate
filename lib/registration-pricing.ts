@@ -47,6 +47,22 @@ export function nextRegistrationLot(
   );
 }
 
+export function registrationLotForMode(
+  lots: RegistrationLot[],
+  options: { now?: Date; internalTestMode?: boolean } = {},
+) {
+  const activeLot = activeRegistrationLot(lots, options.now);
+  if (activeLot || !options.internalTestMode) return activeLot;
+  return (
+    [...lots].sort(
+      (left, right) =>
+        left.display_order - right.display_order ||
+        new Date(left.starts_at).getTime() -
+          new Date(right.starts_at).getTime(),
+    )[0] ?? null
+  );
+}
+
 export function calculateRegistrationPricing(input: {
   baseFeeCents: number;
   birthDate: string;
