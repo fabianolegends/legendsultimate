@@ -255,6 +255,7 @@ export default function EventsPage() {
           <h2>{event.name}</h2><p>{event.location || "Local a definir"}</p><p>{event.description || "Evento pronto para receber percursos, inscritos e regras próprias."}</p>
           <div className="event-stats"><div><strong>{event.stage_count ?? 0}</strong><span>Etapas</span></div><div><strong>{event.registration_count ?? 0}</strong><span>Inscritos</span></div><div><strong>{event.participant_limit ?? "∞"}</strong><span>Limite</span></div></div>
           <div className="event-actions"><button onClick={() => openEdit(event)}>Editar</button>{event.id === activeEventId ? <button disabled>Em uso</button> : <button className="use" onClick={() => setActiveEventId(event.id)}>Usar evento</button>}</div>
+          {event.is_test && <a href={`/eventos/${event.slug}?modo=teste`} target="_blank" rel="noreferrer" style={{marginTop:10,padding:12,background:"#e86619",border:"1px solid #e86619",color:"#fff",textAlign:"center",textDecoration:"none",fontWeight:900}}>TESTAR INSCRIÇÃO NO SANDBOX ↗</a>}
           {event.registration_open && event.access_mode === "public" && <a href={`/eventos/${event.slug}`} target="_blank" style={{marginTop:10,padding:12,border:"1px solid #d76d20",color:"#ef9a59",textAlign:"center",textDecoration:"none",fontWeight:900}}>ABRIR PÁGINA DE INSCRIÇÃO ↗</a>}
         </article>)}
       </div> : <div className="empty"><p>Nenhum evento cadastrado.</p><button className="primary" onClick={openNew}>Criar o primeiro evento</button></div>}
