@@ -359,6 +359,20 @@ function locationFields(item: Registration) {
       : countryLabel(item.country_code),
   };
 }
+function serviceFeeCents(item: Registration) {
+  if (
+    typeof item.payment_amount_cents !== "number" ||
+    typeof item.registration_base_fee_cents !== "number"
+  )
+    return null;
+  const subtotalCents = Math.max(
+    0,
+    item.registration_base_fee_cents -
+      (item.senior_discount_cents ?? 0) +
+      (item.premium_kit_fee_cents ?? 0),
+  );
+  return Math.max(0, item.payment_amount_cents - subtotalCents);
+}
 function formatDocument(value?: string | null) {
   const digits = String(value ?? "").replace(/\D/g, "");
   if (digits.length === 11)
@@ -888,6 +902,7 @@ export default function RegistrationsPage() {
       "Benefício 60+ aplicado",
       "Desconto 60+ (R$)",
       "Valor Kit Premium (R$)",
+      "Taxa de serviço 7,5% (R$)",
       "Valor total cobrado (R$)",
       "Status do pagamento",
       "Provedor do pagamento",
@@ -941,6 +956,7 @@ export default function RegistrationsPage() {
         item.senior_discount_applied ? "Sim" : "Não",
         csvMoney(item.senior_discount_cents),
         csvMoney(item.premium_kit_fee_cents),
+        csvMoney(serviceFeeCents(item)),
         csvMoney(item.payment_amount_cents),
         paymentLabel(item.payment_status),
         origin.label,
@@ -1811,6 +1827,7 @@ export default function RegistrationsPage() {
                         <th>Benefício 60+</th>
                         <th>Desconto 60+</th>
                         <th>Valor do kit</th>
+                        <th>Taxa de serviço</th>
                         <th>Total cobrado</th>
                         <th>Origem</th>
                         <th>Status checkout</th>
@@ -1847,6 +1864,9 @@ export default function RegistrationsPage() {
                             </td>
                             <td>
                               {formatMoney(item.premium_kit_fee_cents) ?? "—"}
+                            </td>
+                            <td>
+                              {formatMoney(serviceFeeCents(item)) ?? "—"}
                             </td>
                             <td>
                               {formatMoney(item.payment_amount_cents) ?? "—"}
