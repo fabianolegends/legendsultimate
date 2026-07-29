@@ -1,15 +1,20 @@
 import { randomBytes } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationEmail } from "@/lib/registration-access";
 import { readRideWithGpsUser } from "@/lib/ridewithgps";
 import { categoryForRegistration } from "@/lib/category-rules";
-import { cancelAsaasCheckout, createAsaasCheckout } from "@/lib/asaas";
+import {
+  cancelAsaasCheckout,
+  createAsaasCheckout,
+  isAsaasSandboxEnvironment,
+} from "@/lib/asaas";
 import { digitsOnly, isValidCpfCnpj } from "@/lib/brazilian-document";
 import {
-  activeRegistrationLot,
   calculateRegistrationPricing,
   isApparelSize,
+  registrationLotForMode,
   type RegistrationLot,
 } from "@/lib/registration-pricing";
 
@@ -31,6 +36,16 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
+    const requestedTestMode =
+      request.nextUrl.searchParams.get("modo") === "teste";
+    const internalTestMode =
+      requestedTestMode &&
+      isAdminRequest(request, "registrations.manage");
+    if (requestedTestMode && !internalTestMode)
+      return NextResponse.json(
+        { error: "Evento não encontrado." },
+        { status: 404 },
+      );
     const body = (await request.json()) as Record<string, unknown>;
     if (clean(body.website)) return NextResponse.json({ registered: true });
     const fullName = clean(body.full_name);
@@ -76,14 +91,15 @@ export async function POST(
       );
 
     const supabase = createSupabaseAdmin();
-    const { data: event, error: eventError } = await supabase
+    let eventQuery = supabase
       .from("events")
       .select(
-        "id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version",
+        "id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, is_test",
       )
-      .eq("slug", slug)
-      .eq("status", "published")
-      .maybeSingle();
+      .eq("slug", slug);
+    if (!internalTestMode) eventQuery = eventQuery.eq("status", "published");
+    const { data: event, error: eventError } =
+      await eventQuery.maybeSingle();
     if (eventError?.code === "42703")
       return NextResponse.json(
         { error: "Execute as migrations 013 e 024 no Supabase." },
@@ -95,12 +111,33 @@ export async function POST(
         { error: "Evento não encontrado." },
         { status: 404 },
       );
-    if (!event.registration_open || event.access_mode !== "public")
+    if (internalTestMode && !event.is_test)
+      return NextResponse.json(
+        { error: "Este evento não está habilitado para testes internos." },
+        { status: 403 },
+      );
+    if (
+      internalTestMode &&
+      event.registration_source === "asaas" &&
+      !isAsaasSandboxEnvironment()
+    )
+      return NextResponse.json(
+        {
+          error:
+            "Teste bloqueado: configure ASAAS_ENVIRONMENT como sandbox antes de continuar.",
+        },
+        { status: 503 },
+      );
+    if (
+      !internalTestMode &&
+      (!event.registration_open || event.access_mode !== "public")
+    )
       return NextResponse.json(
         { error: "As inscrições deste evento não estão abertas ao público." },
         { status: 403 },
       );
     if (
+      !internalTestMode &&
       event.registration_closes_at &&
       new Date(event.registration_closes_at).getTime() < Date.now()
     )
@@ -135,14 +172,16 @@ export async function POST(
       );
     if (lotResult.error) throw lotResult.error;
     const lots = (lotResult.data ?? []) as RegistrationLot[];
-    const activeLot = activeRegistrationLot(lots);
-    if (lots.length > 0 && !activeLot)
+    const selectedLot = registrationLotForMode(lots, {
+      internalTestMode,
+    });
+    if (lots.length > 0 && !selectedLot)
       return NextResponse.json(
         { error: "Não há lote de inscrições vigente nesta data." },
         { status: 409 },
       );
     const baseFeeCents =
-      activeLot?.registration_fee_cents ??
+      selectedLot?.registration_fee_cents ??
       (modality === "experience"
         ? (event.experience_fee_cents ?? event.registration_fee_cents)
         : event.registration_fee_cents);
@@ -356,12 +395,12 @@ export async function POST(
           }
         : {}),
       status: asaasEnabled ? "pending" : "confirmed",
-      source: "online",
+      source: internalTestMode ? "manual" : "online",
       payment_status: asaasEnabled ? "pending" : "courtesy",
       payment_provider: asaasEnabled ? "asaas" : null,
       payment_amount_cents: pricing?.totalCents ?? null,
-      registration_lot_id: activeLot?.id ?? null,
-      registration_lot_name: activeLot?.name ?? null,
+      registration_lot_id: selectedLot?.id ?? null,
+      registration_lot_name: selectedLot?.name ?? null,
       registration_base_fee_cents: asaasEnabled
         ? pricing?.registrationBaseFeeCents
         : null,
@@ -438,6 +477,7 @@ export async function POST(
             : null,
           expiresMinutes: event.asaas_checkout_expires_minutes ?? 120,
           maxInstallments: event.asaas_max_installments ?? 1,
+          internalTestMode,
           customer: {
             name: fullName,
             email,
