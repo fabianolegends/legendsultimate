@@ -475,6 +475,7 @@ export async function POST(
                 jerseySize,
               }
             : null,
+          serviceFeeCents: Number(pricing?.serviceFeeCents),
           expiresMinutes: event.asaas_checkout_expires_minutes ?? 120,
           maxInstallments: event.asaas_max_installments ?? 1,
           internalTestMode,
