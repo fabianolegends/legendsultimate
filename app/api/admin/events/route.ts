@@ -3,7 +3,7 @@ import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { recordAdminAudit } from "@/lib/admin-audit";
 
-const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, created_at, updated_at";
+const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, created_at, updated_at";
 const baseFields = "id, slug, name, timezone, status, starts_on, ends_on, created_at, updated_at";
 
 function unauthorized() {
@@ -42,10 +42,91 @@ function boundedInteger(value: unknown, fallback: number, min: number, max: numb
   return Number.isInteger(parsed) && parsed >= min && parsed <= max ? parsed : fallback;
 }
 
+function normalizedLots(value: unknown) {
+  if (!Array.isArray(value)) return null;
+  const lots = value.map((item, index) => {
+    const row = (item ?? {}) as Record<string, unknown>;
+    const name = String(row.name ?? `Lote ${index + 1}`).trim();
+    const startsAt = String(row.starts_at ?? "").trim();
+    const endsAt = String(row.ends_at ?? "").trim();
+    const startsAtMs = new Date(startsAt).getTime();
+    const endsAtMs = new Date(endsAt).getTime();
+    const registrationFeeCents = optionalPositiveInteger(
+      row.registration_fee_cents,
+    );
+    if (!name || !startsAt || !endsAt || !registrationFeeCents)
+      throw new Error("Preencha nome, início, fim e valor de todos os lotes.");
+    if (!Number.isFinite(startsAtMs) || !Number.isFinite(endsAtMs))
+      throw new Error(`Informe datas válidas para o ${name}.`);
+    if (endsAtMs <= startsAtMs)
+      throw new Error(`A data final do ${name} deve ser posterior à inicial.`);
+    return {
+      name,
+      starts_at: new Date(startsAt).toISOString(),
+      ends_at: new Date(endsAt).toISOString(),
+      registration_fee_cents: registrationFeeCents,
+      display_order: index + 1,
+      updated_at: new Date().toISOString(),
+    };
+  });
+  const ordered = [...lots].sort(
+    (left, right) =>
+      new Date(left.starts_at).getTime() -
+      new Date(right.starts_at).getTime(),
+  );
+  for (let index = 1; index < ordered.length; index += 1) {
+    if (
+      new Date(ordered[index].starts_at).getTime() <=
+      new Date(ordered[index - 1].ends_at).getTime()
+    )
+      throw new Error("Os períodos dos lotes não podem se sobrepor.");
+  }
+  return lots;
+}
+
+async function saveLots(
+  supabase: ReturnType<typeof createSupabaseAdmin>,
+  eventId: string,
+  lots: ReturnType<typeof normalizedLots>,
+) {
+  if (lots === null) return;
+  if (!lots.length) {
+    const { error } = await supabase
+      .from("registration_lots")
+      .delete()
+      .eq("event_id", eventId);
+    if (error) throw error;
+    return;
+  }
+  const displayOrders = lots.map((lot) => lot.display_order);
+  const { error } = await supabase.from("registration_lots").upsert(
+    lots.map((lot) => ({ ...lot, event_id: eventId })),
+    { onConflict: "event_id,display_order" },
+  );
+  if (error) throw error;
+  const existing = await supabase
+    .from("registration_lots")
+    .select("display_order")
+    .eq("event_id", eventId);
+  if (existing.error) throw existing.error;
+  const staleOrders = (existing.data ?? [])
+    .map((lot) => lot.display_order)
+    .filter((displayOrder) => !displayOrders.includes(displayOrder));
+  if (staleOrders.length) {
+    const stale = await supabase
+      .from("registration_lots")
+      .delete()
+      .eq("event_id", eventId)
+      .in("display_order", staleOrders);
+    if (stale.error) throw stale.error;
+  }
+}
+
 async function eventCounts(supabase: ReturnType<typeof createSupabaseAdmin>) {
-  const [{ data: stages }, { data: registrations }] = await Promise.all([
+  const [{ data: stages }, { data: registrations }, lotsResult] = await Promise.all([
     supabase.from("stages").select("id, event_id, stage_number, name, route_label, stage_date, classification_weight, time_limit_s, results_published").order("stage_number", { ascending: true }),
     supabase.from("registrations").select("event_id"),
+    supabase.from("registration_lots").select("id, event_id, name, starts_at, ends_at, registration_fee_cents, display_order").order("display_order", { ascending: true }),
   ]);
   const stageCounts = new Map<string, number>();
   const registrationCounts = new Map<string, number>();
@@ -57,7 +138,15 @@ async function eventCounts(supabase: ReturnType<typeof createSupabaseAdmin>) {
     rows.push(stage);
     stagesByEvent.set(stage.event_id, rows);
   }
-  return { stageCounts, registrationCounts, stagesByEvent };
+  const lotsByEvent = new Map<string, NonNullable<typeof lotsResult.data>>();
+  if (!lotsResult.error) {
+    for (const lot of lotsResult.data ?? []) {
+      const rows = lotsByEvent.get(lot.event_id) ?? [];
+      rows.push(lot);
+      lotsByEvent.set(lot.event_id, rows);
+    }
+  }
+  return { stageCounts, registrationCounts, stagesByEvent, lotsByEvent };
 }
 
 export async function GET(request: NextRequest) {
@@ -72,12 +161,13 @@ export async function GET(request: NextRequest) {
     error = fallback.error;
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  const { stageCounts, registrationCounts, stagesByEvent } = await eventCounts(supabase);
+  const { stageCounts, registrationCounts, stagesByEvent, lotsByEvent } = await eventCounts(supabase);
   const events = (data ?? []).map((event) => ({
     ...event,
     stage_count: stageCounts.get(event.id) ?? 0,
     registration_count: registrationCounts.get(event.id) ?? 0,
     stages: stagesByEvent.get(event.id) ?? [],
+    registration_lots: lotsByEvent.get(event.id) ?? [],
   }));
   return NextResponse.json({ events, module_ready: moduleReady });
 }
@@ -100,9 +190,19 @@ export async function POST(request: NextRequest) {
     const registrationSource = String(body.registration_source ?? "mixed");
     const registrationFeeCents = optionalPositiveInteger(body.registration_fee_cents);
     const experienceFeeCents = optionalPositiveInteger(body.experience_fee_cents);
+    const premiumKitEnabled = body.premium_kit_enabled === true;
+    const premiumKitFeeCents = optionalPositiveInteger(
+      body.premium_kit_fee_cents,
+    );
+    const lots = normalizedLots(body.registration_lots);
     if (registrationSource === "asaas" && !registrationFeeCents) {
       return NextResponse.json({ error: "Informe o valor da inscrição para ativar o checkout Asaas." }, { status: 400 });
     }
+    if (premiumKitEnabled && !premiumKitFeeCents)
+      return NextResponse.json(
+        { error: "Informe o valor do Kit Premium." },
+        { status: 400 },
+      );
     const supabase = createSupabaseAdmin();
     const { data: event, error } = await supabase.from("events").insert({
       name,
@@ -127,8 +227,20 @@ export async function POST(request: NextRequest) {
       experience_fee_cents: experienceFeeCents,
       asaas_checkout_expires_minutes: boundedInteger(body.asaas_checkout_expires_minutes, 120, 10, 1440),
       asaas_max_installments: boundedInteger(body.asaas_max_installments, 1, 1, 21),
+      premium_kit_enabled: premiumKitEnabled,
+      premium_kit_fee_cents: premiumKitEnabled ? premiumKitFeeCents : null,
+      casual_shirt_required: body.casual_shirt_required === true,
+      senior_discount_enabled: body.senior_discount_enabled === true,
+      senior_discount_percent: boundedInteger(
+        body.senior_discount_percent,
+        50,
+        50,
+        100,
+      ),
+      regulation_version:
+        String(body.regulation_version ?? "").trim() || null,
     }).select(extendedFields).single();
-    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012_multi_event_management.sql e 022_asaas_checkout.sql no Supabase." }, { status: 409 });
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012, 022 e 024 no Supabase." }, { status: 409 });
     if (error?.code === "23505") return NextResponse.json({ error: "Já existe um evento com esse identificador." }, { status: 409 });
     if (error) throw error;
 
@@ -142,6 +254,7 @@ export async function POST(request: NextRequest) {
     }));
     const { error: stagesError } = await supabase.from("stages").insert(stages);
     if (stagesError) throw stagesError;
+    await saveLots(supabase, event.id, lots);
     await recordAdminAudit(request, { action: "event.created", resourceType: "event", resourceId: event.id, eventId: event.id, details: { name, stage_count: stageCount } });
     return NextResponse.json({ event: { ...event, stage_count: stageCount, registration_count: 0 } }, { status: 201 });
   } catch (error) {
@@ -160,20 +273,42 @@ export async function PATCH(request: NextRequest) {
     if (requestedSource === "asaas" && !requestedFee) {
       return NextResponse.json({ error: "Informe o valor da inscrição para ativar o checkout Asaas." }, { status: 400 });
     }
-    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "windfit_registration_url", "terms_url", "registration_fee_cents", "experience_fee_cents", "asaas_checkout_expires_minutes", "asaas_max_installments"] as const;
+    const premiumKitEnabled =
+      "premium_kit_enabled" in body
+        ? body.premium_kit_enabled === true
+        : undefined;
+    const premiumKitFee =
+      "premium_kit_fee_cents" in body
+        ? optionalPositiveInteger(body.premium_kit_fee_cents)
+        : undefined;
+    if (premiumKitEnabled === true && !premiumKitFee)
+      return NextResponse.json(
+        { error: "Informe o valor do Kit Premium." },
+        { status: 400 },
+      );
+    const lots = normalizedLots(body.registration_lots);
+    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "windfit_registration_url", "terms_url", "registration_fee_cents", "experience_fee_cents", "asaas_checkout_expires_minutes", "asaas_max_installments", "premium_kit_enabled", "premium_kit_fee_cents", "casual_shirt_required", "senior_discount_enabled", "senior_discount_percent", "regulation_version"] as const;
     const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
     for (const field of fields) {
       if (!(field in body)) continue;
       if (field === "slug") payload[field] = slugify(String(body[field] ?? ""));
       else if (field === "registration_fee_cents" || field === "experience_fee_cents") payload[field] = optionalPositiveInteger(body[field]);
+      else if (field === "premium_kit_fee_cents")
+        payload[field] =
+          body.premium_kit_enabled === false
+            ? null
+            : optionalPositiveInteger(body[field]);
       else if (field === "asaas_checkout_expires_minutes") payload[field] = boundedInteger(body[field], 120, 10, 1440);
       else if (field === "asaas_max_installments") payload[field] = boundedInteger(body[field], 1, 1, 21);
+      else if (field === "senior_discount_percent")
+        payload[field] = boundedInteger(body[field], 50, 50, 100);
       else payload[field] = body[field];
     }
     const supabase = createSupabaseAdmin();
     const { data, error } = await supabase.from("events").update(payload).eq("id", eventId).select(extendedFields).single();
-    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012_multi_event_management.sql e 022_asaas_checkout.sql no Supabase." }, { status: 409 });
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012, 022 e 024 no Supabase." }, { status: 409 });
     if (error) throw error;
+    await saveLots(supabase, eventId, lots);
     await recordAdminAudit(request, { action: "event.updated", resourceType: "event", resourceId: eventId, eventId, details: { fields: Object.keys(payload).filter((field) => field !== "updated_at") } });
     return NextResponse.json({ event: data });
   } catch (error) {
