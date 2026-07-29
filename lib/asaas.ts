@@ -13,6 +13,7 @@ type CheckoutInput = {
   } | null;
   expiresMinutes: number;
   maxInstallments: number;
+  internalTestMode?: boolean;
   customer: {
     name: string;
     email: string;
@@ -43,6 +44,10 @@ function environment() {
   return process.env.ASAAS_ENVIRONMENT?.trim().toLowerCase() === "production"
     ? "production"
     : "sandbox";
+}
+
+export function isAsaasSandboxEnvironment() {
+  return environment() === "sandbox";
 }
 
 export function asaasApiBaseUrl() {
@@ -87,6 +92,7 @@ export async function createAsaasCheckout(
     Math.max(10, Math.round(input.expiresMinutes)),
   );
   const callbackUrl = `${siteUrl()}/eventos/${encodeURIComponent(input.eventSlug)}/pagamento`;
+  const callbackQuery = input.internalTestMode ? "?modo=teste&" : "?";
   const chargeTypes =
     maxInstallments > 1 ? ["DETACHED", "INSTALLMENT"] : ["DETACHED"];
   const payload: Record<string, unknown> = {
@@ -95,9 +101,9 @@ export async function createAsaasCheckout(
     minutesToExpire: expiresMinutes,
     externalReference: asaasExternalReference(input.registrationId),
     callback: {
-      successUrl: `${callbackUrl}?resultado=sucesso`,
-      cancelUrl: `${callbackUrl}?resultado=cancelado`,
-      expiredUrl: `${callbackUrl}?resultado=expirado`,
+      successUrl: `${callbackUrl}${callbackQuery}resultado=sucesso`,
+      cancelUrl: `${callbackUrl}${callbackQuery}resultado=cancelado`,
+      expiredUrl: `${callbackUrl}${callbackQuery}resultado=expirado`,
     },
     items: [
       {
