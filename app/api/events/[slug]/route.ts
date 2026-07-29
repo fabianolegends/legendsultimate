@@ -1,21 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
+import { isAsaasSandboxEnvironment } from "@/lib/asaas";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import {
-  activeRegistrationLot,
   nextRegistrationLot,
+  registrationLotForMode,
   type RegistrationLot,
 } from "@/lib/registration-pricing";
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
+    const requestedTestMode =
+      request.nextUrl.searchParams.get("modo") === "teste";
+    const internalTestMode =
+      requestedTestMode &&
+      isAdminRequest(request, "registrations.manage");
+    if (requestedTestMode && !internalTestMode)
+      return NextResponse.json(
+        { error: "Evento não encontrado." },
+        { status: 404 },
+      );
     const supabase = createSupabaseAdmin();
-    const { data: event, error } = await supabase.from("events")
+    let eventQuery = supabase.from("events")
       .select("id, slug, name, description, location, starts_on, ends_on, event_type, scoring_mode, registration_source, access_mode, participant_limit, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, is_test, status")
-      .eq("slug", slug).eq("status", "published").maybeSingle();
+      .eq("slug", slug);
+    if (!internalTestMode) eventQuery = eventQuery.eq("status", "published");
+    const { data: event, error } = await eventQuery.maybeSingle();
     if (error?.code === "42703") return NextResponse.json({ error: "A inscrição online ainda não foi ativada." }, { status: 503 });
     if (error) throw error;
     if (!event) return NextResponse.json({ error: "Evento não encontrado." }, { status: 404 });
+    if (internalTestMode && !event.is_test)
+      return NextResponse.json(
+        { error: "Este evento não está habilitado para testes internos." },
+        { status: 403 },
+      );
+    if (
+      internalTestMode &&
+      event.registration_source === "asaas" &&
+      !isAsaasSandboxEnvironment()
+    )
+      return NextResponse.json(
+        {
+          error:
+            "Teste bloqueado: configure ASAAS_ENVIRONMENT como sandbox antes de continuar.",
+        },
+        { status: 503 },
+      );
 
     const [{ data: stages, error: stageError }, { count, error: countError }, lotResult] = await Promise.all([
       supabase.from("stages").select("id, stage_number, name, route_label, stage_date, distance_km, elevation_m").eq("event_id", event.id).order("stage_number"),
@@ -26,16 +57,25 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     if (countError) throw countError;
     if (lotResult.error) throw lotResult.error;
     const lots = (lotResult.data ?? []) as RegistrationLot[];
-    const currentLot = activeRegistrationLot(lots);
-    const nextLot = nextRegistrationLot(lots);
+    const currentLot = registrationLotForMode(lots, {
+      internalTestMode,
+    });
+    const nextLot = internalTestMode ? null : nextRegistrationLot(lots);
     const registered = count ?? 0;
     const remaining = event.participant_limit == null ? null : Math.max(0, event.participant_limit - registered);
     const closedByDate = Boolean(event.registration_closes_at && new Date(event.registration_closes_at).getTime() < Date.now());
     const awaitingLot = lots.length > 0 && !currentLot && Boolean(nextLot);
     const lotsEnded = lots.length > 0 && !currentLot && !nextLot;
-    const available = event.registration_open && event.access_mode === "public" && !closedByDate && !awaitingLot && !lotsEnded && (remaining == null || remaining > 0);
+    const available = internalTestMode
+      ? remaining == null || remaining > 0
+      : event.registration_open && event.access_mode === "public" && !closedByDate && !awaitingLot && !lotsEnded && (remaining == null || remaining > 0);
     return NextResponse.json({
       event,
+      test_mode: internalTestMode,
+      payment_environment:
+        internalTestMode && event.registration_source === "asaas"
+          ? "sandbox"
+          : null,
       stages: stages ?? [],
       pricing: {
         lots,
