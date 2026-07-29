@@ -1,23 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeRegistrationCode, normalizeRegistrationEmail } from "@/lib/registration-access";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
+    const requestedTestMode =
+      request.nextUrl.searchParams.get("modo") === "teste";
+    const internalTestMode =
+      requestedTestMode &&
+      isAdminRequest(request, "registrations.manage");
+    if (requestedTestMode && !internalTestMode)
+      return NextResponse.json(
+        { error: "Evento não encontrado." },
+        { status: 404 },
+      );
     const email = normalizeRegistrationEmail(request.nextUrl.searchParams.get("email") ?? "");
     const registrationCode = normalizeRegistrationCode(request.nextUrl.searchParams.get("code") ?? "");
     if (!email || !registrationCode) {
       return NextResponse.json({ error: "Informe o e-mail e o código da inscrição." }, { status: 400 });
     }
     const supabase = createSupabaseAdmin();
-    const { data: event, error: eventError } = await supabase.from("events")
-      .select("id, name, slug")
-      .eq("slug", slug)
-      .eq("status", "published")
-      .maybeSingle();
+    let eventQuery = supabase.from("events")
+      .select("id, name, slug, is_test")
+      .eq("slug", slug);
+    if (!internalTestMode) eventQuery = eventQuery.eq("status", "published");
+    const { data: event, error: eventError } = await eventQuery.maybeSingle();
     if (eventError) throw eventError;
     if (!event) return NextResponse.json({ error: "Evento não encontrado." }, { status: 404 });
+    if (internalTestMode && !event.is_test)
+      return NextResponse.json(
+        { error: "Este evento não está habilitado para testes internos." },
+        { status: 403 },
+      );
 
     const { data, error } = await supabase.from("registrations")
       .select("registration_code, full_name, email, category, modality, status, payment_status, payment_checkout_url, payment_checkout_status, payment_expires_at, payment_confirmed_at")
@@ -35,6 +51,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       && (!data.payment_expires_at || new Date(data.payment_expires_at).getTime() > Date.now());
     return NextResponse.json({
       event: { name: event.name, slug: event.slug },
+      test_mode: internalTestMode,
       registration: {
         ...data,
         payment_checkout_url: checkoutStillActive ? data.payment_checkout_url : null,
