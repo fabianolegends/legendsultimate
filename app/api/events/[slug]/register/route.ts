@@ -6,6 +6,12 @@ import { readRideWithGpsUser } from "@/lib/ridewithgps";
 import { categoryForRegistration } from "@/lib/category-rules";
 import { cancelAsaasCheckout, createAsaasCheckout } from "@/lib/asaas";
 import { digitsOnly, isValidCpfCnpj } from "@/lib/brazilian-document";
+import {
+  activeRegistrationLot,
+  calculateRegistrationPricing,
+  isApparelSize,
+  type RegistrationLot,
+} from "@/lib/registration-pricing";
 
 export const runtime = "nodejs";
 
@@ -43,6 +49,9 @@ export async function POST(
     const addressNumber = clean(body.address_number);
     const addressComplement = clean(body.address_complement);
     const province = clean(body.province);
+    const casualShirtSize = clean(body.casual_shirt_size).toUpperCase();
+    const premiumKitSelected = body.premium_kit_selected === true;
+    const jerseySize = clean(body.jersey_size).toUpperCase();
     if (
       fullName.length < 3 ||
       !validEmail(email) ||
@@ -70,14 +79,14 @@ export async function POST(
     const { data: event, error: eventError } = await supabase
       .from("events")
       .select(
-        "id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments",
+        "id, name, starts_on, status, access_mode, registration_open, registration_closes_at, registration_source, participant_limit, windfit_registration_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version",
       )
       .eq("slug", slug)
       .eq("status", "published")
       .maybeSingle();
     if (eventError?.code === "42703")
       return NextResponse.json(
-        { error: "Execute a migration 013_public_event_registration.sql." },
+        { error: "Execute as migrations 013 e 024 no Supabase." },
         { status: 503 },
       );
     if (eventError) throw eventError;
@@ -109,13 +118,37 @@ export async function POST(
       );
 
     const asaasEnabled = event.registration_source === "asaas";
-    const amountCents =
-      modality === "experience"
+    const lotResult = await supabase
+      .from("registration_lots")
+      .select(
+        "id, event_id, name, starts_at, ends_at, registration_fee_cents, display_order",
+      )
+      .eq("event_id", event.id)
+      .order("display_order");
+    if (lotResult.error?.code === "42P01")
+      return NextResponse.json(
+        {
+          error:
+            "Execute a migration 024_official_event_lots_and_apparel.sql.",
+        },
+        { status: 503 },
+      );
+    if (lotResult.error) throw lotResult.error;
+    const lots = (lotResult.data ?? []) as RegistrationLot[];
+    const activeLot = activeRegistrationLot(lots);
+    if (lots.length > 0 && !activeLot)
+      return NextResponse.json(
+        { error: "Não há lote de inscrições vigente nesta data." },
+        { status: 409 },
+      );
+    const baseFeeCents =
+      activeLot?.registration_fee_cents ??
+      (modality === "experience"
         ? (event.experience_fee_cents ?? event.registration_fee_cents)
-        : event.registration_fee_cents;
+        : event.registration_fee_cents);
     if (
       asaasEnabled &&
-      (!Number.isInteger(amountCents) || Number(amountCents) <= 0)
+      (!Number.isInteger(baseFeeCents) || Number(baseFeeCents) <= 0)
     ) {
       return NextResponse.json(
         {
@@ -125,6 +158,32 @@ export async function POST(
         { status: 503 },
       );
     }
+    if (event.casual_shirt_required && !isApparelSize(casualShirtSize))
+      return NextResponse.json(
+        { error: "Selecione o tamanho da camiseta casual." },
+        { status: 400 },
+      );
+    if (premiumKitSelected && !event.premium_kit_enabled)
+      return NextResponse.json(
+        { error: "O Kit Premium não está disponível neste evento." },
+        { status: 400 },
+      );
+    if (premiumKitSelected && !isApparelSize(jerseySize))
+      return NextResponse.json(
+        { error: "Selecione o tamanho da jersey do Kit Premium." },
+        { status: 400 },
+      );
+    const pricing = asaasEnabled
+      ? calculateRegistrationPricing({
+          baseFeeCents: Number(baseFeeCents),
+          birthDate,
+          eventDate: event.starts_on,
+          seniorDiscountEnabled: event.senior_discount_enabled === true,
+          seniorDiscountPercent: event.senior_discount_percent,
+          premiumKitSelected,
+          premiumKitFeeCents: event.premium_kit_fee_cents,
+        })
+      : null;
     if (asaasEnabled && !isValidCpfCnpj(cpfCnpj)) {
       return NextResponse.json(
         { error: "Informe um CPF ou CNPJ válido." },
@@ -300,7 +359,21 @@ export async function POST(
       source: "online",
       payment_status: asaasEnabled ? "pending" : "courtesy",
       payment_provider: asaasEnabled ? "asaas" : null,
-      payment_amount_cents: asaasEnabled ? amountCents : null,
+      payment_amount_cents: pricing?.totalCents ?? null,
+      registration_lot_id: activeLot?.id ?? null,
+      registration_lot_name: activeLot?.name ?? null,
+      registration_base_fee_cents: asaasEnabled
+        ? pricing?.registrationBaseFeeCents
+        : null,
+      senior_discount_applied: pricing?.seniorEligible ?? false,
+      senior_discount_cents: pricing?.seniorDiscountCents ?? 0,
+      premium_kit_selected: premiumKitSelected,
+      premium_kit_fee_cents: pricing?.premiumKitFeeCents ?? 0,
+      casual_shirt_size: event.casual_shirt_required
+        ? casualShirtSize
+        : null,
+      jersey_size: premiumKitSelected ? jerseySize : null,
+      regulation_version: event.regulation_version ?? null,
       payment_checkout_id: null,
       payment_checkout_url: null,
       payment_checkout_status: asaasEnabled ? "CREATING" : null,
@@ -338,8 +411,8 @@ export async function POST(
       return NextResponse.json(
         {
           error: asaasEnabled
-            ? "Execute as migrations 022_asaas_checkout.sql e 023_registration_billing_data.sql."
-            : "Execute a migration 013_public_event_registration.sql.",
+            ? "Execute as migrations 022, 023 e 024 no Supabase."
+            : "Execute as migrations 013 e 024 no Supabase.",
         },
         { status: 503 },
       );
@@ -353,7 +426,16 @@ export async function POST(
           eventSlug: slug,
           eventName: event.name,
           modality,
-          amountCents: Number(amountCents),
+          registrationFeeCents: Number(
+            pricing?.discountedRegistrationFeeCents,
+          ),
+          seniorDiscountApplied: pricing?.seniorEligible,
+          premiumKit: premiumKitSelected
+            ? {
+                feeCents: Number(pricing?.premiumKitFeeCents),
+                jerseySize,
+              }
+            : null,
           expiresMinutes: event.asaas_checkout_expires_minutes ?? 120,
           maxInstallments: event.asaas_max_installments ?? 1,
           customer: {
