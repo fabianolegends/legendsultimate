@@ -11,6 +11,7 @@ type CheckoutInput = {
     feeCents: number;
     jerseySize: string;
   } | null;
+  serviceFeeCents: number;
   expiresMinutes: number;
   maxInstallments: number;
   internalTestMode?: boolean;
@@ -132,6 +133,17 @@ export async function createAsaasCheckout(
               description: `Jersey de ciclismo — tamanho ${input.premiumKit.jerseySize}`,
               quantity: 1,
               value: input.premiumKit.feeCents / 100,
+            },
+          ]
+        : []),
+      ...(input.serviceFeeCents > 0
+        ? [
+            {
+              externalReference: `service-fee-${input.registrationId}`,
+              name: checkoutItemName("Taxa de serviço Legends Engine"),
+              description: "Taxa de serviço e processamento do sistema (7,5%)",
+              quantity: 1,
+              value: input.serviceFeeCents / 100,
             },
           ]
         : []),
