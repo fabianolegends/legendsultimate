@@ -79,6 +79,10 @@ function digits(value: string) {
   return value.replace(/\D/g, "");
 }
 
+function checkoutItemName(value: string) {
+  return Array.from(value.trim()).slice(0, 30).join("");
+}
+
 export async function createAsaasCheckout(
   input: CheckoutInput,
   fetcher: typeof fetch = fetch,
@@ -108,9 +112,11 @@ export async function createAsaasCheckout(
     items: [
       {
         externalReference: `registration-${input.registrationId}`,
-        name: input.seniorDiscountApplied
-          ? `Inscrição ${input.eventName} — benefício 60+`
-          : `Inscrição ${input.eventName}`,
+        name: checkoutItemName(
+          input.seniorDiscountApplied
+            ? `Inscrição ${input.eventName} 60+`
+            : `Inscrição ${input.eventName}`,
+        ),
         description:
           input.modality === "experience"
             ? "Modalidade Experience"
@@ -122,7 +128,7 @@ export async function createAsaasCheckout(
         ? [
             {
               externalReference: `premium-kit-${input.registrationId}`,
-              name: `Kit Premium ${input.eventName}`,
+              name: checkoutItemName(`Kit Premium ${input.eventName}`),
               description: `Jersey de ciclismo — tamanho ${input.premiumKit.jerseySize}`,
               quantity: 1,
               value: input.premiumKit.feeCents / 100,
