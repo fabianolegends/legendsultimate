@@ -5,6 +5,7 @@ import {
   calculateRegistrationPricing,
   isApparelSize,
   nextRegistrationLot,
+  registrationLotForMode,
   type RegistrationLot,
 } from "./registration-pricing";
 
@@ -36,6 +37,19 @@ test("seleciona o lote ativo e o próximo lote", () => {
     nextRegistrationLot(lots, new Date("2026-08-01T12:00:00.000Z"))?.id,
     "lot-1",
   );
+});
+
+test("modo interno usa o primeiro lote antes da abertura sem mudar as datas", () => {
+  const beforeOpening = new Date("2026-07-29T12:00:00.000Z");
+  assert.equal(registrationLotForMode(lots, { now: beforeOpening }), null);
+  assert.equal(
+    registrationLotForMode(lots, {
+      now: beforeOpening,
+      internalTestMode: true,
+    })?.id,
+    "lot-1",
+  );
+  assert.equal(lots[0].starts_at, "2026-08-18T03:00:00.000Z");
 });
 
 test("aplica 50% apenas à inscrição de pessoa com 60 anos", () => {
