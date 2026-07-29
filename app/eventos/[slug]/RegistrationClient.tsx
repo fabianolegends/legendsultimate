@@ -9,6 +9,8 @@ import {
 } from "@/lib/registration-pricing";
 
 type EventData = {
+  test_mode: boolean;
+  payment_environment: "sandbox" | null;
   event: {
     slug: string;
     name: string;
@@ -84,7 +86,13 @@ function money(cents: number | null | undefined) {
       }).format(cents / 100);
 }
 
-export default function RegistrationClient({ slug }: { slug: string }) {
+export default function RegistrationClient({
+  slug,
+  testMode = false,
+}: {
+  slug: string;
+  testMode?: boolean;
+}) {
   const [data, setData] = useState<EventData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -170,7 +178,10 @@ export default function RegistrationClient({ slug }: { slug: string }) {
   ]);
 
   useEffect(() => {
-    fetch(`/api/events/${encodeURIComponent(slug)}`, { cache: "no-store" })
+    fetch(
+      `/api/events/${encodeURIComponent(slug)}${testMode ? "?modo=teste" : ""}`,
+      { cache: "no-store" },
+    )
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok)
@@ -179,7 +190,7 @@ export default function RegistrationClient({ slug }: { slug: string }) {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, testMode]);
   function update(field: string, value: string | boolean) {
     setForm((current) => ({ ...current, [field]: value }));
   }
@@ -189,7 +200,7 @@ export default function RegistrationClient({ slug }: { slug: string }) {
     setError("");
     try {
       const response = await fetch(
-        `/api/events/${encodeURIComponent(slug)}/register`,
+        `/api/events/${encodeURIComponent(slug)}/register${testMode ? "?modo=teste" : ""}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -269,8 +280,14 @@ export default function RegistrationClient({ slug }: { slug: string }) {
   return (
     <main className="public-event">
       <style>{`
-    .public-event{min-height:100vh;background:#0d100d;color:#f3eee5;font-family:Arial,sans-serif}.public-event *{box-sizing:border-box}.loading{display:grid;place-items:center;padding:30px}.event-top{min-height:420px;background:linear-gradient(90deg,#070907f2,#070907a8),url('/hero-production.jpg') center/cover;padding:30px 5vw 58px}.event-nav{display:flex;align-items:center;justify-content:space-between}.event-nav img{width:170px}.event-nav a{color:#ddd;text-decoration:none;font-size:12px;font-weight:800;text-transform:uppercase}.event-hero{width:min(1400px,100%);margin:76px auto 0}.event-kicker{color:#e0792e;font-size:12px;letter-spacing:.22em;font-weight:900;text-transform:uppercase}.event-hero h1{font-size:clamp(52px,7vw,104px);line-height:.88;font-weight:300;margin:16px 0 24px}.event-hero p{font-size:19px;line-height:1.65;color:#bdc0b9;max-width:760px}.event-facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:28px}.event-facts div{border-left:1px solid #b95e23;padding-left:14px}.event-facts strong,.event-facts span{display:block}.event-facts strong{font-size:23px}.event-facts span{color:#999;font-size:11px;text-transform:uppercase;margin-top:4px}.registration-layout{width:min(1400px,90%);margin:0 auto;padding:70px 0 100px;display:grid;grid-template-columns:.75fr 1.25fr;gap:36px;align-items:start}.stage-panel{border:1px solid #383d36;background:#151814;padding:28px}.stage-panel h2,.form-panel h2{font-size:34px;font-weight:400;margin:8px 0 20px}.stage-row{padding:17px 0;border-top:1px solid #383d36}.stage-row strong,.stage-row span{display:block}.stage-row span{color:#999;font-size:13px;margin-top:6px}.availability{margin-top:24px;border:1px solid #70451f;background:#25190f;padding:18px;color:#efb078}.form-panel{background:#eee5d8;color:#171917;padding:34px}.form-panel>p{color:#60655e;line-height:1.6}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:24px}.form-grid label{display:grid;gap:7px;font-size:12px;font-weight:800}.wide{grid-column:1/-1}.checks{grid-column:1/-1;display:grid;gap:10px;border-top:1px solid #c8bcac;padding-top:17px}.checks label{display:flex;grid-template-columns:auto 1fr;align-items:start;font-weight:400;line-height:1.45}.checks input{margin-top:3px}.submit{grid-column:1/-1;padding:18px;border:0;background:#e86619;color:white;font-size:16px;font-weight:900;cursor:pointer}.submit:disabled{opacity:.6}.form-error{grid-column:1/-1;background:#f3dcd6;border:1px solid #b65b46;color:#7c2d21;padding:14px}.closed{padding:28px;border:1px solid #8b5427;background:#281b11;color:#efb078}.windfit-button,.passport-button{display:block;padding:18px;background:#e86619;color:#fff;text-align:center;text-decoration:none;font-weight:900;margin-top:22px}.success{border:1px solid #31734d;background:#edf5ef;padding:26px}.success h2{color:#255e3c}.access-code{border:1px dashed #c36118;background:white;padding:18px;text-align:center;margin:20px 0}.access-code strong{display:block;font:900 30px monospace;color:#c36118}.access-code button{margin-top:9px;border:0;background:transparent;color:#555;text-decoration:underline;cursor:pointer}.success-steps{color:#555;line-height:1.7}.website{position:absolute;left:-9999px}@media(max-width:850px){.registration-layout{grid-template-columns:1fr;width:min(94%,700px);padding:45px 0 70px}.event-top{padding-inline:22px}.event-nav img{width:140px}.event-hero{margin-top:55px}.form-grid{grid-template-columns:1fr}.wide,.checks,.submit,.form-error{grid-column:auto}.form-panel{padding:24px}.event-facts{gap:16px}}
+    .public-event{min-height:100vh;background:#0d100d;color:#f3eee5;font-family:Arial,sans-serif}.public-event *{box-sizing:border-box}.loading{display:grid;place-items:center;padding:30px}.test-banner{position:sticky;top:0;z-index:50;background:#e86619;color:#fff;padding:13px 20px;text-align:center;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.event-top{min-height:420px;background:linear-gradient(90deg,#070907f2,#070907a8),url('/hero-production.jpg') center/cover;padding:30px 5vw 58px}.event-nav{display:flex;align-items:center;justify-content:space-between}.event-nav img{width:170px}.event-nav a{color:#ddd;text-decoration:none;font-size:12px;font-weight:800;text-transform:uppercase}.event-hero{width:min(1400px,100%);margin:76px auto 0}.event-kicker{color:#e0792e;font-size:12px;letter-spacing:.22em;font-weight:900;text-transform:uppercase}.event-hero h1{font-size:clamp(52px,7vw,104px);line-height:.88;font-weight:300;margin:16px 0 24px}.event-hero p{font-size:19px;line-height:1.65;color:#bdc0b9;max-width:760px}.event-facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:28px}.event-facts div{border-left:1px solid #b95e23;padding-left:14px}.event-facts strong,.event-facts span{display:block}.event-facts strong{font-size:23px}.event-facts span{color:#999;font-size:11px;text-transform:uppercase;margin-top:4px}.registration-layout{width:min(1400px,90%);margin:0 auto;padding:70px 0 100px;display:grid;grid-template-columns:.75fr 1.25fr;gap:36px;align-items:start}.stage-panel{border:1px solid #383d36;background:#151814;padding:28px}.stage-panel h2,.form-panel h2{font-size:34px;font-weight:400;margin:8px 0 20px}.stage-row{padding:17px 0;border-top:1px solid #383d36}.stage-row strong,.stage-row span{display:block}.stage-row span{color:#999;font-size:13px;margin-top:6px}.availability{margin-top:24px;border:1px solid #70451f;background:#25190f;padding:18px;color:#efb078}.form-panel{background:#eee5d8;color:#171917;padding:34px}.form-panel>p{color:#60655e;line-height:1.6}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:24px}.form-grid label{display:grid;gap:7px;font-size:12px;font-weight:800}.wide{grid-column:1/-1}.checks{grid-column:1/-1;display:grid;gap:10px;border-top:1px solid #c8bcac;padding-top:17px}.checks label{display:flex;grid-template-columns:auto 1fr;align-items:start;font-weight:400;line-height:1.45}.checks input{margin-top:3px}.submit{grid-column:1/-1;padding:18px;border:0;background:#e86619;color:white;font-size:16px;font-weight:900;cursor:pointer}.submit:disabled{opacity:.6}.form-error{grid-column:1/-1;background:#f3dcd6;border:1px solid #b65b46;color:#7c2d21;padding:14px}.closed{padding:28px;border:1px solid #8b5427;background:#281b11;color:#efb078}.windfit-button,.passport-button{display:block;padding:18px;background:#e86619;color:#fff;text-align:center;text-decoration:none;font-weight:900;margin-top:22px}.success{border:1px solid #31734d;background:#edf5ef;padding:26px}.success h2{color:#255e3c}.access-code{border:1px dashed #c36118;background:white;padding:18px;text-align:center;margin:20px 0}.access-code strong{display:block;font:900 30px monospace;color:#c36118}.access-code button{margin-top:9px;border:0;background:transparent;color:#555;text-decoration:underline;cursor:pointer}.success-steps{color:#555;line-height:1.7}.website{position:absolute;left:-9999px}@media(max-width:850px){.registration-layout{grid-template-columns:1fr;width:min(94%,700px);padding:45px 0 70px}.event-top{padding-inline:22px}.event-nav img{width:140px}.event-hero{margin-top:55px}.form-grid{grid-template-columns:1fr}.wide,.checks,.submit,.form-error{grid-column:auto}.form-panel{padding:24px}.event-facts{gap:16px}}
   `}</style>
+      {data.test_mode ? (
+        <div className="test-banner">
+          Ambiente de teste interno · Asaas Sandbox · nenhum valor real será
+          cobrado
+        </div>
+      ) : null}
       <section className="event-top">
         <nav className="event-nav">
           <a href="/">
@@ -282,7 +299,11 @@ export default function RegistrationClient({ slug }: { slug: string }) {
           </div>
         </nav>
         <div className="event-hero">
-          <div className="event-kicker">INSCRIÇÃO · LEGENDS PASSPORT</div>
+          <div className="event-kicker">
+            {data.test_mode
+              ? "TESTE INTERNO · LEGENDS ENGINE"
+              : "INSCRIÇÃO · LEGENDS PASSPORT"}
+          </div>
           <h1>{event.name}</h1>
           <p>
             {event.description ||
@@ -414,7 +435,9 @@ export default function RegistrationClient({ slug }: { slug: string }) {
               <h2>Inscreva-se</h2>
               <p>
                 {asaasCheckout
-                  ? `Preencha seus dados e continue para o ambiente seguro do Asaas. Pagamento por Pix ou cartão${(event.asaas_max_installments ?? 1) > 1 ? ` em até ${event.asaas_max_installments}x` : ""}. A vaga só será confirmada após o pagamento.`
+                  ? data.test_mode
+                    ? `Preencha os dados e simule o checkout no Asaas Sandbox. O pagamento é fictício e será usado apenas para validar a inscrição, o webhook e o painel da organização.`
+                    : `Preencha seus dados e continue para o ambiente seguro do Asaas. Pagamento por Pix ou cartão${(event.asaas_max_installments ?? 1) > 1 ? ` em até ${event.asaas_max_installments}x` : ""}. A vaga só será confirmada após o pagamento.`
                   : "Preencha seus dados. Sua categoria será definida automaticamente pelo ano-base do evento."}
               </p>
               <form className="form-grid" onSubmit={submit}>
@@ -796,7 +819,9 @@ export default function RegistrationClient({ slug }: { slug: string }) {
                   {saving
                     ? "PREPARANDO CHECKOUT..."
                     : asaasCheckout
-                      ? "CONTINUAR PARA PAGAMENTO NO ASAAS →"
+                      ? data.test_mode
+                        ? "TESTAR PAGAMENTO NO ASAAS SANDBOX →"
+                        : "CONTINUAR PARA PAGAMENTO NO ASAAS →"
                       : "CONFIRMAR INSCRIÇÃO"}
                 </button>
               </form>
