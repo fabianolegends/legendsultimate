@@ -36,6 +36,8 @@ type RegistrationInput = {
   address_number?: string | null;
   address_complement?: string | null;
   province?: string | null;
+  casual_shirt_size?: string | null;
+  jersey_size?: string | null;
 };
 
 function unauthorized() {
@@ -241,6 +243,8 @@ function normalizeInput(
     address_number: cleanNullable(input.address_number),
     address_complement: cleanNullable(input.address_complement),
     province: cleanNullable(input.province),
+    casual_shirt_size: cleanNullable(input.casual_shirt_size)?.toUpperCase(),
+    jersey_size: cleanNullable(input.jersey_size)?.toUpperCase(),
     registered_at: normalizeDateTime(input.registered_at),
     payment_status: paymentStatus,
     imported_at:
@@ -285,7 +289,8 @@ export async function GET(request: NextRequest) {
       "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
     const detailFields = `${baseFields}, phone, location, registered_at`;
     const paymentFields = `${detailFields}, payment_provider, payment_amount_cents, payment_checkout_id, payment_checkout_url, payment_checkout_status, payment_expires_at, payment_confirmed_at, payment_refunded_at, last_payment_event_at`;
-    const fields = `${paymentFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
+    const billingFields = `${paymentFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
+    const fields = `${billingFields}, registration_lot_id, registration_lot_name, registration_base_fee_cents, senior_discount_applied, senior_discount_cents, premium_kit_selected, premium_kit_fee_cents, casual_shirt_size, jersey_size, regulation_version`;
     let query = supabase
       .from("registrations")
       .select(fields)
@@ -295,36 +300,48 @@ export async function GET(request: NextRequest) {
     let detailsReady = true;
     let paymentReady = true;
     let billingReady = true;
+    let commerceReady = true;
     if (error?.code === "42703") {
-      billingReady = false;
+      commerceReady = false;
       let fallbackQuery = supabase
         .from("registrations")
-        .select(paymentFields)
+        .select(billingFields)
         .order("full_name", { ascending: true });
       if (eventId) fallbackQuery = fallbackQuery.eq("event_id", eventId);
       const fallback = await fallbackQuery;
       registrations = fallback.data as typeof registrations;
       error = fallback.error;
       if (error?.code === "42703") {
-        paymentReady = false;
-        let detailQuery = supabase
+        billingReady = false;
+        let paymentQuery = supabase
           .from("registrations")
-          .select(detailFields)
+          .select(paymentFields)
           .order("full_name", { ascending: true });
-        if (eventId) detailQuery = detailQuery.eq("event_id", eventId);
-        const detail = await detailQuery;
-        registrations = detail.data as typeof registrations;
-        error = detail.error;
+        if (eventId) paymentQuery = paymentQuery.eq("event_id", eventId);
+        const payment = await paymentQuery;
+        registrations = payment.data as typeof registrations;
+        error = payment.error;
         if (error?.code === "42703") {
-          detailsReady = false;
-          let legacyQuery = supabase
+          paymentReady = false;
+          let detailQuery = supabase
             .from("registrations")
-            .select(baseFields)
+            .select(detailFields)
             .order("full_name", { ascending: true });
-          if (eventId) legacyQuery = legacyQuery.eq("event_id", eventId);
-          const legacy = await legacyQuery;
-          registrations = legacy.data as typeof registrations;
-          error = legacy.error;
+          if (eventId) detailQuery = detailQuery.eq("event_id", eventId);
+          const detail = await detailQuery;
+          registrations = detail.data as typeof registrations;
+          error = detail.error;
+          if (error?.code === "42703") {
+            detailsReady = false;
+            let legacyQuery = supabase
+              .from("registrations")
+              .select(baseFields)
+              .order("full_name", { ascending: true });
+            if (eventId) legacyQuery = legacyQuery.eq("event_id", eventId);
+            const legacy = await legacyQuery;
+            registrations = legacy.data as typeof registrations;
+            error = legacy.error;
+          }
         }
       }
     }
@@ -434,6 +451,9 @@ export async function GET(request: NextRequest) {
       !billingReady
         ? "Execute a migration 023_registration_billing_data.sql para armazenar CPF e endereço."
         : null,
+      !commerceReady
+        ? "Execute a migration 024_official_event_lots_and_apparel.sql para lotes, descontos, kit e tamanhos."
+        : null,
     ].filter(Boolean);
     return NextResponse.json({
       module_ready: true,
@@ -441,6 +461,7 @@ export async function GET(request: NextRequest) {
       details_ready: detailsReady,
       payment_ready: paymentReady,
       billing_ready: billingReady,
+      commerce_ready: commerceReady,
       numbering_ready: numberingReady,
       identity_ready: identityReady,
       link_audit: linkAudit,
