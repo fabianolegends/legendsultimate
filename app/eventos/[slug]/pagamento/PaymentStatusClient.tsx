@@ -52,7 +52,12 @@ export default function PaymentStatusClient({
       return;
     }
     try {
-      const response = await fetch(`/api/events/${encodeURIComponent(slug)}/registration-status?code=${encodeURIComponent(stored.code)}&email=${encodeURIComponent(stored.email)}`, { cache: "no-store" });
+      const searchParams = new URLSearchParams({
+        code: stored.code,
+        email: stored.email,
+      });
+      if (testMode) searchParams.set("modo", "teste");
+      const response = await fetch(`/api/events/${encodeURIComponent(slug)}/registration-status?${searchParams.toString()}`, { cache: "no-store" });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error ?? "Não foi possível consultar a inscrição.");
       setPayload(body);
@@ -62,7 +67,7 @@ export default function PaymentStatusClient({
       setMessage(error instanceof Error ? error.message : "Não foi possível consultar a inscrição.");
       setChecking(false);
     }
-  }, [slug]);
+  }, [slug, testMode]);
 
   useEffect(() => {
     void check();
