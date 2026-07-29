@@ -25,7 +25,15 @@ function title(result: string, paymentStatus?: string) {
   return "Estamos confirmando seu pagamento";
 }
 
-export default function PaymentStatusClient({ slug, result }: { slug: string; result: string }) {
+export default function PaymentStatusClient({
+  slug,
+  result,
+  testMode = false,
+}: {
+  slug: string;
+  result: string;
+  testMode?: boolean;
+}) {
   const [payload, setPayload] = useState<StatusPayload | null>(null);
   const [message, setMessage] = useState("");
   const [checking, setChecking] = useState(true);
@@ -72,7 +80,7 @@ export default function PaymentStatusClient({ slug, result }: { slug: string; re
     `}</style>
     <article className="payment-card">
       <a href="/"><img className="logo" src="/legends-logo-official.png" alt="Legends Bike Race"/></a>
-      <div className="kicker">LEGENDS PASSPORT · ASAAS</div>
+      <div className="kicker">{testMode ? "AMBIENTE DE TESTE · ASAAS SANDBOX" : "LEGENDS PASSPORT · ASAAS"}</div>
       <h1>{title(result, registration?.payment_status)}</h1>
       {paid ? <div className="confirmed">
         <strong>Sua vaga está garantida.</strong>
@@ -85,7 +93,7 @@ export default function PaymentStatusClient({ slug, result }: { slug: string; re
       <div className="actions">
         {!paid && registration?.payment_status === "pending" && registration.payment_checkout_url ? <a className="primary" href={registration.payment_checkout_url}>RETOMAR PAGAMENTO NO ASAAS →</a> : null}
         {paid ? <a className="primary" href="/passport/acesso">ACESSAR O LEGENDS PASSPORT →</a> : <button className="secondary" type="button" onClick={() => { setChecking(true); void check(); }}>VERIFICAR NOVAMENTE</button>}
-        <a className="secondary" href={`/eventos/${encodeURIComponent(slug)}`}>VOLTAR AO EVENTO</a>
+        <a className="secondary" href={`/eventos/${encodeURIComponent(slug)}${testMode ? "?modo=teste" : ""}`}>VOLTAR AO EVENTO</a>
       </div>
     </article>
   </main>;
