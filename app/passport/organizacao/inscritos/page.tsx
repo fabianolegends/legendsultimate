@@ -47,6 +47,15 @@ type Registration = {
   payment_confirmed_at?: string | null;
   payment_refunded_at?: string | null;
   last_payment_event_at?: string | null;
+  registration_lot_name?: string | null;
+  registration_base_fee_cents?: number | null;
+  senior_discount_applied?: boolean;
+  senior_discount_cents?: number;
+  premium_kit_selected?: boolean;
+  premium_kit_fee_cents?: number;
+  casual_shirt_size?: string | null;
+  jersey_size?: string | null;
+  regulation_version?: string | null;
   created_at: string;
   imported_at: string | null;
   last_synced_at: string | null;
@@ -409,6 +418,9 @@ export default function RegistrationsPage() {
             item.bib_number,
             item.registration_code,
             item.external_registration_id,
+            item.registration_lot_name,
+            item.casual_shirt_size,
+            item.jersey_size,
           ].some((value) =>
             String(value ?? "")
               .toLowerCase()
@@ -1357,6 +1369,16 @@ export default function RegistrationsPage() {
                                 ? "Experience"
                                 : "Gravel Race"}
                             </span>
+                            {item.casual_shirt_size ? (
+                              <span>
+                                Camiseta casual: {item.casual_shirt_size}
+                              </span>
+                            ) : null}
+                            {item.premium_kit_selected ? (
+                              <span>
+                                Kit Premium · Jersey {item.jersey_size ?? "—"}
+                              </span>
+                            ) : null}
                           </td>
                           <td>
                             <span className={item.payment_status}>
@@ -1365,6 +1387,15 @@ export default function RegistrationsPage() {
                             {formatMoney(item.payment_amount_cents) ? (
                               <span>
                                 {formatMoney(item.payment_amount_cents)}
+                              </span>
+                            ) : null}
+                            {item.registration_lot_name ? (
+                              <span>{item.registration_lot_name}</span>
+                            ) : null}
+                            {item.senior_discount_applied ? (
+                              <span>
+                                Benefício 60+: −
+                                {formatMoney(item.senior_discount_cents)}
                               </span>
                             ) : null}
                             {item.payment_confirmed_at ? (
