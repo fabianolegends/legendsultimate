@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import "./overrides.css";
+import "./tr3-footer.css";
 import CookieConsent from "./CookieConsent";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
