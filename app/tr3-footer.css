@@ -1,0 +1,39 @@
+/* Assinatura institucional TR3 no rodapé da página inicial. */
+.redesign .footer > p:first-of-type {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 18px !important;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+.redesign .footer > p:first-of-type::before {
+  content: "";
+  display: block;
+  flex: 0 0 74px;
+  width: 74px;
+  height: 48px;
+  background: url('/tr3-logo-footer.png') center / contain no-repeat;
+}
+
+@media (max-width: 760px) {
+  .redesign .footer > p:first-of-type {
+    gap: 12px !important;
+    white-space: normal;
+  }
+
+  .redesign .footer > p:first-of-type::before {
+    flex-basis: 58px;
+    width: 58px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .redesign .footer > p:first-of-type {
+    flex-direction: column;
+    gap: 8px !important;
+    text-align: center;
+  }
+}
