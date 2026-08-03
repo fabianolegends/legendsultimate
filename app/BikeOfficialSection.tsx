@@ -55,20 +55,6 @@ export default function BikeOfficialSection() {
 
   return createPortal(
     <section id="bike-oficial" className={styles.section} aria-labelledby="bike-oficial-title">
-      <div className={styles.desktopArtwork}>
-        <img
-          src="/bike-oficial-danda-specialized.webp"
-          alt="Danda Bike e Specialized, parceiros da bike oficial da Legends Bike Race"
-        />
-        <a
-          className={styles.desktopButton}
-          href="https://dandabikeshop.com.br/bicicletas/estrada-gravel"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Conheça a bike oficial no site da Danda Bike"
-        />
-      </div>
-
       <div className={styles.inner}>
         <div className={styles.copy}>
           <p className={styles.kicker}>Bike oficial</p>
@@ -96,10 +82,12 @@ export default function BikeOfficialSection() {
           </a>
         </div>
 
-        <div className={styles.visual} aria-hidden="true">
+        <div className={styles.visual}>
           <img
-            src="/bike-oficial-danda-specialized.webp"
-            alt=""
+            src="/diverge-4-official.webp"
+            alt="Specialized Diverge 4 Sport, bike oficial da Legends Bike Race"
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </div>
