@@ -84,7 +84,7 @@ export default function BikeOfficialSection() {
 
         <div className={styles.visual}>
           <img
-            src="/diverge-4-official.webp"
+            src="/diverge-4-cutout-v2.webp"
             alt="Specialized Diverge 4 Sport, bike oficial da Legends Bike Race"
             loading="lazy"
             decoding="async"
