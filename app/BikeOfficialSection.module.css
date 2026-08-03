@@ -145,7 +145,7 @@
   z-index: 1;
   min-width: 0;
   min-height: 650px;
-  margin-right: clamp(-110px, -5vw, -30px);
+  margin-right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,12 +180,12 @@
   z-index: 1;
   display: block;
   width: auto;
-  max-width: 118%;
+  max-width: 96%;
   height: auto;
-  max-height: min(50vw, 700px);
+  max-height: min(44vw, 620px);
   object-fit: contain;
   filter: sepia(.06) saturate(.92) contrast(1.08) brightness(.9) drop-shadow(0 28px 30px rgba(0, 0, 0, .68));
-  transform: translate(4%, 5%);
+  transform: translateY(3%);
 }
 
 @media (max-width: 1100px) {
@@ -199,7 +199,7 @@
   }
 
   .visual {
-    margin-right: -70px;
+    margin-right: 0;
   }
 }
 
