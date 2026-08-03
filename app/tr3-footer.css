@@ -1,39 +1,42 @@
 /* Assinatura institucional TR3 no rodapé da página inicial. */
 .redesign .footer > p:first-of-type {
+  position: relative;
+  min-height: 58px;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 18px !important;
   margin: 0 !important;
+  padding-left: 106px;
+  overflow: visible !important;
   white-space: nowrap;
+  background-image: url('/tr3-logo-footer.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 88px auto;
 }
 
+/* Remove a implementação anterior em pseudo-elemento, que podia ser recortada. */
 .redesign .footer > p:first-of-type::before {
-  content: "";
-  display: block;
-  flex: 0 0 74px;
-  width: 74px;
-  height: 48px;
-  background: url('/tr3-logo-footer.png') center / contain no-repeat;
+  content: none !important;
+  display: none !important;
 }
 
 @media (max-width: 760px) {
   .redesign .footer > p:first-of-type {
-    gap: 12px !important;
+    min-height: 48px;
+    padding-left: 82px;
     white-space: normal;
-  }
-
-  .redesign .footer > p:first-of-type::before {
-    flex-basis: 58px;
-    width: 58px;
-    height: 38px;
+    background-size: 68px auto;
   }
 }
 
 @media (max-width: 520px) {
   .redesign .footer > p:first-of-type {
-    flex-direction: column;
-    gap: 8px !important;
-    text-align: center;
+    min-height: 96px;
+    padding: 62px 0 0;
+    justify-content: flex-start !important;
+    text-align: left;
+    background-position: left top;
+    background-size: 72px auto;
   }
 }
