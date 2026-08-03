@@ -21,7 +21,7 @@
   padding-left: 112px;
   overflow: visible !important;
   white-space: nowrap;
-  background-image: url('/tr3-logo-footer.png');
+  background-image: url('/tr3-logo-footer-exact.svg');
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 94px auto;
@@ -33,7 +33,6 @@
   text-align: right;
 }
 
-/* Remove a implementação anterior em pseudo-elemento. */
 .redesign .footer > p:first-of-type::before {
   content: none !important;
   display: none !important;
