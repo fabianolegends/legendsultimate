@@ -1,42 +1,81 @@
 /* Assinatura institucional TR3 no rodapé da página inicial. */
+.redesign .footer {
+  display: grid !important;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center !important;
+  justify-content: stretch !important;
+  column-gap: 26px;
+}
+
+.redesign .footer .footerLogo {
+  margin: 0 !important;
+}
+
 .redesign .footer > p:first-of-type {
   position: relative;
-  min-height: 58px;
+  min-height: 62px;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   margin: 0 !important;
-  padding-left: 106px;
+  padding-left: 112px;
   overflow: visible !important;
   white-space: nowrap;
   background-image: url('/tr3-logo-footer.png');
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: 88px auto;
+  background-size: 94px auto;
 }
 
-/* Remove a implementação anterior em pseudo-elemento, que podia ser recortada. */
+.redesign .footer > p:last-of-type {
+  justify-self: end;
+  margin: 0 !important;
+  text-align: right;
+}
+
+/* Remove a implementação anterior em pseudo-elemento. */
 .redesign .footer > p:first-of-type::before {
   content: none !important;
   display: none !important;
 }
 
 @media (max-width: 760px) {
+  .redesign .footer {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 16px;
+    column-gap: 18px;
+    align-items: center !important;
+  }
+
   .redesign .footer > p:first-of-type {
-    min-height: 48px;
-    padding-left: 82px;
+    min-height: 52px;
+    padding-left: 88px;
     white-space: normal;
-    background-size: 68px auto;
+    background-size: 74px auto;
+  }
+
+  .redesign .footer > p:last-of-type {
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
   }
 }
 
 @media (max-width: 520px) {
+  .redesign .footer {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 14px;
+  }
+
+  .redesign .footer .footerLogo {
+    height: 58px !important;
+  }
+
   .redesign .footer > p:first-of-type {
-    min-height: 96px;
-    padding: 62px 0 0;
-    justify-content: flex-start !important;
-    text-align: left;
-    background-position: left top;
-    background-size: 72px auto;
+    min-height: 50px;
+    padding-left: 78px;
+    font-size: 10px;
+    line-height: 1.35;
+    background-size: 66px auto;
   }
 }
