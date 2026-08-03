@@ -204,6 +204,7 @@
   .copy {
     max-width: none;
     padding: 58px max(28px, env(safe-area-inset-right)) 48px max(28px, env(safe-area-inset-left));
+    text-align: center;
   }
 
   .kicker {
@@ -217,7 +218,7 @@
 
   .description {
     max-width: 620px;
-    margin-top: 28px;
+    margin: 28px auto 0;
     font-size: 15.5px;
     line-height: 1.75;
   }
@@ -225,6 +226,7 @@
   .logos {
     margin: 30px 0 32px;
     gap: 20px;
+    justify-content: center;
   }
 
   .danda {
@@ -242,9 +244,17 @@
   }
 
   .button {
+    position: relative;
     width: 100%;
     min-height: 76px;
     padding-inline: 24px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .button span {
+    position: absolute;
+    right: 24px;
   }
 
   .visual {
@@ -266,10 +276,10 @@
   }
 
   .visual img {
-    width: 132%;
-    max-width: none;
+    width: min(92%, 600px);
+    max-width: 600px;
     filter: saturate(1.08) contrast(1.05) drop-shadow(0 22px 24px rgba(0, 0, 0, .54));
-    transform: translate(2%, 8%);
+    transform: translateY(5%);
   }
 }
 
