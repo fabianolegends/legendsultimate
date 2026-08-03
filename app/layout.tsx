@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import "./overrides.css";
 import "./tr3-footer.css";
+import BikeOfficialSection from "./BikeOfficialSection";
 import CookieConsent from "./CookieConsent";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -99,6 +100,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
+        <BikeOfficialSection />
         <CookieConsent />
       </body>
     </html>
