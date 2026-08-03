@@ -1,27 +1,48 @@
 .section {
   position: relative;
   overflow: hidden;
-  min-height: 760px;
   color: #f5f0dc;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.98) 0%, rgba(0,0,0,.93) 34%, rgba(0,0,0,.58) 58%, rgba(0,0,0,.2) 100%),
-    linear-gradient(0deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,.45) 100%),
-    url('/hero-production.jpg') center / cover no-repeat;
+  background: #070707;
   border-top: 1px solid rgba(186,112,73,.34);
   border-bottom: 1px solid rgba(186,112,73,.34);
 }
 
-.section::after {
-  content: "";
+.desktopArtwork {
+  position: relative;
+  width: 100%;
+  max-width: 1920px;
+  margin-inline: auto;
+}
+
+.desktopArtwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.desktopButton {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 72% 47%, rgba(186,112,73,.2), transparent 38%),
-    linear-gradient(90deg, transparent 55%, rgba(245,240,220,.08) 100%);
+  z-index: 2;
+  left: 6.65%;
+  top: 80%;
+  width: 23.35%;
+  height: 8.5%;
+  border-radius: 2px;
+  transition: background-color .2s ease, box-shadow .2s ease;
+}
+
+.desktopButton:hover {
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.22) inset;
+}
+
+.desktopButton:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
 }
 
 .inner {
+  display: none;
   position: relative;
   z-index: 1;
   width: min(1440px, calc(100% - 96px));
@@ -106,9 +127,9 @@
   justify-content: space-between;
   gap: 24px;
   padding: 20px 26px;
-  border: 1px solid #ba7049;
-  color: #f5f0dc;
-  background: rgba(0,0,0,.32);
+  border: 1px solid #c77b54;
+  color: #fff;
+  background: #c77b54;
   font: 700 16px/1 'Barlow Condensed', sans-serif;
   letter-spacing: .13em;
   text-transform: uppercase;
@@ -117,7 +138,7 @@
 
 .button:hover {
   color: #fff;
-  background: #ba7049;
+  background: #df8b62;
   transform: translateY(-2px);
 }
 
@@ -157,31 +178,27 @@
 }
 
 @media (max-width: 1100px) {
-  .inner {
-    width: min(100% - 48px, 980px);
-    grid-template-columns: minmax(360px, .9fr) minmax(430px, 1.1fr);
-  }
-
-  .title {
-    font-size: clamp(55px, 6vw, 78px);
-  }
-
-  .visual {
-    min-height: 560px;
+  .desktopButton {
+    top: 79.8%;
   }
 }
 
 @media (max-width: 800px) {
+  .desktopArtwork {
+    display: none;
+  }
+
   .section,
   .inner {
     min-height: 0;
   }
 
   .section {
-    background-position: 62% center;
+    background: #070707;
   }
 
   .inner {
+    display: grid;
     width: calc(100% - 32px);
     grid-template-columns: 1fr;
     gap: 0;
@@ -224,14 +241,34 @@
   }
 
   .visual {
-    min-height: 420px;
+    height: 420px;
+    min-height: 0;
     margin: 0 -16px;
   }
 
   .visual img {
-    width: 112%;
+    width: 100%;
+    height: 100%;
     max-width: none;
-    max-height: 470px;
-    transform: translateX(0);
+    max-height: none;
+    object-fit: cover;
+    object-position: 78% center;
+    mix-blend-mode: normal;
+    filter: none;
+    transform: none;
+  }
+
+  .visual::before {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .copy {
+    padding-top: 56px;
+  }
+
+  .visual {
+    height: 360px;
   }
 }

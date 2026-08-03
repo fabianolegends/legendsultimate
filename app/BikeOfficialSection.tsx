@@ -54,7 +54,21 @@ export default function BikeOfficialSection() {
   if (!target) return null;
 
   return createPortal(
-    <section className={styles.section} aria-labelledby="bike-oficial-title">
+    <section id="bike-oficial" className={styles.section} aria-labelledby="bike-oficial-title">
+      <div className={styles.desktopArtwork}>
+        <img
+          src="/bike-oficial-danda-specialized.webp"
+          alt="Danda Bike e Specialized, parceiros da bike oficial da Legends Bike Race"
+        />
+        <a
+          className={styles.desktopButton}
+          href="https://dandabikeshop.com.br/bicicletas/estrada-gravel"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Conheça a bike oficial no site da Danda Bike"
+        />
+      </div>
+
       <div className={styles.inner}>
         <div className={styles.copy}>
           <p className={styles.kicker}>Bike oficial</p>
@@ -84,7 +98,7 @@ export default function BikeOfficialSection() {
 
         <div className={styles.visual} aria-hidden="true">
           <img
-            src="https://www.cycle-revolution.net/images/myimages/scom-9828-diverge-vertical.jpeg?width=1920"
+            src="/bike-oficial-danda-specialized.webp"
             alt=""
           />
         </div>
