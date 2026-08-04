@@ -1,14 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Barlow_Condensed, Manrope } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import "./overrides.css";
 import "./tr3-footer.css";
+import "./font-aliases.css";
 import BikeOfficialSection from "./BikeOfficialSection";
 import CookieConsent from "./CookieConsent";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  preload: true,
+  variable: "--font-manrope",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+  preload: true,
+  variable: "--font-barlow-condensed",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.legendsbikerace.com.br"),
@@ -91,14 +105,14 @@ const structuredData = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={barlowCondensed.variable}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${manrope.className} ${manrope.variable} antialiased`}>
         {children}
         <BikeOfficialSection />
         <CookieConsent />

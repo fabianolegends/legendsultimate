@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "prepare:fonts": "node scripts/prepare-fonts.mjs",
+    "dev": "npm run prepare:fonts && next dev",
+    "build": "npm run prepare:fonts && next build",
     "test:payments": "node --import tsx --test lib/asaas-webhook.test.ts lib/brazilian-document.test.ts lib/registration-pricing.test.ts",
     "test:classification-engine": "node --import tsx --test lib/classification-engine/index.test.ts",
     "test:race-engine": "node --import tsx --test lib/race-engine/index.test.ts",
