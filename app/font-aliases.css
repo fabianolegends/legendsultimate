@@ -1,0 +1,64 @@
+/*
+ * Aliases tipográficos da Legends.
+ * As famílias são fornecidas pelo next/font, sem chamada ao Google Fonts em tempo de execução.
+ */
+:root {
+  --font-legends-body: var(--font-manrope);
+  --font-legends-display: var(--font-barlow-condensed);
+}
+
+body {
+  font-family: var(--font-legends-body), Arial, sans-serif !important;
+}
+
+/*
+ * Mantém a mesma hierarquia que já usava Barlow Condensed no projeto.
+ * O !important é intencional para substituir somente declarações legadas da mesma família.
+ */
+:where(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  button,
+  summary,
+  .brand,
+  .navLinks,
+  .navCta,
+  .button,
+  .textLink,
+  .eyebrow,
+  .kicker,
+  .tag,
+  .sectionLabel,
+  .stageN,
+  .stageAction,
+  .backLink,
+  .detailEyebrow,
+  .stageKicker,
+  .dataList dt,
+  .dataList dd,
+  .mobileMenuTrigger,
+  .mobileMenuLinks,
+  .mobileMenuActions,
+  .heroStat,
+  .metric,
+  .fact,
+  .engineLink,
+  .manifestoButton,
+  .supportGroup h3,
+  .cityStrip strong,
+  .backToTop,
+  .raceInfoTitle,
+  .raceInfoSummary,
+  .journeyMode,
+  .stageFacts,
+  .terrainHero,
+  .priorityPage .fact,
+  .access-kicker,
+  .access-button
+) {
+  font-family: var(--font-legends-display), "Arial Narrow", Arial, sans-serif !important;
+}
