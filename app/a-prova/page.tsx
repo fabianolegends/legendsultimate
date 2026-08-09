@@ -3,37 +3,24 @@ import RaceInfoMenu from "./RaceInfoMenu";
 
 export const metadata: Metadata = {
   title: "A Prova",
-  description: "Entenda como funciona a Legends Ultimate: quatro etapas de gravel, autonavegação, categorias, classificação e estrutura na Serra Gaúcha.",
+  description: "Como funciona a Legends Bike Race 2027: quatro etapas, autonavegação, categorias, pontos, Race Engine e estrutura na Serra Gaúcha.",
   alternates: { canonical: "/a-prova" },
-  openGraph: { url: "/a-prova", title: "A Prova | Legends Ultimate Gravel Race", description: "Conheça a jornada, as regras e a estrutura da Legends Ultimate Gravel Race." },
+  openGraph: { url: "/a-prova", title: "A Prova | Legends Bike Race 2027", description: "Conheça a jornada, as modalidades e as regras esportivas da Legends Bike Race 2027." },
 };
 
 const numbers = [
-  ["04", "dias de prova"],
+  ["04", "dias"],
   ["370,3 km", "de percurso"],
-  ["6.302 m", "de ascensão"],
-  ["75%", "em estradas de terra"],
+  ["6.302 m+", "de ascensão"],
+  ["100", "vagas"],
 ];
 
 const journey = [
-  ["01", "Prepare", "Receba o GPX oficial, confira seu equipamento e participe do briefing."],
-  ["02", "Pedale", "Siga a rota por GPS e administre ritmo, hidratação e estratégia."],
-  ["03", "Sincronize", "Ao concluir, conecte sua atividade ao Legends Passport."],
-  ["04", "Valide", "O Race Engine confere percurso e passagens nos checkpoints digitais."],
-  ["05", "Acompanhe", "Veja sua etapa validada e, na Gravel Race, tempos, pontos e classificação."],
-];
-
-const stagePoints = [
-  ["1º", "115", "100", "120", "65"],
-  ["2º", "98", "85", "102", "55"],
-  ["3º", "83", "72", "86", "47"],
-  ["4º", "70", "61", "73", "40"],
-  ["5º", "60", "52", "62", "34"],
-  ["6º", "51", "44", "53", "29"],
-  ["7º", "43", "37", "44", "24"],
-  ["8º", "36", "31", "37", "20"],
-  ["9º", "30", "26", "31", "17"],
-  ["10º", "25", "22", "26", "14"],
+  ["01", "Prepare", "Confira documentação, equipamento, GPX, SPOT e participe do briefing."],
+  ["02", "Pedale", "Siga a rota oficial por GPS e administre ritmo, hidratação e estratégia."],
+  ["03", "Monitore", "O SPOT e a estrutura operacional acompanham a progressão durante a etapa."],
+  ["04", "Valide", "O Race Engine cruza dados da atividade, percurso, checkpoints e rastreamento."],
+  ["05", "Acompanhe", "Na Gravel Race, consulte tempos, pontos, classificação e eventuais revisões."],
 ];
 
 export default function AboutRace() {
@@ -46,53 +33,44 @@ export default function AboutRace() {
 
       <section className="aboutHero">
         <div className="shell">
-          <p className="aboutKicker">A prova · Legends Ultimate</p>
+          <p className="aboutKicker">A prova · 29 ABR — 02 MAI 2027</p>
           <h1>Quatro dias.<br /><em>Uma única travessia.</em></h1>
-          <p className="aboutLead">Uma stage race de gravel que conecta Canela, São Francisco de Paula, Gramado e Nova Petrópolis em uma jornada de resistência, estratégia e descoberta pela Serra Gaúcha.</p>
-          <div className="aboutNumbers">
-            {numbers.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
-          </div>
+          <p className="aboutLead">Uma stage race que conecta Canela, São Francisco de Paula, Gramado e Nova Petrópolis em 370,3 km e 6.302 m+ pela Serra Gaúcha.</p>
+          <div className="aboutNumbers">{numbers.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
         </div>
       </section>
 
-      <section className="raceInfoSection">
-        <div className="shell"><RaceInfoMenu /></div>
-      </section>
+      <section className="raceInfoSection"><div className="shell"><RaceInfoMenu /></div></section>
 
       <section className="aboutConcept" id="conceito">
         <div className="shell aboutConceptGrid">
           <p className="detailEyebrow">O conceito</p>
           <div>
-            <h2>O que é uma<br /><em>stage race de gravel?</em></h2>
+            <h2>Não é circuito.<br /><em>É travessia.</em></h2>
             <div className="aboutCopyCols">
-              <p>É uma prova disputada em etapas consecutivas. A cada dia, um novo percurso leva o atleta a outro destino, criando uma experiência contínua que vai muito além de uma corrida de um único dia.</p>
-              <p>Na Legends, o terreno combina estradas rurais, cascalho, trechos pavimentados e altimetria exigente. O desafio não é apenas pedalar: é administrar esforço, equipamento e recuperação ao longo de toda a jornada.</p>
+              <p>A Legends é disputada em quatro etapas consecutivas. Cada dia apresenta um novo percurso e exige que o participante administre esforço, equipamento, alimentação, navegação e recuperação.</p>
+              <p>As vias poderão permanecer abertas ao trânsito. Autonomia e pilotagem defensiva fazem parte da experiência, sempre respeitando o Regulamento, as autoridades e as orientações de segurança.</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className="aboutNavigation shell" id="autonavegacao">
-        <div>
-          <p className="detailEyebrow">Autonavegação</p>
-          <h2>Você escolhe o ritmo.<br /><em>O percurso mostra o caminho.</em></h2>
-        </div>
+        <div><p className="detailEyebrow">Autonavegação</p><h2>O GPS é parte<br /><em>da prova.</em></h2></div>
         <div className="navigationText">
-          <p>Os atletas recebem o arquivo oficial de cada etapa para navegação por GPS. O trajeto não depende de uma sequência contínua de placas: atenção, leitura do percurso e autonomia fazem parte do desafio.</p>
-          <p>Cada participante deve largar preparado para cuidar da própria estratégia de hidratação, alimentação, vestuário, ferramentas e reparos básicos, respeitando as orientações e os pontos de apoio definidos pela organização.</p>
+          <p>O percurso oficial será disponibilizado eletronicamente. O participante é responsável por carregar corretamente a rota, conhecer o dispositivo, manter autonomia de bateria e permanecer no trajeto oficial.</p>
+          <p>A sinalização física é complementar. Se sair involuntariamente da rota, o atleta deve retornar ao ponto do desvio antes de continuar. Atalhos e reconexões posteriores podem gerar penalização ou desclassificação.</p>
         </div>
       </section>
 
       <section className="dailyJourney" id="como-funciona">
         <div className="shell">
-          <div className="journeyHead"><div><p className="detailEyebrow">Como funciona</p><h2>Do percurso<br /><em>ao resultado.</em></h2></div><p className="journeyIntro">Uma sequência simples para o participante. O sistema trabalha nos bastidores e apresenta apenas o que importa.</p></div>
-          <div className="journeyGrid">
-            {journey.map(([number, title, text]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}
-          </div>
+          <div className="journeyHead"><div><p className="detailEyebrow">Como funciona</p><h2>Do percurso<br /><em>ao resultado.</em></h2></div><p className="journeyIntro">A operação integra autonavegação, SPOT, checkpoints, Race Engine e revisão humana quando necessário.</p></div>
+          <div className="journeyGrid">{journey.map(([number, title, text]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
           <div className="journeyEngine">
-            <div className="journeyEngineCopy"><p className="detailEyebrow">Legends Race Engine</p><h3>Uma tecnologia.<br />Duas experiências.</h3><p>O mesmo sistema valida a jornada respeitando o objetivo escolhido por cada participante.</p></div>
-            <div className="journeyMode"><span>Competição</span><strong>Gravel Race</strong><p>Tempos, pontos e classificação por categoria.</p></div>
-            <div className="journeyMode journeyModeExperience"><span>Experiência</span><strong>MTB e E-bike</strong><p>Etapas validadas e certificado, sem ranking competitivo.</p></div>
+            <div className="journeyEngineCopy"><p className="detailEyebrow">Legends Race Engine</p><h3>Uma tecnologia.<br />Duas experiências.</h3><p>O sistema respeita a modalidade escolhida e utiliza dados de percurso e passagem para apoiar validação e apuração.</p></div>
+            <div className="journeyMode"><span>Competição</span><strong>Gravel Race</strong><p>Gravel e Cyclocross sem assistência motorizada. Tempos, pontos e classificação.</p></div>
+            <div className="journeyMode journeyModeExperience"><span>Experiência</span><strong>Legends Experience</strong><p>Gravel, MTB e E-Bikes de pedal assistido, sem ranking competitivo.</p></div>
             <a className="journeyEngineLink" href="/race-engine">Conheça o Race Engine <span>→</span></a>
           </div>
         </div>
@@ -102,50 +80,44 @@ export default function AboutRace() {
         <div className="shell">
           <div className="classificationIntro">
             <p className="detailEyebrow">Classificação geral</p>
-            <div>
-              <h2>O tempo define a etapa.<br /><em>Os pontos fazem o campeão.</em></h2>
-              <p>A classificação geral será definida pela soma dos pontos conquistados — e não pela soma dos tempos. Cada etapa recebe um peso proporcional à distância, à altimetria, à dificuldade e ao tempo-limite. A soma dos pesos equivale a 4,00; quem vencer as quatro etapas termina com exatamente 400 pontos.</p>
-            </div>
+            <div><h2>O tempo valida a etapa.<br /><em>Os pontos fazem a geral.</em></h2><p>A Gravel Race utiliza uma fórmula proporcional ao melhor tempo válido de cada categoria. O resultado de cada etapa é multiplicado pelo coeficiente correspondente, e a classificação geral é formada pela soma dos pontos válidos.</p></div>
           </div>
 
           <div className="stageWeights">
-            <article><span>Stage 01</span><strong>1,15</strong><p>Etapa longa e exigente.</p></article>
-            <article><span>Stage 02</span><strong>1,00</strong><p>Dificuldade intermediária.</p></article>
-            <article><span>Stage 03</span><strong>1,20</strong><p>Maior importância técnica e física.</p></article>
-            <article><span>Stage 04</span><strong>0,65</strong><p>Etapa mais curta, com limite de 6 horas.</p></article>
+            <article><span>Stage 01</span><strong>1,15</strong><p>111,9 km · 1.684 m+</p></article>
+            <article><span>Stage 02</span><strong>1,00</strong><p>89,1 km · 1.520 m+</p></article>
+            <article><span>Stage 03</span><strong>1,20</strong><p>99,3 km · 1.522 m+</p></article>
+            <article><span>Stage 04</span><strong>0,65</strong><p>70,0 km · 1.576 m+</p></article>
           </div>
 
           <div className="pointsTableWrap">
-            <div className="pointsTableHead"><p className="detailEyebrow">Pontuação por etapa</p><span>Os dez primeiros de cada categoria pontuam</span></div>
-            <table className="pointsTable">
-              <thead><tr><th>Colocação</th><th>Stage 01</th><th>Stage 02</th><th>Stage 03</th><th>Stage 04</th></tr></thead>
-              <tbody>{stagePoints.map(([place, ...points]) => <tr key={place}><th>{place}</th>{points.map((point, index) => <td key={index}>{point}</td>)}</tr>)}</tbody>
-            </table>
+            <div className="pointsTableHead"><p className="detailEyebrow">Fórmula oficial de referência</p><span>Regulamento Oficial v1.1</span></div>
+            <div style={{padding:"34px",border:"1px solid rgba(198,122,59,.3)",fontFamily:"Barlow Condensed",fontSize:"clamp(24px,3vw,40px)",fontWeight:700,textTransform:"uppercase",lineHeight:1.15}}>
+              Pontos = 1.000 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa
+            </div>
           </div>
 
           <div className="classificationBottom" id="categorias-regras">
             <div className="categoryBlock">
               <p className="detailEyebrow">Categorias masculinas</p>
               <div className="categoryCards">
-                <article><strong>Open</strong><span>18–35 anos</span></article>
-                <article><strong>Master</strong><span>36–49 anos</span></article>
+                <article><strong>Open</strong><span>18–29 anos</span></article>
+                <article><strong>Master A</strong><span>30–39 anos</span></article>
+                <article><strong>Master B</strong><span>40–49 anos</span></article>
                 <article><strong>Senior</strong><span>50 anos ou mais</span></article>
               </div>
               <p className="detailEyebrow">Categorias femininas</p>
-              <div className="categoryCards">
-                <article><strong>Feminino A</strong><span>18–40 anos</span></article>
-                <article><strong>Feminino B</strong><span>41 anos ou mais</span></article>
-              </div>
-              <p className="categoryNote">As categorias femininas exigem no mínimo cinco atletas inscritas em cada faixa. Caso esse número não seja atingido, será formada uma categoria feminina única.</p>
+              <div className="categoryCards"><article><strong>Feminino A</strong><span>18–40 anos</span></article><article><strong>Feminino B</strong><span>41 anos ou mais</span></article></div>
+              <p className="categoryNote">A idade considerada é a que o atleta completa no ano-base da competição. É exigido mínimo de cinco atletas confirmados por categoria. Quando o mínimo não for atingido, aplica-se o agrupamento previsto no Regulamento Oficial.</p>
             </div>
             <div className="rulesBlock">
               <p className="detailEyebrow">Regras da geral</p>
               <ul>
-                <li>Será campeão quem acumular o maior número de pontos após as quatro etapas.</li>
-                <li>Para integrar a classificação geral final, o atleta deverá completar todas as etapas dentro dos respectivos tempos-limite.</li>
-                <li>Quem não concluir uma etapa não pontua nela e deixa a disputa pelo título geral, mas pode continuar nas premiações individuais das etapas.</li>
-                <li>O tempo define a ordem de chegada de cada etapa, mas não é somado para decidir o campeão geral.</li>
-                <li>Penalizações poderão resultar em perda de pontos ou desclassificação.</li>
+                <li>A classificação geral é formada pela soma dos pontos válidos das etapas.</li>
+                <li>DNS significa não largou; DNF significa largou e não concluiu validamente; DSQ significa desclassificado.</li>
+                <li>Um DNF pode ser autorizado a largar a etapa seguinte, sem recuperar a pontuação perdida.</li>
+                <li>Penalizações podem resultar em tempo, perda de pontos, DNF ou DSQ.</li>
+                <li>Resultados provisórios podem ser contestados em até 30 minutos pelo canal oficial.</li>
               </ul>
             </div>
           </div>
@@ -153,26 +125,22 @@ export default function AboutRace() {
           <div className="tieBreak">
             <p className="detailEyebrow">Critérios de desempate</p>
             <ol>
-              <li><span>01</span>Melhor colocação na Stage 04</li>
-              <li><span>02</span>Maior número de vitórias em etapas</li>
-              <li><span>03</span>Maior número de segundos lugares</li>
-              <li><span>04</span>Maior número de terceiros lugares</li>
-              <li><span>05</span>Menor tempo registrado na Stage 04</li>
+              <li><span>01</span>Maior número de vitórias em etapas</li>
+              <li><span>02</span>Melhor pontuação na Stage 03</li>
+              <li><span>03</span>Menor soma dos tempos válidos</li>
+              <li><span>04</span>Melhor classificação na Stage 04</li>
+              <li><span>05</span>Persistindo igualdade, colocação compartilhada ou decisão da Direção de Prova</li>
             </ol>
           </div>
         </div>
       </section>
 
       <section className="aboutAudience shell" id="para-quem">
-        <p className="detailEyebrow">Para quem é</p>
-        <div>
-          <h2>Para quem entende que<br /><em>chegar é parte da jornada.</em></h2>
-          <p>A Legends foi criada para ciclistas de gravel e mountain bike com preparo para longas distâncias, que valorizam desafio, paisagem, cultura local e uma experiência esportiva premium. Não é necessário ser atleta profissional, mas treinamento, planejamento e autonomia são essenciais.</p>
-          <a className="button aboutButton" href="/percursos">Conheça as etapas <span>→</span></a>
-        </div>
+        <p className="detailEyebrow">Antes de se inscrever</p>
+        <div><h2>Leia. Entenda.<br /><em>Prepare-se.</em></h2><p>A participação exige Atestado Médico e Declaração de Saúde oficiais, além do cumprimento das exigências de equipamento, navegação e segurança previstas no Regulamento.</p><a className="button aboutButton" href="/regulamento">Consultar regulamento <span>→</span></a></div>
       </section>
 
-      <footer className="stageDetailFooter shell"><a href="/">← Voltar ao site</a><p>Legends Ultimate · Serra Gaúcha</p></footer>
+      <footer className="stageDetailFooter shell"><a href="/">← Voltar ao site</a><p>Legends Bike Race · 29 ABR — 02 MAI 2027</p></footer>
     </main>
   );
 }
