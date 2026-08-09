@@ -13,7 +13,9 @@ export const launchConfig = {
     { name: "Lote 02", price: "R$ 1.399", period: "21/09 a 10/12/2026" },
     { name: "Lote 03", price: "R$ 1.599", period: "11/12/2026 a 20/03/2027" },
   ],
-  premiumKitPrice: "R$ 349",
+  premiumKitPrice: "R$ 399",
+  premiumKitItems: ["Camisa de ciclismo", "Colete de ciclismo", "2 pares de meias"],
+  cyclingJerseyOnlyPrice: "R$ 189",
 } as const;
 
 export function getRegistrationLabel() {
