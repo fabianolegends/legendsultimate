@@ -17,6 +17,7 @@ export type OrganizationEvent = {
   registration_source?: string;
   access_mode?: string;
   participant_limit?: number | null;
+  public_remaining_spots?: number | null;
   is_test?: boolean;
   registration_open?: boolean;
   registration_closes_at?: string | null;
