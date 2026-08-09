@@ -30,8 +30,9 @@ const groups: Array<{ label: string; items: NavItem[] }> = [
     { href: "/passport/organizacao/impressao", label: "Impressão e PDF", icon: "▤" },
   ] },
   { label: "Administração", items: [
+    { href: "/passport/organizacao/vagas", label: "Vagas no site", icon: "◫" },
     { href: "/passport/organizacao/seguranca", label: "Equipe e segurança", icon: "◫" },
-        { href: "/passport/organizacao/interessados", label: "Lista prioritária", icon: "✦" },
+    { href: "/passport/organizacao/interessados", label: "Lista prioritária", icon: "✦" },
   ] },
 ];
 
