@@ -53,11 +53,31 @@ export default function LaunchHomePreview() {
     if (ctas) {
       const links = Array.from(ctas.querySelectorAll<HTMLAnchorElement>("a"));
       if (links[0]) { links[0].href = "/inscricoes"; links[0].innerHTML = "Ver inscrições <span>→</span>"; }
-      if (links[1]) { links[1].href = "/regulamento"; links[1].textContent = "Consultar regulamento"; }
+      if (links[1]) links[1].style.display = "none";
+
+      let spots = ctas.querySelector<HTMLElement>(".remainingSpotsCard");
+      if (!spots) {
+        spots = document.createElement("div");
+        spots.className = "remainingSpotsCard";
+        spots.innerHTML = '<span>RESTAM</span><strong>100</strong><small>VAGAS / DE 100</small>';
+        if (links[1]) links[1].insertAdjacentElement("afterend", spots);
+        else ctas.appendChild(spots);
+      }
+
+      void fetch("/api/public/remaining-spots", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((payload) => {
+          const total = Number(payload.total ?? 100);
+          const remaining = Number(payload.remaining ?? total);
+          if (!spots) return;
+          spots.innerHTML = `<span>RESTAM</span><strong>${remaining}</strong><small>VAGAS / DE ${total}</small>`;
+        })
+        .catch(() => undefined);
+
       if (!ctas.querySelector(".launchPrice")) {
         const price = document.createElement("div");
         price.className = "launchPrice";
-        price.innerHTML = '<span>LOTE 01</span><strong>R$ 1.199</strong><small>100 vagas</small>';
+        price.innerHTML = '<span>LOTE 01</span><strong>R$ 1.199</strong><small>valor da inscrição</small>';
         ctas.appendChild(price);
       }
     }
@@ -102,7 +122,7 @@ export default function LaunchHomePreview() {
 
   return <>
     <style>{`
-      .launchPrice{display:grid;grid-template-columns:auto auto;align-items:end;gap:0 14px;padding-left:6px}.launchPrice span{grid-column:1/-1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{color:#b8b0a4;font-size:11px}.launchOldIncluded{display:none!important}.launchFaqHidden{display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}.launchIncluded{background:#f4f0db;color:#0b0d0c;padding:120px 0}.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:55px}.launchIncluded .eyebrow{color:#c67a3b;text-transform:uppercase;letter-spacing:.2em;font:600 13px 'Barlow Condensed'}.launchIncluded h2{font:700 clamp(48px,5.6vw,84px) 'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:15px 0}.launchIncludedHead>p{color:#646761;line-height:1.7}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:26px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 25px 'Barlow Condensed';text-transform:uppercase;margin:15px 0 0}.launchServices{display:grid;grid-template-columns:repeat(5,1fr);margin-top:22px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:17px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 13px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.launchDocs a{padding:14px 17px;border:1px solid #c67a3b;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:#c67a3b;color:#fff}@media(max-width:900px){.launchIncluded .wrap{width:calc(100% - 30px)}.launchIncludedHead{grid-template-columns:1fr}.launchProducts{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}.launchServices{grid-template-columns:1fr 1fr}.launchPrice{width:100%;padding-top:8px}}
+      .remainingSpotsCard{height:68px;min-width:224px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-content:center;column-gap:12px;padding:10px 18px;border:1px solid rgba(241,236,227,.45);background:rgba(8,10,9,.52);text-transform:uppercase}.remainingSpotsCard span{grid-column:1;grid-row:1;color:#c67a3b;font:600 10px 'Barlow Condensed';letter-spacing:.16em;align-self:end}.remainingSpotsCard strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:.9;color:#f1ece3}.remainingSpotsCard small{grid-column:2;grid-row:1/3;align-self:center;color:#d4cec4;font:600 12px 'Barlow Condensed';letter-spacing:.08em;white-space:nowrap}.launchPrice{display:grid;grid-template-columns:auto auto;align-items:end;gap:0 14px;padding-left:6px}.launchPrice span{grid-column:1/-1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{color:#b8b0a4;font-size:11px}.launchOldIncluded{display:none!important}.launchFaqHidden{display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}.launchIncluded{background:#f4f0db;color:#0b0d0c;padding:120px 0}.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:55px}.launchIncluded .eyebrow{color:#c67a3b;text-transform:uppercase;letter-spacing:.2em;font:600 13px 'Barlow Condensed'}.launchIncluded h2{font:700 clamp(48px,5.6vw,84px) 'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:15px 0}.launchIncludedHead>p{color:#646761;line-height:1.7}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:26px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 25px 'Barlow Condensed';text-transform:uppercase;margin:15px 0 0}.launchServices{display:grid;grid-template-columns:repeat(5,1fr);margin-top:22px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:17px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 13px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.launchDocs a{padding:14px 17px;border:1px solid #c67a3b;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:#c67a3b;color:#fff}@media(max-width:900px){.launchIncluded .wrap{width:calc(100% - 30px)}.launchIncludedHead{grid-template-columns:1fr}.launchProducts{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}.launchServices{grid-template-columns:1fr 1fr}.launchPrice{width:100%;padding-top:8px}.remainingSpotsCard{min-width:210px}}
     `}</style>
     {kitTarget && createPortal(
       <section className="launchIncluded">
