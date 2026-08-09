@@ -14,16 +14,16 @@ const includedServices = [
   "SPOT em todas as etapas",
   "Transporte da bag entre cidades-base",
   "Hidratação nos checkpoints",
-  "GPX oficial e checkpoints",
-  "Race Engine e apuração",
   "Seguro básico conforme apólice",
   "Equipe de apoio, segurança e resgate",
   "Bike Wash",
   "Mecânica básica Danda Bike",
-  "Briefings, largadas e chegadas",
+  "GPX oficial e Race Engine",
 ];
 
 export default function LaunchHomePreview() {
+  const [summaryTarget, setSummaryTarget] = useState<HTMLElement | null>(null);
+  const [journeyTarget, setJourneyTarget] = useState<HTMLElement | null>(null);
   const [kitTarget, setKitTarget] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -31,20 +31,30 @@ export default function LaunchHomePreview() {
     if (!home) return;
 
     const desktopNav = home.querySelector<HTMLElement>(".desktopNavCluster .navLinks");
-    if (desktopNav && !desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
-      const registration = document.createElement("a");
-      registration.href = "/inscricoes";
-      registration.textContent = "Inscrições";
-      registration.dataset.launchLink = "inscricoes";
-      desktopNav.insertBefore(registration, desktopNav.firstChild);
-
-      const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href") === "/faq");
-      const rules = document.createElement("a");
-      rules.href = "/regulamento";
-      rules.textContent = "Regulamento";
-      rules.dataset.launchLink = "regulamento";
-      desktopNav.insertBefore(rules, faqLink || null);
+    if (desktopNav) {
+      desktopNav.querySelectorAll("a").forEach((link) => {
+        const href = link.getAttribute("href");
+        if (["#modalidades", "/race-engine", "/regulamento", "https://wa.me/5554996329164"].includes(href || "")) link.remove();
+      });
+      if (!desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
+        const registration = document.createElement("a");
+        registration.href = "/inscricoes";
+        registration.textContent = "Inscrições";
+        registration.dataset.launchLink = "inscricoes";
+        desktopNav.insertBefore(registration, desktopNav.firstChild);
+      }
+      if (!desktopNav.querySelector('[data-launch-link="incluido"]')) {
+        const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href") === "/faq");
+        const included = document.createElement("a");
+        included.href = "#incluido";
+        included.textContent = "O que está incluído";
+        included.dataset.launchLink = "incluido";
+        desktopNav.insertBefore(included, faqLink || null);
+      }
     }
+
+    const navCta = home.querySelector<HTMLAnchorElement>(".desktopNavCluster .navCta");
+    if (navCta) { navCta.textContent = "Área do atleta"; navCta.href = "/acesso"; }
 
     const kicker = home.querySelector<HTMLElement>(".heroCopy .kicker");
     if (kicker) kicker.textContent = "29 ABR — 02 MAI 2027 · SERRA GAÚCHA";
@@ -77,21 +87,40 @@ export default function LaunchHomePreview() {
       if (!ctas.querySelector(".launchPrice")) {
         const price = document.createElement("div");
         price.className = "launchPrice";
-        price.innerHTML = '<span>LOTE 01</span><strong>R$ 1.199</strong><small>valor da inscrição</small>';
+        price.innerHTML = '<span>LOTE 01</span><strong>R$ 1.199</strong><small>próximo lote R$ 1.399</small>';
         ctas.appendChild(price);
       }
     }
 
+    const hero = home.querySelector<HTMLElement>(".heroRedesign");
+    if (hero?.parentNode) {
+      let root = document.getElementById("launch-summary-root");
+      if (!root) { root = document.createElement("div"); root.id = "launch-summary-root"; hero.insertAdjacentElement("afterend", root); }
+      setSummaryTarget(root);
+    }
+
+    const technicalLink = home.querySelector<HTMLAnchorElement>('a[href="/race-engine"]');
+    const technicalSection = technicalLink?.closest("section");
+    if (technicalSection) technicalSection.classList.add("launchTechnicalReduced");
+    home.querySelector<HTMLElement>(".profileSection")?.classList.add("launchProfileHidden");
+
+    const safety = home.querySelector<HTMLElement>(".safetySection");
+    if (safety?.parentNode) {
+      let root = document.getElementById("launch-journey-root");
+      if (!root) { root = document.createElement("div"); root.id = "launch-journey-root"; safety.parentNode.insertBefore(root, safety); }
+      setJourneyTarget(root);
+    }
+
     const faqCopy = home.querySelector<HTMLElement>(".faqSection .sectionHead > p:last-child");
-    if (faqCopy) faqCopy.textContent = "Data, modalidades, documentação, logística e regras já estão consolidadas para a edição 2027. Consulte o FAQ completo para as condições de inscrição.";
+    if (faqCopy) faqCopy.textContent = "As cinco respostas essenciais antes de decidir. As regras completas ficam no FAQ e no Regulamento.";
     const faqList = home.querySelector<HTMLElement>(".faqSection .faqList");
-    if (faqList) faqList.classList.add("launchFaqHidden");
+    if (faqList) faqList.classList.add("launchFaqEssential");
     const faqSection = home.querySelector<HTMLElement>(".faqSection .wide");
     if (faqSection && !faqSection.querySelector(".launchFaqLink")) {
       const a = document.createElement("a");
       a.className = "launchFaqLink button";
       a.href = "/faq";
-      a.innerHTML = "Consultar FAQ 2027 <span>→</span>";
+      a.innerHTML = "Ver todas as perguntas <span>→</span>";
       faqSection.appendChild(a);
     }
 
@@ -101,10 +130,10 @@ export default function LaunchHomePreview() {
       const h2 = priority.querySelector<HTMLElement>("h2");
       const p = priority.querySelector<HTMLElement>("p:not(.kicker)");
       const a = priority.querySelector<HTMLAnchorElement>("a");
-      if (pk) pk.textContent = "29 ABR — 02 MAI 2027 · 100 VAGAS";
-      if (h2) h2.innerHTML = "Seu lugar na<br><em>travessia.</em>";
-      if (p) p.textContent = "A página de inscrições já está preparada com lotes, modalidades, documentos e condições. Nesta prévia, a compra permanece bloqueada até a abertura oficial.";
-      if (a) { a.href = "/inscricoes"; a.innerHTML = "Ver condições de inscrição <span>→</span>"; }
+      if (pk) pk.textContent = "29 ABR — 02 MAI 2027 · LOTE 01 · R$ 1.199";
+      if (h2) h2.innerHTML = "Quero ser um<br><em>dos 100.</em>";
+      if (p) p.textContent = "Confira modalidade, documentos e condições. Nesta prévia, a compra continua bloqueada até a abertura oficial.";
+      if (a) { a.href = "/inscricoes"; a.innerHTML = "Quero ser um dos 100 <span>→</span>"; }
     }
 
     const oldIncluded = home.querySelector<HTMLElement>(".includedSection");
@@ -122,17 +151,49 @@ export default function LaunchHomePreview() {
 
   return <>
     <style>{`
-      .remainingSpotsCard{height:68px;min-width:224px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-content:center;column-gap:12px;padding:10px 18px;border:1px solid rgba(241,236,227,.45);background:rgba(8,10,9,.52);text-transform:uppercase}.remainingSpotsCard span{grid-column:1;grid-row:1;color:#c67a3b;font:600 10px 'Barlow Condensed';letter-spacing:.16em;align-self:end}.remainingSpotsCard strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:.9;color:#f1ece3}.remainingSpotsCard small{grid-column:2;grid-row:1/3;align-self:center;color:#d4cec4;font:600 12px 'Barlow Condensed';letter-spacing:.08em;white-space:nowrap}.launchPrice{display:grid;grid-template-columns:auto auto;align-items:end;gap:0 14px;padding-left:6px}.launchPrice span{grid-column:1/-1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{color:#b8b0a4;font-size:11px}.launchOldIncluded{display:none!important}.launchFaqHidden{display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}.launchIncluded{background:#f4f0db;color:#0b0d0c;padding:120px 0}.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:55px}.launchIncluded .eyebrow{color:#c67a3b;text-transform:uppercase;letter-spacing:.2em;font:600 13px 'Barlow Condensed'}.launchIncluded h2{font:700 clamp(48px,5.6vw,84px) 'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:15px 0}.launchIncludedHead>p{color:#646761;line-height:1.7}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:26px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 25px 'Barlow Condensed';text-transform:uppercase;margin:15px 0 0}.launchServices{display:grid;grid-template-columns:repeat(5,1fr);margin-top:22px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:17px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 13px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.launchDocs a{padding:14px 17px;border:1px solid #c67a3b;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:#c67a3b;color:#fff}@media(max-width:900px){.launchIncluded .wrap{width:calc(100% - 30px)}.launchIncludedHead{grid-template-columns:1fr}.launchProducts{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}.launchServices{grid-template-columns:1fr 1fr}.launchPrice{width:100%;padding-top:8px}.remainingSpotsCard{min-width:210px}}
+      .remainingSpotsCard{height:68px;min-width:224px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-content:center;column-gap:12px;padding:10px 18px;border:1px solid rgba(241,236,227,.45);background:rgba(8,10,9,.52);text-transform:uppercase}.remainingSpotsCard span{grid-column:1;grid-row:1;color:#c67a3b;font:600 10px 'Barlow Condensed';letter-spacing:.16em;align-self:end}.remainingSpotsCard strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:.9;color:#f1ece3}.remainingSpotsCard small{grid-column:2;grid-row:1/3;align-self:center;color:#d4cec4;font:600 12px 'Barlow Condensed';letter-spacing:.08em;white-space:nowrap}.launchPrice{display:grid;grid-template-columns:auto auto;align-items:end;gap:0 14px;padding-left:6px}.launchPrice span{grid-column:1/-1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{color:#b8b0a4;font-size:11px}.launchProfileHidden,.launchTechnicalReduced{display:none!important}.launchOldIncluded{display:none!important}.launchFaqEssential details:nth-of-type(n+6){display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}
+      .launchSummary{background:#0c0f0d;color:#f1ece3;border-bottom:1px solid rgba(198,122,59,.25);padding:34px 0}.launchSummary .wrap,.launchJourney .wrap,.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}.launchSummaryGrid{display:grid;grid-template-columns:1.3fr repeat(7,auto);gap:22px;align-items:center}.launchSummaryTitle span{color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.18em;text-transform:uppercase}.launchSummaryTitle strong{display:block;font:700 27px 'Barlow Condensed';text-transform:uppercase;margin-top:4px}.launchFact{padding-left:20px;border-left:1px solid rgba(241,236,227,.16)}.launchFact strong{display:block;font:700 24px 'Barlow Condensed'}.launchFact span{display:block;color:#9fa39d;font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+      .launchJourney{background:#111411;color:#f1ece3;padding:96px 0;border-top:1px solid rgba(255,255,255,.07)}.launchJourneyHead{display:grid;grid-template-columns:1fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchJourney .eyebrow,.launchIncluded .eyebrow{color:#c67a3b;text-transform:uppercase;letter-spacing:.2em;font:600 13px 'Barlow Condensed'}.launchJourney h2,.launchIncluded h2{font:700 clamp(48px,5.6vw,84px) 'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:15px 0}.launchJourneyHead>p{color:#a8aca5;line-height:1.7}.journeySteps{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(198,122,59,.3)}.journeySteps article{padding:26px;border-right:1px solid rgba(198,122,59,.25)}.journeySteps article:last-child{border:0}.journeySteps b{color:#c67a3b;font:700 12px 'Barlow Condensed';letter-spacing:.14em}.journeySteps h3{font:700 26px 'Barlow Condensed';text-transform:uppercase;margin:12px 0}.journeySteps p{color:#a7aba4;font-size:13px;line-height:1.55;margin:0}.beforeBox{margin-top:28px;padding:22px;border:1px solid rgba(255,255,255,.12);display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}.beforeBox strong{font:700 22px 'Barlow Condensed';text-transform:uppercase;color:#c67a3b}.beforeBox p{margin:0;color:#c7c9c4;line-height:1.65}
+      .launchIncluded{background:#f4f0db;color:#0b0d0c;padding:100px 0}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchIncludedHead>p{color:#646761;line-height:1.7}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:22px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 23px 'Barlow Condensed';text-transform:uppercase;margin:12px 0 0}.launchServices{display:grid;grid-template-columns:repeat(4,1fr);margin-top:18px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:15px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 12px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.launchDocs a{padding:13px 16px;border:1px solid #c67a3b;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:#c67a3b;color:#fff}
+      @media(max-width:1050px){.launchSummaryGrid{grid-template-columns:1fr repeat(4,1fr)}.launchSummaryTitle{grid-column:1/-1}.journeySteps{grid-template-columns:1fr 1fr}.journeySteps article{border-bottom:1px solid rgba(198,122,59,.25)}.journeySteps article:nth-child(even){border-right:0}}
+      @media(max-width:900px){.launchSummary .wrap,.launchJourney .wrap,.launchIncluded .wrap{width:calc(100% - 30px)}.launchJourneyHead,.launchIncludedHead{grid-template-columns:1fr}.launchProducts{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}.launchServices{grid-template-columns:1fr 1fr}.launchPrice{width:100%;padding-top:8px}.remainingSpotsCard{min-width:210px}.beforeBox{grid-template-columns:1fr}}
+      @media(max-width:620px){.launchSummaryGrid{grid-template-columns:1fr 1fr}.launchFact{padding-left:12px}.journeySteps{grid-template-columns:1fr}.journeySteps article{border-right:0}.launchProducts{grid-template-columns:1fr 1fr}}
     `}</style>
-    {kitTarget && createPortal(
-      <section className="launchIncluded">
-        <div className="wrap">
-          <div className="launchIncludedHead"><div><p className="eyebrow">Inscrição padrão</p><h2>O que está<br />incluído.</h2></div><p>A inscrição foi atualizada para refletir o Regulamento Oficial 1.1. Jersey e meias não fazem parte da inscrição padrão e poderão integrar produtos opcionais / Kit Premium.</p></div>
-          <div className="launchProducts">{includedProducts.map(([name,img])=><article className="launchProduct" key={name}><img src={img} alt={name} /><h3>{name}</h3></article>)}</div>
-          <div className="launchServices">{includedServices.map(item=><span key={item}>{item}</span>)}</div>
-          <div className="launchDocs"><a href="/inscricoes">Ver inscrições →</a><a href="/regulamento">Regulamento</a><a href="/documentos-medicos">Documentação médica</a><a href="/manual-do-atleta">Manual do atleta</a></div>
+
+    {summaryTarget && createPortal(
+      <section className="launchSummary" aria-label="Legends em 30 segundos"><div className="wrap launchSummaryGrid">
+        <div className="launchSummaryTitle"><span>Em 30 segundos</span><strong>O essencial para decidir.</strong></div>
+        <div className="launchFact"><strong>29 ABR</strong><span>02 MAI 2027</span></div>
+        <div className="launchFact"><strong>4</strong><span>dias</span></div>
+        <div className="launchFact"><strong>4</strong><span>etapas</span></div>
+        <div className="launchFact"><strong>370,3</strong><span>km</span></div>
+        <div className="launchFact"><strong>6.302</strong><span>m+</span></div>
+        <div className="launchFact"><strong>2</strong><span>modalidades</span></div>
+        <div className="launchFact"><strong>100</strong><span>participantes</span></div>
+      </div></section>, summaryTarget
+    )}
+
+    {journeyTarget && createPortal(
+      <section className="launchJourney"><div className="wrap">
+        <div className="launchJourneyHead"><div><p className="eyebrow">Como funciona a jornada</p><h2>Você pedala.<br />A jornada segue.</h2></div><p>Sem complicar a decisão com tecnologia e regulamento. O essencial é entender como seus quatro dias funcionam na prática.</p></div>
+        <div className="journeySteps">
+          <article><b>01</b><h3>Largue</h3><p>Com o GPX oficial, sua estratégia de hidratação, alimentação e equipamento.</p></article>
+          <article><b>02</b><h3>Pedale</h3><p>Siga a rota por GPS e complete os checkpoints previstos para a etapa.</p></article>
+          <article><b>03</b><h3>Chegue</h3><p>Ao final da etapa, sua atividade é validada e você entra na nova cidade-base.</p></article>
+          <article><b>04</b><h3>Recupere</h3><p>Sua bag oficial é transportada pela organização. Bike Wash e mecânica básica ajudam na preparação.</p></article>
+          <article><b>05</b><h3>Repita</h3><p>No dia seguinte, uma nova etapa, uma nova cidade e mais um capítulo da travessia.</p></article>
         </div>
-      </section>, kitTarget
+        <div className="beforeBox"><strong>Antes de se inscrever</strong><p>Hospedagem e refeições não estão incluídas. O transporte da bag oficial entre as cidades-base está incluído. O deslocamento pessoal do atleta permanece por conta do participante enquanto não houver serviço oficial de transfer divulgado.</p></div>
+      </div></section>, journeyTarget
+    )}
+
+    {kitTarget && createPortal(
+      <section className="launchIncluded" id="incluido"><div className="wrap">
+        <div className="launchIncludedHead"><div><p className="eyebrow">Inscrição padrão</p><h2>O que sua<br />inscrição entrega.</h2></div><p>Mostramos aqui apenas o que mais pesa na decisão. A relação completa está na página de inscrições e no Regulamento Oficial.</p></div>
+        <div className="launchProducts">{includedProducts.map(([name,img])=><article className="launchProduct" key={name}><img src={img} alt={name} /><h3>{name}</h3></article>)}</div>
+        <div className="launchServices">{includedServices.map(item=><span key={item}>{item}</span>)}</div>
+        <div className="launchDocs"><a href="/inscricoes">Ver tudo que está incluído →</a><a href="/regulamento">Regulamento</a><a href="/documentos-medicos">Documentação médica</a></div>
+      </div></section>, kitTarget
     )}
   </>;
 }
