@@ -30,6 +30,22 @@ export default function LaunchHomePreview() {
     const home = document.querySelector<HTMLElement>(".redesign");
     if (!home) return;
 
+    const desktopNav = home.querySelector<HTMLElement>(".desktopNavCluster .navLinks");
+    if (desktopNav && !desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
+      const registration = document.createElement("a");
+      registration.href = "/inscricoes";
+      registration.textContent = "Inscrições";
+      registration.dataset.launchLink = "inscricoes";
+      desktopNav.insertBefore(registration, desktopNav.firstChild);
+
+      const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href") === "/faq");
+      const rules = document.createElement("a");
+      rules.href = "/regulamento";
+      rules.textContent = "Regulamento";
+      rules.dataset.launchLink = "regulamento";
+      desktopNav.insertBefore(rules, faqLink || null);
+    }
+
     const kicker = home.querySelector<HTMLElement>(".heroCopy .kicker");
     if (kicker) kicker.textContent = "29 ABR — 02 MAI 2027 · SERRA GAÚCHA";
 
@@ -91,7 +107,7 @@ export default function LaunchHomePreview() {
     {kitTarget && createPortal(
       <section className="launchIncluded">
         <div className="wrap">
-          <div className="launchIncludedHead"><div><p className="eyebrow">Inscrição padrão</p><h2>O que está<br />incluído.</h2></div><p>A inscrição foi atualizada para refletir exatamente o Regulamento Oficial 1.1. Jersey e meias não fazem parte da inscrição padrão e poderão integrar produtos opcionais / Kit Premium.</p></div>
+          <div className="launchIncludedHead"><div><p className="eyebrow">Inscrição padrão</p><h2>O que está<br />incluído.</h2></div><p>A inscrição foi atualizada para refletir o Regulamento Oficial 1.1. Jersey e meias não fazem parte da inscrição padrão e poderão integrar produtos opcionais / Kit Premium.</p></div>
           <div className="launchProducts">{includedProducts.map(([name,img])=><article className="launchProduct" key={name}><img src={img} alt={name} /><h3>{name}</h3></article>)}</div>
           <div className="launchServices">{includedServices.map(item=><span key={item}>{item}</span>)}</div>
           <div className="launchDocs"><a href="/inscricoes">Ver inscrições →</a><a href="/regulamento">Regulamento</a><a href="/documentos-medicos">Documentação médica</a><a href="/manual-do-atleta">Manual do atleta</a></div>
