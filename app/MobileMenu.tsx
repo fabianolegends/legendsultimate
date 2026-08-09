@@ -7,8 +7,7 @@ const links = [
   ["Inscrições", "/inscricoes"],
   ["A prova", "/a-prova"],
   ["Percursos", "/percursos"],
-  ["Race Engine", "/race-engine"],
-  ["Regulamento", "/regulamento"],
+  ["O que está incluído", "/#incluido"],
   ["FAQ", "/faq"],
 ];
 
@@ -47,9 +46,8 @@ export default function MobileMenu() {
             ))}
           </nav>
           <div className="mobileMenuActions">
-            <a href="/inscricoes" onClick={() => setOpen(false)}>Inscrições em breve <span>→</span></a>
-            <a href="/documentos-medicos" onClick={() => setOpen(false)}>Documentação médica</a>
-            <a href="/acesso" onClick={() => setOpen(false)}>Atleta / Organizador</a>
+            <a href="/inscricoes" onClick={() => setOpen(false)}>Ver inscrições <span>→</span></a>
+            <a href="/acesso" onClick={() => setOpen(false)}>Área do atleta</a>
           </div>
         </div>,
         document.body
