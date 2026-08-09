@@ -2,39 +2,50 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Perguntas Frequentes",
-  description: "Tire suas dúvidas sobre participação, bicicletas, navegação por GPS, percurso, logística e inscrições da Legends Ultimate Gravel Race.",
+  description: "Dúvidas sobre participação, inscrições, bicicletas, GPS, SPOT, logística e regras da Legends Bike Race 2027.",
   alternates: { canonical: "/faq" },
-  openGraph: { url: "/faq", title: "Perguntas Frequentes | Legends Bike Race", description: "Respostas sobre participação, percurso, logística e inscrições da Legends Ultimate." },
+  openGraph: { url: "/faq", title: "Perguntas Frequentes | Legends Bike Race 2027", description: "Respostas atualizadas para a Legends Bike Race 2027." },
 };
 
 const groups = [
   ["Participação", [
-    ["A Legends é indicada para iniciantes?", "Não. Não é necessário ser atleta profissional, mas é indispensável estar preparado para quatro dias consecutivos, longa distância e aproximadamente 1.500 metros de ascensão por etapa."],
-    ["Posso participar com MTB?", "Sim, no modo Legends Experience, sem classificação, tempo competitivo ou premiação."],
-    ["E-bike é permitida?", "Sim, também no modo Legends Experience e sem classificação."],
-    ["Cyclocross pode participar?", "Sim, desde que a bicicleta esteja adequada ao terreno e às exigências técnicas do percurso."],
-    ["Bike all-road é recomendada?", "Não. O percentual de estradas de terra e cascalho exige uma bicicleta preparada para gravel."],
+    ["Quando será a Legends Bike Race 2027?", "De 29 de abril a 2 de maio de 2027, na Serra Gaúcha, em quatro etapas consecutivas."],
+    ["Quantas vagas haverá?", "A edição terá limite inicial de 100 participantes."],
+    ["A Legends é indicada para iniciantes?", "Não. Não é necessário ser atleta profissional, mas é indispensável estar preparado para quatro dias consecutivos, longa distância, altimetria elevada, estradas não pavimentadas e autonavegação."],
+    ["Posso participar com MTB?", "Sim, exclusivamente na Legends Experience, modalidade não competitiva, sem classificação ou premiação esportiva."],
+    ["E-Bike é permitida?", "Sim, exclusivamente na Legends Experience e somente E-Bikes de pedal assistido. Bicicletas com acelerador ou propulsão independente da pedalada não são permitidas."],
+    ["Cyclocross pode participar?", "Sim. Gravel e Cyclocross sem assistência elétrica podem participar da Legends Gravel Race."],
   ]],
-  ["Navegação e percurso", [
-    ["Quando recebo o GPX?", "O arquivo oficial será disponibilizado no site uma semana antes do evento."],
-    ["Qual GPS devo usar?", "Qualquer equipamento com navegação de percurso e autonomia mínima recomendada de 15 horas."],
-    ["O percurso será sinalizado?", "A Legends é por autonavegação. Haverá sinalização apenas em pontos críticos, cruzamentos e acessos a rodovias."],
-    ["O que acontece se eu sair do trajeto?", "Você deve retornar ao ponto em que deixou o percurso oficial e retomar o GPX. Cortes podem gerar desclassificação."],
-    ["Quantos checkpoints haverá?", "Cada etapa terá dois checkpoints com hidratação e controle por passaporte carimbado."],
+  ["Inscrição e documentos", [
+    ["Quais são os valores?", "Lote 01: R$ 1.199; Lote 02: R$ 1.399; Lote 03: R$ 1.599. As datas de cada lote estão na página de inscrições."],
+    ["Onde será feita a inscrição?", "A inscrição e o pagamento serão processados pela plataforma oficial Windfit. O botão será ativado no site no momento autorizado para abertura."],
+    ["O atestado médico é obrigatório?", "Sim. Para liberação do participante serão obrigatórios o Atestado Médico e a Declaração de Saúde oficial da Legends Bike Race, devidamente preenchidos e assinados."],
+    ["Como funciona o cancelamento?", "Além dos direitos legalmente obrigatórios, o Regulamento prevê percentuais de reembolso conforme a antecedência do pedido. Consulte a seção de cancelamento no Regulamento Oficial."],
+    ["Posso transferir minha inscrição?", "Sim, uma vez e até 30 dias antes do evento. No mesmo lote, a taxa é de R$ 100. Se a transferência ocorrer em lote posterior, será cobrada a diferença para o lote vigente, respeitado o mínimo de R$ 100."],
+    ["Posso trocar de modalidade?", "Sim, até 15 dias antes do evento, mediante disponibilidade, aprovação da Organização e eventual regularização de diferença financeira."],
   ]],
-  ["Logística", [
-    ["A organização transporta minha bagagem?", "Sim. Cada participante receberá uma bag de 50 litros, transportada entre as cidades-base."],
-    ["Hospedagem está incluída?", "Não. A organização indicará hotéis oficiais e opções adaptadas à dinâmica da prova."],
-    ["Alimentação está incluída?", "Não. Jantares e refeições poderão ser oferecidos ou indicados separadamente."],
-    ["Pode haver apoio externo?", "Não. O apoio será centralizado pelos veículos oficiais da organização."],
-    ["Existe Bike Wash e mecânica?", "Sim. Bike Wash e suporte mecânico básico pós-etapa estão incluídos."],
+  ["Navegação, checkpoints e Race Engine", [
+    ["Como funciona a navegação?", "A Legends utiliza autonavegação. O percurso oficial será disponibilizado em GPX e cada participante é responsável por carregar a rota, conhecer seu GPS e manter autonomia suficiente de bateria."],
+    ["O percurso será sinalizado?", "A sinalização física é complementar e não substitui o GPS. A referência principal é o percurso oficial carregado no dispositivo do participante."],
+    ["O que acontece se eu sair do trajeto?", "O participante deve retornar ao ponto em que deixou o percurso oficial antes de continuar. Atalhos ou reconexões em ponto posterior podem gerar penalização ou desclassificação."],
+    ["Quantos checkpoints haverá?", "A quantidade final será divulgada operacionalmente. As etapas poderão utilizar checkpoints físicos e digitais para controle, hidratação, segurança, horários e segmentos."],
+    ["Como funciona o Race Engine?", "O Legends Race Engine poderá analisar GPS, FIT, GPX, atividades sincronizadas, checkpoints, horários, direção, aderência ao percurso, dados de rastreamento e registros oficiais. Inconsistências podem ser submetidas à revisão humana."],
   ]],
-  ["Inscrição e operação", [
-    ["A data já foi definida?", "Ainda não. A lista prioritária receberá a data oficial antes da abertura pública."],
-    ["Quantas vagas haverá?", "A primeira edição terá limite de 100 participantes."],
-    ["Será possível parcelar?", "A previsão é oferecer pagamento em até seis vezes."],
-    ["O que está incluído?", "Jersey, camiseta, cap, meias, bag 50 litros, seguro básico, GPX, transporte de bagagem, checkpoints, Bike Wash, mecânica, placa e medalha."],
-    ["O que não está incluído?", "Hospedagem, alimentação, transfers, seguro viagem, passagens, massagens e serviços opcionais."],
+  ["Logística e segurança", [
+    ["A organização transporta minha bagagem?", "Sim. Cada participante recebe uma bag oficial de 50 litros, que será transportada entre as cidades-base de acordo com locais, horários, identificação e limite de peso definidos no Manual do Atleta."],
+    ["O transporte do atleta está incluído?", "Não deve ser considerado incluído. Até que a Organização divulgue eventual serviço específico, o participante deve planejar seus próprios deslocamentos."],
+    ["Hospedagem está incluída?", "Não. A Organização poderá indicar hotéis oficiais e parceiros, mas hospedagem deve ser contratada separadamente."],
+    ["Alimentação está incluída?", "Refeições não estão incluídas. A inscrição contempla hidratação nos checkpoints oficiais e eventuais itens oferecidos pela Organização nesses pontos."],
+    ["O que é o SPOT?", "É o rastreador satelital utilizado durante todas as etapas para monitoramento e segurança. O participante deve mantê-lo consigo, ligado e devolvê-lo conforme as orientações da Organização."],
+    ["Existe Bike Wash e mecânica?", "Sim. Bike Wash ao final das etapas e mecânica básica disponibilizada pela Danda Bike estão incluídos. Peças, componentes e manutenção Premium não estão incluídos."],
+    ["Pode haver apoio externo na Gravel Race?", "Não é permitido apoio particular programado. São permitidos apoio oficial, mecânica oficial, checkpoints, estabelecimentos abertos ao público, auxílio espontâneo entre participantes e auxílio emergencial."],
+  ]],
+  ["Categorias e classificação", [
+    ["Quais são as categorias masculinas?", "Open Masculino 18–29, Master A 30–39, Master B 40–49 e Senior 50+. A idade considerada é a que o atleta completa no ano-base da competição."],
+    ["Quais são as categorias femininas?", "Feminino A 18–40 e Feminino B 41+, considerando a idade no ano-base da competição."],
+    ["Existe número mínimo por categoria?", "Sim. São necessários cinco atletas inscritos e confirmados por categoria. Se o mínimo não for atingido, a categoria será incorporada à imediatamente anterior conforme o Regulamento."],
+    ["Como funciona a classificação geral?", "A Gravel Race utiliza pontos. A referência é: 1.000 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa. Os coeficientes são 1,15; 1,00; 1,20 e 0,65."],
+    ["Qual é o prazo para protesto ou revisão?", "Até 30 minutos após a publicação do resultado provisório da etapa, pelo canal definido pela Organização."],
   ]],
 ];
 
@@ -42,14 +53,14 @@ export default function FAQ() {
   return <main className="faqPage"><style>{`
     .faqPage{--paper:#f4f0db;--ink:#0b0d0c;--copper:#c67a3b;--line:rgba(198,122,59,.34);background:#111411;color:#f1ece3;min-height:100vh}.wrap{width:min(1120px,calc(100% - 80px));margin:auto}
     .top{height:100px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.logo{height:72px}.back{color:var(--copper);font:600 13px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.15em}
-    .hero{padding:100px 0 80px}.kicker{color:var(--copper);font:600 14px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.22em}h1,h2{font-family:'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:20px 0}h1{font-size:clamp(70px,9vw,130px)}h2{font-size:clamp(38px,5vw,62px)}.lead{max-width:760px;color:#aab0a7;font-size:18px;line-height:1.75}
-    .group{padding:55px 0;border-top:1px solid var(--line)}details{border-bottom:1px solid rgba(198,122,59,.22);padding:22px 0}summary{cursor:pointer;list-style:none;font:600 24px 'Barlow Condensed';text-transform:uppercase}summary:after{content:'+';float:right;color:var(--copper)}details[open] summary:after{content:'–'}details p{max-width:850px;color:#aeb3ab;line-height:1.75}
-    .cta{background:var(--paper);color:var(--ink);padding:90px 0;text-align:center}.cta a{display:inline-block;background:var(--copper);padding:18px 28px;margin-top:20px;font:700 14px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.12em}
+    .hero{padding:100px 0 80px}.kicker{color:var(--copper);font:600 14px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.22em}h1,h2{font-family:'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:20px 0}h1{font-size:clamp(70px,9vw,130px)}h2{font-size:clamp(38px,5vw,62px)}.lead{max-width:820px;color:#aab0a7;font-size:18px;line-height:1.75}.quickLinks{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.quickLinks a{border:1px solid var(--line);padding:11px 14px;color:#ddd7cc;font:600 12px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase}
+    .group{padding:55px 0;border-top:1px solid var(--line)}details{border-bottom:1px solid rgba(198,122,59,.22);padding:22px 0}summary{cursor:pointer;list-style:none;font:600 24px 'Barlow Condensed';text-transform:uppercase}summary:after{content:'+';float:right;color:var(--copper)}details[open] summary:after{content:'–'}details p{max-width:900px;color:#aeb3ab;line-height:1.75}
+    .cta{background:var(--paper);color:var(--ink);padding:90px 0;text-align:center}.ctaLinks{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.cta a{display:inline-block;background:var(--copper);color:#fff;padding:18px 28px;margin-top:20px;font:700 14px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.12em}.cta a.alt{background:#111411}
     @media(max-width:700px){.wrap{width:calc(100% - 32px)}.top{height:82px}.logo{height:58px}.hero{padding:70px 0}.group{padding:40px 0}summary{font-size:21px}}
   `}</style>
   <nav className="top wrap"><a href="/"><img className="logo" src="/legends-logo-official.png" alt="Legends" /></a><a className="back" href="/">← Voltar à Home</a></nav>
-  <section className="hero wrap"><p className="kicker">Perguntas frequentes</p><h1>Antes de partir, entenda tudo.</h1><p className="lead">Esta página reúne as principais informações já definidas. Data, valores, programação final e regras completas serão atualizados quando a primeira edição for oficialmente confirmada.</p></section>
+  <section className="hero wrap"><p className="kicker">Perguntas frequentes · 2027</p><h1>Antes de partir, entenda tudo.</h1><p className="lead">Informações atualizadas para a edição de 29 de abril a 2 de maio de 2027. As inscrições permanecem bloqueadas nesta versão de prévia até a autorização oficial de abertura.</p><div className="quickLinks"><a href="/inscricoes">Inscrições</a><a href="/regulamento">Regulamento</a><a href="/documentos-medicos">Documentação médica</a><a href="/manual-do-atleta">Manual do atleta</a></div></section>
   <section className="wrap">{groups.map(([title,items])=><div className="group" key={title as string}><p className="kicker">{title as string}</p><h2>{title as string}</h2>{(items as string[][]).map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>)}</section>
-  <section className="cta"><div className="wrap"><h2>Ainda quer falar com a organização?</h2><a href="mailto:contato@threerace.com.br?subject=Dúvida sobre a Legends">Enviar uma pergunta →</a></div></section>
+  <section className="cta"><div className="wrap"><h2>Leia os documentos antes de se inscrever.</h2><div className="ctaLinks"><a href="/regulamento">Regulamento oficial →</a><a className="alt" href="/inscricoes">Ver inscrições →</a></div></div></section>
   </main>;
 }
