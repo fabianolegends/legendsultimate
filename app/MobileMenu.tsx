@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 const links = [
+  ["Inscrições", "/inscricoes"],
   ["A prova", "/a-prova"],
   ["Percursos", "/percursos"],
-  ["Modalidades", "/#modalidades"],
   ["Race Engine", "/race-engine"],
-  ["Perguntas frequentes", "/faq"],
-  ["Contato", "https://wa.me/5554996329164"],
+  ["Regulamento", "/regulamento"],
+  ["FAQ", "/faq"],
 ];
 
 export default function MobileMenu() {
@@ -22,21 +22,12 @@ export default function MobileMenu() {
     if (!open) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
+    return () => { document.body.style.overflow = previous; };
   }, [open]);
 
   return (
     <>
-      <button
-        className={`mobileMenuTrigger${open ? " isOpen" : ""}`}
-        type="button"
-        aria-label={open ? "Fechar menu" : "Abrir menu"}
-        aria-expanded={open}
-        aria-controls="mobile-site-menu"
-        onClick={() => setOpen((value) => !value)}
-      >
+      <button className={`mobileMenuTrigger${open ? " isOpen" : ""}`} type="button" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} aria-controls="mobile-site-menu" onClick={() => setOpen((value) => !value)}>
         <i /><i /><i />
       </button>
 
@@ -56,7 +47,8 @@ export default function MobileMenu() {
             ))}
           </nav>
           <div className="mobileMenuActions">
-            <a href="/lista-prioritaria" onClick={() => setOpen(false)}>Lista prioritária <span>→</span></a>
+            <a href="/inscricoes" onClick={() => setOpen(false)}>Inscrições em breve <span>→</span></a>
+            <a href="/documentos-medicos" onClick={() => setOpen(false)}>Documentação médica</a>
             <a href="/acesso" onClick={() => setOpen(false)}>Atleta / Organizador</a>
           </div>
         </div>,
