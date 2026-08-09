@@ -7,6 +7,7 @@ export const launchConfig = {
   registrationUrl: process.env.NEXT_PUBLIC_WINDFIT_REGISTRATION_URL || "",
   registrationOpen: process.env.NEXT_PUBLIC_REGISTRATION_OPEN === "true",
   priorityAccess: process.env.NEXT_PUBLIC_PRIORITY_ACCESS === "true",
+  activeLotIndex: 0,
   lots: [
     { name: "Lote 01", price: "R$ 1.199", period: "18/08 a 20/09/2026" },
     { name: "Lote 02", price: "R$ 1.399", period: "21/09 a 10/12/2026" },
