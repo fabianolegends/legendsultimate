@@ -14,7 +14,7 @@ export default function DocumentosMedicosPage() {
         .medicalPage .shell{width:min(1080px,calc(100% - 48px));margin:auto}
         .medicalPage .top{height:96px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
         .medicalPage .top img{height:68px}.medicalPage .top a{color:var(--copper);font:600 13px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.1em}
-        .medicalPage .hero{min-height:430px!important;height:430px!important;padding:0!important;display:flex;align-items:center;background:linear-gradient(90deg,rgba(7,9,8,.94) 0%,rgba(7,9,8,.78) 38%,rgba(7,9,8,.18) 75%),linear-gradient(0deg,rgba(7,9,8,.34),rgba(7,9,8,.05)),url('https://images.pexels.com/photos/18674757/pexels-photo-18674757.jpeg?auto=compress&cs=tinysrgb&w=1800') center 57%/cover no-repeat!important}
+        .medicalPage .hero{min-height:430px!important;height:430px!important;padding:0!important;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,rgba(7,9,8,.94) 0%,rgba(7,9,8,.78) 38%,rgba(7,9,8,.18) 75%),linear-gradient(0deg,rgba(7,9,8,.34),rgba(7,9,8,.05)),url('https://images.pexels.com/photos/18674757/pexels-photo-18674757.jpeg?auto=compress&cs=tinysrgb&w=1800') center 57%/cover no-repeat!important}
         .medicalPage .heroInner{width:min(1080px,calc(100% - 48px));margin:0 auto}
         .medicalPage .eyebrow{color:var(--copper);font:600 13px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.2em}
         .medicalPage .hero h1{font:700 clamp(52px,6.2vw,88px) 'Barlow Condensed';line-height:.88;text-transform:uppercase;margin:14px 0;max-width:680px}
