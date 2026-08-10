@@ -1,53 +1,52 @@
 # Design QA - Inscrições em acordeão
 
-- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/d3783594-be2e-452c-9d1d-65285cf7010a.png`
-- Implementation route: `/inscricoes`
-- Implementation screenshot: `/tmp/legends-design-qa/implementation-open.png` in the cloud-browser runtime
-- Source pixels: 2048 x 1280, including browser chrome
-- Implementation capture: desktop cloud-browser viewport, 1363 CSS px wide, device scale factor 1
-- State: `Valores e lotes` open; other accordions closed
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/e13cf699-4f30-4635-bc31-5e5b5f16588b.png`
+- Implementation route: `/inscricoes#informacoes`
+- Desktop implementation screenshot: `/tmp/legends-design-qa-v2/implementation-closed.png` in the cloud-browser runtime
+- Mobile implementation screenshot: `/tmp/legends-design-qa-v2/implementation-mobile.png` in the cloud-browser runtime
+- Combined comparison screenshot: `/tmp/legends-design-qa-v2/comparison-desktop.png` in the cloud-browser runtime
+- Source pixels: 2048 x 1280, including browser chrome; the content region was cropped to 2048 x 1111 for comparison
+- Desktop capture: 1348 x 926 px at a 1363 CSS px browser viewport, device scale factor 1
+- Mobile capture: 390 x 844 CSS px inside the browser-rendered responsive test frame; wrapper capture 1363 x 936 px
+- State: all eight accordions closed for the desktop comparison; `Categorias` open for the mobile interaction check
 
 ## Full-view comparison evidence
 
-The source and implementation were both opened and inspected. A normalized combined comparison image could not be created because the cloud browser blocked the local comparison document under its URL security policy. The two captures therefore could not be evaluated in the required single comparison surface.
+The cropped source and current implementation were rendered together in one browser comparison surface at the same desktop layout state. The implementation preserves the reference's cream background, editorial heading, compact white rows, left color rail, outline icons, small supporting copy, and right-side plus control. The three requested rows were inserted without changing the established hierarchy. The implementation intentionally uses the sampled Legends logo terracotta rather than the previous orange.
 
 ## Focused region evidence
 
-- The accordion region was captured with `Valores e lotes` open.
-- A second interaction check closed the first panel and opened `Modalidades`; the expanded content, minus state, and following row reflow were verified visually.
-- No application console errors were observed. Reported console errors came from the browser extension, not the Legends application.
-- A true mobile viewport capture was unavailable in the selected cloud browser. Responsive CSS was implemented but not visually verified at the mobile breakpoint.
+- The accordion list was compared with every item closed, matching the compact state shown in the reference.
+- The current implementation contains eight rows: Valores e lotes, Modalidades, Categorias, Etapas, Programação, O que está incluído, Kit Premium, and Regulamento e documentos.
+- `Categorias` was opened in the 390 px mobile frame. Its two groups remained readable with no horizontal overflow (`scrollWidth` 373 px and `clientWidth` 373 px).
+- The mobile heading, summaries, icons, plus/minus state, and expanded content were visually inspected.
 
 ## Required fidelity surfaces
 
-- Typography: Barlow Condensed hierarchy and Manrope body copy are consistent with the Legends page. Normalized source comparison blocked.
-- Spacing and layout: compact 76 px desktop rows, 68 px mobile rows, terracotta icon rail, and controlled 10 px gaps reproduce the reference's accordion rhythm while preserving Legends proportions.
-- Colors and tokens: existing Legends cream, black, and terracotta tokens were retained instead of copying the reference's white and orange palette.
-- Image and icon fidelity: no raster assets were required. Interface icons use Phosphor outline icons; no handcrafted SVG or CSS icon substitutes were added.
-- Copy and content: the existing registration information was preserved and regrouped into five decision-focused accordions. Date, spots, active lot, price, and primary CTA remain visible above the accordion area.
+- Typography: Barlow Condensed display and UI hierarchy match the existing Legends system and remain visually consistent with the supplied source.
+- Spacing and layout: 76 px desktop rows and 68 px mobile rows preserve the compact rhythm. The added rows fit without overlap, clipping, or horizontal overflow.
+- Colors and tokens: the accent is `#B96F48` / `rgb(185, 111, 72)`, sampled from `public/legends-logo-official.png`. Icon rails, plus/minus controls, headings, borders, and CTAs use the same token.
+- Image and icon fidelity: the existing official Legends logo is preserved. Interface symbols use Phosphor outline icons; no handcrafted SVG, CSS drawing, or placeholder asset was added.
+- Copy and content: categories follow the official competitive ranges; stages use the published route metrics and time limits; the programming lists 29 April through 2 May and clearly identifies detailed operational times as pending official publication.
 
 ## Findings
 
-- P2 - Normalized visual comparison unavailable. Source and implementation could not be placed into the same browser-rendered comparison surface.
-- P2 - Mobile visual verification unavailable. The responsive layout has not been captured at or below 850 CSS px.
+- No actionable P0, P1, or P2 visual or interaction issues remain.
+- P3: the reference screenshot includes a blue browser focus outline on the last row; it was not reproduced because it is browser state rather than part of the Legends visual system.
 
 ## Comparison history
 
-1. Initial build: direct Phosphor imports failed during server-side page-data collection.
-2. Fix: icons were isolated in a client boundary. Production build then passed.
-3. Interaction check: native details/summary controls opened and closed successfully; open/closed icon states and content reflow were confirmed.
+1. Previous pass: only five rows existed, the first item opened by default, the accent used `#C67A3B`, and normalized desktop/mobile comparison was blocked.
+2. Fixes: added Categorias, Etapas, and Programação; sampled and applied `#B96F48`; made the initial state fully collapsed; grouped native `details` so only one panel remains open at a time.
+3. Post-fix evidence: combined desktop comparison rendered successfully; 390 px mobile layout and expanded category content were captured and inspected.
 
 ## Primary interactions tested
 
-- Close `Valores e lotes`
-- Open `Modalidades`
-- Confirm `open` state and expanded body layout
-- Confirm plus/minus state change
+- Confirm all eight accordions are closed on initial load.
+- Open `Categorias`, then open `Etapas`, and confirm the previous panel closes automatically.
+- Open `Programação` and confirm all four dates and routes render.
+- Confirm all four stage links point to the corresponding `/percursos/stage-*` page.
+- Confirm the computed brand accent is `rgb(185, 111, 72)`.
+- Check browser console: no Legends application errors; only unrelated Chrome extension metadata errors were present.
 
-## Remaining checklist
-
-- Review the deployed branch preview at desktop width.
-- Review the deployed branch preview on a real mobile viewport.
-- Confirm whether the heading should stay editorial or become closer to the one-line reference title.
-
-final result: blocked
+final result: passed

@@ -1,12 +1,15 @@
 "use client";
 
-import { Bicycle, CurrencyDollar, FileText, Minus, Package, Plus, TShirt } from "@phosphor-icons/react";
+import { Bicycle, CalendarDots, CurrencyDollar, FileText, MapTrifold, Minus, Package, Plus, TShirt, UsersThree } from "@phosphor-icons/react";
 
-type IconKind = "values" | "modalities" | "included" | "premium" | "documents";
+type IconKind = "values" | "modalities" | "categories" | "stages" | "schedule" | "included" | "premium" | "documents";
 
 const icons = {
   values: CurrencyDollar,
   modalities: Bicycle,
+  categories: UsersThree,
+  stages: MapTrifold,
+  schedule: CalendarDots,
   included: Package,
   premium: TShirt,
   documents: FileText,
