@@ -1,41 +1,48 @@
-# Design QA - Hero de inscrições
+# Design QA - Título da seção de informações
 
-- Source visual truth (estado anterior): `/workspace/scratch/7ff5f007655b/upload/d8d37328-0439-4df5-82af-bb269b7528b6.png`
-- Source visual truth (imagem de fundo): `/workspace/scratch/7ff5f007655b/upload/pexels-markusspiske-13799229.jpg`
-- Implementation route: `/inscricoes`
-- Desktop viewport: 1363 CSS px, device scale factor 1
-- Mobile viewport: 390 x 844 CSS px em frame responsivo renderizado pelo navegador
-- State: página no topo, hero e navegação visíveis
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/cc5b6b19-8f1d-4b89-a6c6-8777bcc4f617.png`
+- Implementation route: `/inscricoes#informacoes`
+- Desktop combined comparison: `/tmp/legends-design-qa-title/comparison-desktop.jpg` no runtime do cloud browser
+- Mobile implementation screenshot: `/tmp/legends-design-qa-title/implementation-mobile.jpg` no runtime do cloud browser
+- Source pixels: 2048 x 1280 px; região de comparação recortada para 2048 x 900 px
+- Desktop capture: 1363 x 936 px, viewport de 1363 CSS px, device scale factor 1
+- Mobile capture: página responsiva em frame de 390 x 844 CSS px; área útil de conteúdo com 375 px
+- State: seção de informações visível e todos os acordeões fechados
 
-## Comparação visual
+## Full-view comparison evidence
 
-O estado anterior, a implementação atual e a fotografia fornecida foram renderizados juntos numa superfície de comparação no navegador. A implementação preserva a hierarquia editorial da Legends e aplica exatamente a fotografia anexada como fundo do hero, com dois gradientes escuros para manter a leitura do título, do parágrafo e do card de lote.
+A referência anexada e a implementação foram renderizadas juntas na mesma superfície de comparação. A alteração preserva a composição original, substituindo apenas o título anterior por “Todas as informações para decidir.”. A hierarquia em duas cores permanece: “Todas as informações” em preto e “Para decidir.” em terracota.
 
-## Verificações do hero
+## Focused region evidence
 
-- A logo oficial permanece no menu com altura controlada de 74 px no desktop e 58 px no mobile, sem corte ou distorção.
-- O hero tem 640 px de altura no desktop e passa a ter altura automática no mobile.
-- A fotografia otimizada é carregada por `/inscricoes-gravel-forest.webp`, em 2048 x 1365 px.
-- O enquadramento mantém o ciclista visível no centro/direita e reserva contraste para o conteúdo à esquerda.
-- Os quatro indicadores abaixo do parágrafo foram removidos do DOM; `heroMetaPresent` retornou `false`.
-- O card do lote recebeu fundo translúcido e desfoque, preservando contraste sobre a fotografia.
+- No desktop, o novo título ocupa três linhas visuais e mantém alinhamento com o texto auxiliar e a lista de acordeões.
+- No mobile, o título renderiza como “Todas as informações” seguido de “Para decidir.”, sem corte, sobreposição ou rolagem horizontal.
+- Medição mobile: `scrollWidth` 375 px e `clientWidth` 375 px.
 
-## Responsividade e acessibilidade visual
+## Required fidelity surfaces
 
-- No mobile, o hero, a logo, o título e o card cabem sem sobreposição nem rolagem horizontal.
-- Medição mobile: `scrollWidth` 373 px para `clientWidth` 373 px.
-- O contraste do conteúdo principal foi inspecionado visualmente nos dois tamanhos.
-- O tratamento escuro da imagem é intencional para garantir legibilidade do texto branco e do cobre da marca.
+- Fonts and typography: família, peso, caixa alta, entrelinha e destaque terracota permanecem iguais aos do sistema Legends.
+- Spacing and layout rhythm: nenhuma margem, grid, altura de linha ou espaçamento da seção foi alterado.
+- Colors and visual tokens: preto, creme e terracota continuam usando os tokens existentes.
+- Image quality and asset fidelity: nenhuma imagem ou logo foi alterada nesta iteração.
+- Copy and content: o título agora comunica exatamente “Todas as informações para decidir.”, com acentuação correta.
 
 ## Findings
 
-- Nenhum problema visual ou de interação P0, P1 ou P2 permanece.
-- P3: a fotografia é deliberadamente mais escura no hero do que no arquivo original, para proteger a leitura do conteúdo.
+- Nenhum problema P0, P1 ou P2 foi encontrado.
+- Nenhum refinamento P3 necessário para esta alteração.
 
-## Validações técnicas
+## Primary interactions tested
 
-- `npx next build`: aprovado, incluindo geração estática de `/inscricoes`.
-- `git diff --check`: aprovado.
-- Console do navegador: nenhum erro da aplicação Legends; somente mensagens externas de extensões do Chrome.
+- Abrir “Valores e lotes” e confirmar que o conteúdo aparece.
+- Fechar novamente e confirmar que nenhum acordeão permanece aberto.
+- Conferir a nova frase no desktop e no frame mobile.
+- Conferir o console: nenhum erro da aplicação Legends; somente mensagens externas da extensão do Chrome.
+
+## Comparison history
+
+1. Estado anterior: “Tudo para decidir. Sem excesso de rolagem.”.
+2. Alteração: título substituído por “Todas as informações para decidir.” sem mudanças na estrutura visual.
+3. Pós-alteração: comparação desktop e inspeção mobile aprovadas sem problemas acionáveis.
 
 final result: passed

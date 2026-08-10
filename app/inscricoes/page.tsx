@@ -125,7 +125,7 @@ export default function InscricoesPage() {
       <section className="detailsSection" id="informacoes">
         <div className="shell">
           <div className="detailsHead">
-            <div><p className="eyebrow">Informações completas</p><h2>Tudo para decidir.<br /><em>Sem excesso de rolagem.</em></h2></div>
+            <div><p className="eyebrow">Informações completas</p><h2>Todas as informações<br /><em>para decidir.</em></h2></div>
             <p>Abra apenas o que precisa consultar. Data, vagas, lote atual, preço e acesso à inscrição permanecem sempre visíveis acima.</p>
           </div>
 
