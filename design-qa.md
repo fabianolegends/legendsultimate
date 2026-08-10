@@ -1,55 +1,45 @@
-# Design QA - Centralização da chamada final
+# Design QA - Remoção das métricas duplicadas da Home
 
-- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/ef9fb8d2-a35e-4ba6-81fd-53d1bd24e3d2.png`
-- Implementation route: `/inscricoes`
-- Desktop implementation screenshot: `/tmp/legends-design-qa-final-center/desktop-after.jpg` no runtime do cloud browser
-- Mobile implementation screenshot: `/tmp/legends-design-qa-final-center/mobile-after.jpg` no runtime do cloud browser
-- Combined before/after comparison: `/tmp/legends-design-qa-final-center/combined-before-after.jpg` no runtime do cloud browser
-- Desktop capture: viewport de 1363 CSS px, device scale factor 1
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/6cf0adf5-94fb-4644-b9f2-aff9b75b2729.png`
+- Implementation route: `/`
+- Desktop implementation screenshot: `/tmp/legends-design-qa-home-summary/desktop-after.png` no runtime do cloud browser
+- Mobile implementation screenshot: `/tmp/legends-design-qa-home-summary/mobile-after.png` no runtime do cloud browser
+- Desktop capture: viewport de 1363 CSS px
 - Mobile capture: página responsiva em frame de 390 x 844 CSS px
-- State: chamada final “Não é circuito. É travessia.” visível
 
 ## Full-view comparison evidence
 
-A referência anexada e a implementação foram colocadas lado a lado na mesma superfície, com o mesmo viewport interno de 1975 x 754 px. A comparação confirma que o parágrafo, antes deslocado para a esquerda, passou para o mesmo eixo central do título e do botão sem alterar a imagem, a tipografia ou as cores.
+A referência mostra dois blocos consecutivos com as mesmas métricas: o quadro grande de quatro colunas e, abaixo, o resumo “Em 30 segundos”. Na implementação final, o primeiro quadro foi removido e o resumo compacto permanece imediatamente após o hero.
 
 ## Focused region evidence
 
-- Desktop: shell central em `x = 84 px`, largura `1180 px` e centro `674 px`.
-- Desktop: eyebrow, título, parágrafo e botão apresentaram `deltaFromShellCenter = 0 px`.
-- Mobile: shell central em `x = 15 px`, largura `360 px` e centro `195 px`.
-- Mobile: eyebrow, título, parágrafo e botão apresentaram `deltaFromShellCenter = 0 px`.
-- O texto descritivo usa `text-align: center` em ambos os tamanhos e não produz rolagem horizontal.
+- Desktop: nenhuma ocorrência de `.heroStats` e uma ocorrência de `.launchSummary`.
+- Desktop: sete itens compactos preservados — data, dias, etapas, distância, ascensão, modalidades e participantes.
+- Mobile: nenhuma ocorrência de `.heroStats`, uma ocorrência de `.launchSummary` e sete itens compactos.
+- Mobile: o resumo reorganiza os dados em duas colunas, com `scrollWidth` e `clientWidth` iguais a `375 px` na raiz do documento.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: Barlow Condensed e Manrope preservadas, sem mudança de peso, escala ou entrelinha.
-- Spacing and layout rhythm: larguras máximas e espaçamento vertical mantidos; apenas o alinhamento horizontal foi corrigido.
-- Colors and visual tokens: preto, creme e terracota continuam usando os tokens existentes.
-- Image quality and asset fidelity: imagem de fundo, logo e ícones não foram alterados.
-- Copy and content: nenhum texto foi modificado.
+- Fonts and typography: Barlow Condensed e Manrope preservadas.
+- Spacing and layout rhythm: o resumo ocupa o espaço logo após o hero sem o bloco redundante intermediário.
+- Colors and visual tokens: fundo preto, creme e terracota continuam usando os tokens existentes.
+- Image quality and asset fidelity: imagem do hero, logo e demais ativos não foram alterados.
+- Copy and content: todos os dados do resumo compacto foram preservados.
 
 ## Findings
 
 - Nenhum problema P0, P1 ou P2 encontrado.
 - Nenhum refinamento P3 necessário nesta iteração.
 
-## Primary interactions tested
+## Primary checks
 
-- Abrir “Valores e lotes” e confirmar o estado aberto.
-- Fechar novamente e confirmar o estado fechado.
-- Conferir a chamada final no desktop e no frame mobile.
-- Conferir o console: nenhum erro da aplicação Legends; somente mensagens externas da extensão do Chrome.
-
-## Comparison history
-
-1. Estado anterior: uma regra global mais específica aplicava `margin-left: 0` ao parágrafo final.
-2. Ajuste: o shell da chamada passou a centralizar os filhos em grid e o seletor local recebeu escopo suficiente para prevalecer.
-3. Pós-ajuste: todos os elementos registraram desvio horizontal de `0 px` no desktop e no mobile.
+- Confirmada a ausência do quadro grande “04 dias / 370,3 quilômetros / 6.302 metros de ascensão / 100 vagas”.
+- Confirmada a presença do quadro compacto “O essencial para decidir”.
+- Conferidos desktop e mobile sem rolagem horizontal na raiz do documento.
 
 ## Validações técnicas
 
-- `npm run build`: aprovado, incluindo geração estática de `/inscricoes`.
+- `npm run build`: aprovado, incluindo geração estática da Home.
 - `git diff --check`: aprovado.
 
 final result: passed

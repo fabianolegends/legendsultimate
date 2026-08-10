@@ -22,7 +22,6 @@ const includedServices = [
 ];
 
 export default function LaunchHomePreview() {
-  const [summaryTarget, setSummaryTarget] = useState<HTMLElement | null>(null);
   const [journeyTarget, setJourneyTarget] = useState<HTMLElement | null>(null);
   const [kitTarget, setKitTarget] = useState<HTMLElement | null>(null);
 
@@ -92,13 +91,6 @@ export default function LaunchHomePreview() {
       }
     }
 
-    const hero = home.querySelector<HTMLElement>(".heroRedesign");
-    if (hero?.parentNode) {
-      let root = document.getElementById("launch-summary-root");
-      if (!root) { root = document.createElement("div"); root.id = "launch-summary-root"; hero.insertAdjacentElement("afterend", root); }
-      setSummaryTarget(root);
-    }
-
     const technicalLink = home.querySelector<HTMLAnchorElement>('a[href="/race-engine"]');
     const technicalSection = technicalLink?.closest("section");
     if (technicalSection) technicalSection.classList.add("launchTechnicalReduced");
@@ -152,26 +144,13 @@ export default function LaunchHomePreview() {
   return <>
     <style>{`
       .remainingSpotsCard{height:68px;min-width:224px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-content:center;column-gap:12px;padding:10px 18px;border:1px solid rgba(241,236,227,.45);background:rgba(8,10,9,.52);text-transform:uppercase}.remainingSpotsCard span{grid-column:1;grid-row:1;color:#c67a3b;font:600 10px 'Barlow Condensed';letter-spacing:.16em;align-self:end}.remainingSpotsCard strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:.9;color:#f1ece3}.remainingSpotsCard small{grid-column:2;grid-row:1/3;align-self:center;color:#d4cec4;font:600 12px 'Barlow Condensed';letter-spacing:.08em;white-space:nowrap}.launchPrice{display:grid;grid-template-columns:auto auto;align-items:end;gap:0 14px;padding-left:6px}.launchPrice span{grid-column:1/-1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{color:#b8b0a4;font-size:11px}.launchProfileHidden,.launchTechnicalReduced{display:none!important}.launchOldIncluded{display:none!important}.launchFaqEssential details:nth-of-type(n+6){display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}
-      .launchSummary{background:#0c0f0d;color:#f1ece3;border-bottom:1px solid rgba(198,122,59,.25);padding:34px 0}.launchSummary .wrap,.launchJourney .wrap,.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}.launchSummaryGrid{display:grid;grid-template-columns:1.3fr repeat(7,auto);gap:22px;align-items:center}.launchSummaryTitle span{color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.18em;text-transform:uppercase}.launchSummaryTitle strong{display:block;font:700 27px 'Barlow Condensed';text-transform:uppercase;margin-top:4px}.launchFact{padding-left:20px;border-left:1px solid rgba(241,236,227,.16)}.launchFact strong{display:block;font:700 24px 'Barlow Condensed'}.launchFact span{display:block;color:#9fa39d;font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+      .launchJourney .wrap,.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}
       .launchJourney{background:#111411;color:#f1ece3;padding:96px 0;border-top:1px solid rgba(255,255,255,.07)}.launchJourneyHead{display:grid;grid-template-columns:1fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchJourney .eyebrow,.launchIncluded .eyebrow{color:#c67a3b;text-transform:uppercase;letter-spacing:.2em;font:600 13px 'Barlow Condensed'}.launchJourney h2,.launchIncluded h2{font:700 clamp(48px,5.6vw,84px) 'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:15px 0}.launchJourneyHead>p{color:#a8aca5;line-height:1.7}.journeySteps{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(198,122,59,.3)}.journeySteps article{padding:26px;border-right:1px solid rgba(198,122,59,.25)}.journeySteps article:last-child{border:0}.journeySteps b{color:#c67a3b;font:700 12px 'Barlow Condensed';letter-spacing:.14em}.journeySteps h3{font:700 26px 'Barlow Condensed';text-transform:uppercase;margin:12px 0}.journeySteps p{color:#a7aba4;font-size:13px;line-height:1.55;margin:0}.beforeBox{margin-top:28px;padding:22px;border:1px solid rgba(255,255,255,.12);display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}.beforeBox strong{font:700 22px 'Barlow Condensed';text-transform:uppercase;color:#c67a3b}.beforeBox p{margin:0;color:#c7c9c4;line-height:1.65}
       .launchIncluded{background:#f4f0db;color:#0b0d0c;padding:100px 0}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchIncludedHead>p{color:#646761;line-height:1.7}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:22px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 23px 'Barlow Condensed';text-transform:uppercase;margin:12px 0 0}.launchServices{display:grid;grid-template-columns:repeat(4,1fr);margin-top:18px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:15px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 12px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.launchDocs a{padding:13px 16px;border:1px solid #c67a3b;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:#c67a3b;color:#fff}
-      @media(max-width:1050px){.launchSummaryGrid{grid-template-columns:1fr repeat(4,1fr)}.launchSummaryTitle{grid-column:1/-1}.journeySteps{grid-template-columns:1fr 1fr}.journeySteps article{border-bottom:1px solid rgba(198,122,59,.25)}.journeySteps article:nth-child(even){border-right:0}}
-      @media(max-width:900px){.launchSummary .wrap,.launchJourney .wrap,.launchIncluded .wrap{width:calc(100% - 30px)}.launchJourneyHead,.launchIncludedHead{grid-template-columns:1fr}.launchProducts{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}.launchServices{grid-template-columns:1fr 1fr}.launchPrice{width:100%;padding-top:8px}.remainingSpotsCard{min-width:210px}.beforeBox{grid-template-columns:1fr}}
-      @media(max-width:620px){.launchSummaryGrid{grid-template-columns:1fr 1fr}.launchFact{padding-left:12px}.journeySteps{grid-template-columns:1fr}.journeySteps article{border-right:0}.launchProducts{grid-template-columns:1fr 1fr}}
+      @media(max-width:1050px){.journeySteps{grid-template-columns:1fr 1fr}.journeySteps article{border-bottom:1px solid rgba(198,122,59,.25)}.journeySteps article:nth-child(even){border-right:0}}
+      @media(max-width:900px){.launchJourney .wrap,.launchIncluded .wrap{width:calc(100% - 30px)}.launchJourneyHead,.launchIncludedHead{grid-template-columns:1fr}.launchProducts{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}.launchServices{grid-template-columns:1fr 1fr}.launchPrice{width:100%;padding-top:8px}.remainingSpotsCard{min-width:210px}.beforeBox{grid-template-columns:1fr}}
+      @media(max-width:620px){.journeySteps{grid-template-columns:1fr}.journeySteps article{border-right:0}.launchProducts{grid-template-columns:1fr 1fr}}
     `}</style>
-
-    {summaryTarget && createPortal(
-      <section className="launchSummary" aria-label="Legends em 30 segundos"><div className="wrap launchSummaryGrid">
-        <div className="launchSummaryTitle"><span>Em 30 segundos</span><strong>O essencial para decidir.</strong></div>
-        <div className="launchFact"><strong>29 ABR</strong><span>02 MAI 2027</span></div>
-        <div className="launchFact"><strong>4</strong><span>dias</span></div>
-        <div className="launchFact"><strong>4</strong><span>etapas</span></div>
-        <div className="launchFact"><strong>370,3</strong><span>km</span></div>
-        <div className="launchFact"><strong>6.302</strong><span>m+</span></div>
-        <div className="launchFact"><strong>2</strong><span>modalidades</span></div>
-        <div className="launchFact"><strong>100</strong><span>participantes</span></div>
-      </div></section>, summaryTarget
-    )}
 
     {journeyTarget && createPortal(
       <section className="launchJourney"><div className="wrap">
