@@ -1,50 +1,51 @@
-# Design QA - Título em duas linhas
+# Design QA - Centralização da chamada final
 
-- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/82dc1c01-97ba-4f41-8a34-603e63536937.png`
-- Implementation route: `/inscricoes#informacoes`
-- Desktop combined comparison: `/tmp/legends-design-qa-two-line/comparison-desktop.jpg` no runtime do cloud browser
-- Mobile implementation screenshot: `/tmp/legends-design-qa-two-line/implementation-mobile.jpg` no runtime do cloud browser
-- Source pixels: 2048 x 1280 px; região de comparação recortada para 2048 x 980 px
-- Desktop capture: 1363 x 936 px, viewport de 1363 CSS px, device scale factor 1
-- Mobile capture: página responsiva em frame de 390 x 844 CSS px; área útil de conteúdo com 375 px
-- State: seção de informações visível e todos os acordeões fechados
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/ef9fb8d2-a35e-4ba6-81fd-53d1bd24e3d2.png`
+- Implementation route: `/inscricoes`
+- Desktop implementation screenshot: `/tmp/legends-design-qa-final-center/desktop-after.jpg` no runtime do cloud browser
+- Mobile implementation screenshot: `/tmp/legends-design-qa-final-center/mobile-after.jpg` no runtime do cloud browser
+- Combined before/after comparison: `/tmp/legends-design-qa-final-center/combined-before-after.jpg` no runtime do cloud browser
+- Desktop capture: viewport de 1363 CSS px, device scale factor 1
+- Mobile capture: página responsiva em frame de 390 x 844 CSS px
+- State: chamada final “Não é circuito. É travessia.” visível
 
 ## Full-view comparison evidence
 
-A referência anexada, com o título em três linhas, foi colocada ao lado da implementação atual na mesma superfície de comparação. A implementação reduz somente a escala responsiva do título e passa a exibir exatamente duas linhas: “Todas as informações” e “Para decidir.”.
+A referência anexada e a implementação foram colocadas lado a lado na mesma superfície, com o mesmo viewport interno de 1975 x 754 px. A comparação confirma que o parágrafo, antes deslocado para a esquerda, passou para o mesmo eixo central do título e do botão sem alterar a imagem, a tipografia ou as cores.
 
 ## Focused region evidence
 
-- Desktop: fonte calculada em 69,513 px; a primeira linha mede 592,08 px dentro de uma coluna de 644 px.
-- Mobile: fonte calculada em 40 px; a primeira linha mede 340,77 px dentro de uma coluna de 345 px.
-- Nos dois tamanhos, o destaque terracota permanece integralmente na segunda linha.
-- Mobile sem rolagem horizontal: `scrollWidth` 375 px e `clientWidth` 375 px.
+- Desktop: shell central em `x = 84 px`, largura `1180 px` e centro `674 px`.
+- Desktop: eyebrow, título, parágrafo e botão apresentaram `deltaFromShellCenter = 0 px`.
+- Mobile: shell central em `x = 15 px`, largura `360 px` e centro `195 px`.
+- Mobile: eyebrow, título, parágrafo e botão apresentaram `deltaFromShellCenter = 0 px`.
+- O texto descritivo usa `text-align: center` em ambos os tamanhos e não produz rolagem horizontal.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: família Barlow Condensed, peso 700, caixa alta, entrelinha e hierarquia foram preservados; somente a escala foi ajustada para controlar a quebra.
-- Spacing and layout rhythm: grid, alinhamento, margens e distância para os acordeões permanecem inalterados.
+- Fonts and typography: Barlow Condensed e Manrope preservadas, sem mudança de peso, escala ou entrelinha.
+- Spacing and layout rhythm: larguras máximas e espaçamento vertical mantidos; apenas o alinhamento horizontal foi corrigido.
 - Colors and visual tokens: preto, creme e terracota continuam usando os tokens existentes.
-- Image quality and asset fidelity: nenhuma imagem, logo ou ícone foi alterado.
-- Copy and content: o texto permanece “Todas as informações para decidir.”, agora em duas linhas exatas.
+- Image quality and asset fidelity: imagem de fundo, logo e ícones não foram alterados.
+- Copy and content: nenhum texto foi modificado.
 
 ## Findings
 
-- Nenhum problema P0, P1 ou P2 foi encontrado.
+- Nenhum problema P0, P1 ou P2 encontrado.
 - Nenhum refinamento P3 necessário nesta iteração.
 
 ## Primary interactions tested
 
-- Abrir “Valores e lotes” e confirmar um acordeão aberto.
-- Fechar novamente e confirmar zero acordeões abertos.
-- Conferir a quebra em duas linhas no desktop e no frame mobile.
+- Abrir “Valores e lotes” e confirmar o estado aberto.
+- Fechar novamente e confirmar o estado fechado.
+- Conferir a chamada final no desktop e no frame mobile.
 - Conferir o console: nenhum erro da aplicação Legends; somente mensagens externas da extensão do Chrome.
 
 ## Comparison history
 
-1. Estado anterior: primeira parte do título quebrava em duas linhas, totalizando três linhas visuais.
-2. Ajuste: escala máxima desktop reduzida de 78 px para 72 px e escala mobile reduzida de 46 px para 40 px.
-3. Pós-ajuste: duas linhas confirmadas por medição e inspeção visual em desktop e mobile, sem overflow.
+1. Estado anterior: uma regra global mais específica aplicava `margin-left: 0` ao parágrafo final.
+2. Ajuste: o shell da chamada passou a centralizar os filhos em grid e o seletor local recebeu escopo suficiente para prevalecer.
+3. Pós-ajuste: todos os elementos registraram desvio horizontal de `0 px` no desktop e no mobile.
 
 ## Validações técnicas
 
