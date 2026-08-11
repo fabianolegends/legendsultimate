@@ -64,10 +64,36 @@ const stages = [
 ] as const;
 
 const schedule = [
-  ["29 ABR", "Stage 01", "Canela → São Francisco de Paula"],
-  ["30 ABR", "Stage 02", "São Francisco de Paula → Gramado"],
-  ["01 MAI", "Stage 03", "Gramado → Nova Petrópolis"],
-  ["02 MAI", "Stage 04", "Nova Petrópolis → Canela · encerramento"],
+  {
+    date: "28 ABR",
+    stage: "Credenciamento",
+    route: "Canela",
+    events: [["12h–18h", "Credenciamento, conferência documental e entrega dos kits"], ["18h30", "Briefing geral obrigatório"]],
+  },
+  {
+    date: "29 ABR",
+    stage: "Stage 01",
+    route: "Canela → São Francisco de Paula",
+    events: [["07h–07h30", "Entrega das bags"], ["07h30", "Briefing da etapa"], ["07h45", "Largada"], ["17h", "Resultados oficiais"], ["18h30", "Briefing pós-etapa"]],
+  },
+  {
+    date: "30 ABR",
+    stage: "Stage 02",
+    route: "São Francisco de Paula → Gramado",
+    events: [["07h–07h30", "Entrega das bags"], ["07h30", "Briefing da etapa"], ["07h45", "Largada"], ["17h", "Resultados oficiais"], ["18h30", "Briefing pós-etapa"]],
+  },
+  {
+    date: "01 MAI",
+    stage: "Stage 03",
+    route: "Gramado → Nova Petrópolis",
+    events: [["07h–07h30", "Entrega das bags"], ["07h30", "Briefing da etapa"], ["07h45", "Largada"], ["17h", "Resultados oficiais"], ["18h30", "Briefing pós-etapa"]],
+  },
+  {
+    date: "02 MAI",
+    stage: "Stage 04",
+    route: "Nova Petrópolis → Canela",
+    events: [["07h–07h30", "Entrega das bags"], ["07h30", "Briefing da etapa"], ["07h45", "Largada"], ["17h", "Resultados oficiais"], ["18h30", "Premiação geral e encerramento"]],
+  },
 ] as const;
 
 export default function InscricoesPage() {
@@ -94,11 +120,11 @@ export default function InscricoesPage() {
         .modeGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.mode{padding:34px;border:1px solid rgba(17,17,17,.18);background:#ede6d9}.mode.dark{background:#111411;color:#f1ece3;border-color:#111411}.mode h3{font:700 40px 'Barlow Condensed';text-transform:uppercase;margin:8px 0 15px}.mode p{line-height:1.65;color:#6f706c}.mode.dark p{color:#a8ada5}.mode .tag{color:var(--copper);font:600 12px 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase}
         .columns{display:grid;grid-template-columns:1fr 1fr;gap:50px}.checkList{list-style:none;padding:0;margin:0}.checkList li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.11);color:#c4c6c1}.light .checkList li{border-color:rgba(17,17,17,.13);color:#3e403d}.checkList li:before{content:'✓';color:var(--copper);margin-right:10px}.minus li:before{content:'—'}
         .premiumOptions{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.premiumOption{position:relative;border:1px solid rgba(17,17,17,.17);padding:34px;display:grid;grid-template-columns:1fr auto;gap:34px;align-items:center;background:rgba(255,255,255,.17)}.premiumOption.featured{border-color:rgba(185,111,72,.72);background:linear-gradient(135deg,rgba(185,111,72,.09),rgba(255,255,255,.12))}.premiumBadge{position:absolute;top:0;left:34px;transform:translateY(-50%);background:var(--copper);color:#fff;padding:7px 11px;font:700 10px 'Barlow Condensed';letter-spacing:.15em;text-transform:uppercase}.premiumOption h3{font:700 36px 'Barlow Condensed';text-transform:uppercase;margin:0 0 12px}.premiumOption p{color:#676a65;line-height:1.6;margin:0}.premiumItems{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.premiumItems span{border:1px solid rgba(17,17,17,.15);padding:8px 10px;font:600 11px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.05em}.price{color:var(--copper);font:700 48px 'Barlow Condensed';white-space:nowrap}.price small{display:block;font:600 10px 'Barlow Condensed';letter-spacing:.12em;text-transform:uppercase;color:#777;margin-bottom:4px}
-        .categoryGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:34px}.categoryGroup{border-top:1px solid rgba(17,17,17,.18)}.categoryGroup h3{font:700 27px 'Barlow Condensed';text-transform:uppercase;margin:0;padding:0 0 16px}.categoryRow{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:1px solid rgba(17,17,17,.14)}.categoryRow strong{font:700 18px 'Barlow Condensed';text-transform:uppercase}.categoryRow span{color:#686b65;font-size:13px}.categoryNote{grid-column:1/-1;margin:0;color:#676a65;font-size:12px;line-height:1.65}.stageCompactGrid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.17)}.stageCompact{display:grid;align-content:start;gap:10px;min-height:185px;padding:24px;border-right:1px solid rgba(17,17,17,.17);color:var(--ink)}.stageCompact:last-child{border-right:0}.stageCompact span{color:var(--copper);font:600 12px 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase}.stageCompact h3{font:700 24px 'Barlow Condensed';line-height:1;text-transform:uppercase;margin:0}.stageCompact p{color:#646760;font-size:12px;line-height:1.5;margin:0}.stageCompact b{align-self:end;color:var(--copper);font:700 11px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase}.scheduleList{border-top:1px solid rgba(17,17,17,.18)}.scheduleItem{display:grid;grid-template-columns:100px 120px minmax(0,1fr);gap:22px;align-items:center;padding:16px 0;border-bottom:1px solid rgba(17,17,17,.14)}.scheduleItem time{color:var(--copper);font:700 19px 'Barlow Condensed';letter-spacing:.06em}.scheduleItem strong{font:700 16px 'Barlow Condensed';text-transform:uppercase}.scheduleItem span{color:#565a53;font-size:13px}.scheduleNote{margin:18px 0 0;color:#686b65;font-size:12px;line-height:1.6}
+        .categoryGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:34px}.categoryGroup{border-top:1px solid rgba(17,17,17,.18)}.categoryGroup h3{font:700 27px 'Barlow Condensed';text-transform:uppercase;margin:0;padding:0 0 16px}.categoryRow{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:1px solid rgba(17,17,17,.14)}.categoryRow strong{font:700 18px 'Barlow Condensed';text-transform:uppercase}.categoryRow span{color:#686b65;font-size:13px}.categoryNote{grid-column:1/-1;margin:0;color:#676a65;font-size:12px;line-height:1.65}.stageCompactGrid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.17)}.stageCompact{display:grid;align-content:start;gap:10px;min-height:185px;padding:24px;border-right:1px solid rgba(17,17,17,.17);color:var(--ink)}.stageCompact:last-child{border-right:0}.stageCompact span{color:var(--copper);font:600 12px 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase}.stageCompact h3{font:700 24px 'Barlow Condensed';line-height:1;text-transform:uppercase;margin:0}.stageCompact p{color:#646760;font-size:12px;line-height:1.5;margin:0}.stageCompact b{align-self:end;color:var(--copper);font:700 11px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase}.scheduleList{display:grid;gap:20px}.scheduleDay{border-top:1px solid rgba(17,17,17,.18);padding-top:18px}.scheduleItem{display:grid;grid-template-columns:100px 120px minmax(0,1fr);gap:22px;align-items:center}.scheduleItem time{color:var(--copper);font:700 19px 'Barlow Condensed';letter-spacing:.06em}.scheduleItem strong{font:700 16px 'Barlow Condensed';text-transform:uppercase}.scheduleItem span{color:#565a53;font-size:13px}.scheduleEvents{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:15px 0 0;border:1px solid rgba(17,17,17,.14)}.scheduleEvent{min-height:76px;padding:13px 14px;border-right:1px solid rgba(17,17,17,.14);background:#f7f1e6}.scheduleEvent:last-child{border-right:0}.scheduleEvent strong{display:block;color:var(--copper);font:700 16px 'Barlow Condensed';letter-spacing:.04em}.scheduleEvent span{display:block;margin-top:5px;color:#555951;font-size:11px;line-height:1.35}.scheduleNote{margin:20px 0 0;color:#686b65;font-size:12px;line-height:1.6}.lodgingNotice{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:42px;align-items:center;border:1px solid rgba(17,17,17,.17);background:#f7f1e6;padding:32px}.lodgingNotice h3{margin:5px 0 12px;font:700 34px 'Barlow Condensed';line-height:1;text-transform:uppercase}.lodgingNotice p{max-width:720px;margin:0;color:#5f635c;font-size:14px;line-height:1.65}.lodgingDate{min-width:180px;padding-left:28px;border-left:1px solid rgba(17,17,17,.16)}.lodgingDate span{display:block;color:#74776f;font:600 11px 'Barlow Condensed';letter-spacing:.13em;text-transform:uppercase}.lodgingDate strong{display:block;margin-top:7px;color:var(--copper);font:700 36px 'Barlow Condensed'}
         .docs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.docCard{border:1px solid var(--line);padding:26px}.docCard h3{font:700 29px 'Barlow Condensed';text-transform:uppercase;margin:10px 0}.docCard p{color:#a4aaa0;line-height:1.55}.docCard a{color:var(--copper);font:700 13px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.08em}
         .finalCta{text-align:center}.registrationPage .finalCta>.shell{display:grid;justify-items:center}.finalCta h2{width:min(100%,880px);margin-inline:auto}.registrationPage .finalCta>.shell>p{width:min(100%,690px);color:#a1a69e;margin:0 0 30px;line-height:1.65;text-align:center}.finalCta .mainCta{width:min(100%,360px);margin-inline:auto}
-        @media(max-width:850px){.heroGrid,.columns,.modeGrid,.premiumOptions,.detailsHead,.categoryGrid{grid-template-columns:1fr}.lotGrid{grid-template-columns:1fr}.lot{border-right:0;border-bottom:1px solid var(--line)}.lot:last-child{border-bottom:0}.activeLotBadge{top:14px;right:14px}.docs{grid-template-columns:1fr}.premiumOption{grid-template-columns:1fr}.premiumBadge{left:24px}.regNav img{height:58px}.regHero{min-height:auto;padding:64px 0 58px;background-position:60% center}.registrationPage .shell{width:min(100% - 30px,1180px)}.detailsHead{gap:18px}.regAccordion summary{grid-template-columns:58px minmax(0,1fr) 44px;min-height:68px}.accordionIcon svg{width:23px;height:23px}.accordionTitle{padding:11px 14px}.accordionTitle strong{font-size:16px;letter-spacing:.09em}.accordionTitle small{font-size:11px}.accordionBody{padding:20px 16px}.stageCompactGrid{grid-template-columns:1fr 1fr}.stageCompact:nth-child(2){border-right:0}.stageCompact:nth-child(-n+2){border-bottom:1px solid rgba(17,17,17,.17)}.categoryNote{grid-column:auto}}
-        @media(max-width:520px){.stageCompactGrid{grid-template-columns:1fr}.stageCompact{min-height:0;border-right:0;border-bottom:1px solid rgba(17,17,17,.17)}.stageCompact:last-child{border-bottom:0}.scheduleItem{grid-template-columns:76px 1fr;gap:6px 14px}.scheduleItem span{grid-column:1/-1}.categoryRow{align-items:baseline}.detailsSection{padding-top:62px}.detailsHead h2{font-size:40px}}
+        @media(max-width:850px){.heroGrid,.columns,.modeGrid,.premiumOptions,.detailsHead,.categoryGrid{grid-template-columns:1fr}.lotGrid{grid-template-columns:1fr}.lot{border-right:0;border-bottom:1px solid var(--line)}.lot:last-child{border-bottom:0}.activeLotBadge{top:14px;right:14px}.docs{grid-template-columns:1fr}.premiumOption{grid-template-columns:1fr}.premiumBadge{left:24px}.regNav img{height:58px}.regHero{min-height:auto;padding:64px 0 58px;background-position:60% center}.registrationPage .shell{width:min(100% - 30px,1180px)}.detailsHead{gap:18px}.regAccordion summary{grid-template-columns:58px minmax(0,1fr) 44px;min-height:68px}.accordionIcon svg{width:23px;height:23px}.accordionTitle{padding:11px 14px}.accordionTitle strong{font-size:16px;letter-spacing:.09em}.accordionTitle small{font-size:11px}.accordionBody{padding:20px 16px}.stageCompactGrid{grid-template-columns:1fr 1fr}.stageCompact:nth-child(2){border-right:0}.stageCompact:nth-child(-n+2){border-bottom:1px solid rgba(17,17,17,.17)}.categoryNote{grid-column:auto}.scheduleEvents{grid-template-columns:repeat(2,minmax(0,1fr))}.scheduleEvent{border-bottom:1px solid rgba(17,17,17,.14)}.scheduleEvent:nth-child(even){border-right:0}.lodgingNotice{grid-template-columns:1fr;gap:24px}.lodgingDate{padding:20px 0 0;border-left:0;border-top:1px solid rgba(17,17,17,.16)}}
+        @media(max-width:520px){.stageCompactGrid{grid-template-columns:1fr}.stageCompact{min-height:0;border-right:0;border-bottom:1px solid rgba(17,17,17,.17)}.stageCompact:last-child{border-bottom:0}.scheduleItem{grid-template-columns:76px 1fr;gap:6px 14px}.scheduleItem span{grid-column:1/-1}.scheduleEvents{grid-template-columns:1fr}.scheduleEvent{border-right:0}.categoryRow{align-items:baseline}.detailsSection{padding-top:62px}.detailsHead h2{font-size:40px}.lodgingNotice{padding:24px 20px}.lodgingNotice h3{font-size:29px}}
       `}</style>
 
       <div className="shell regNav">
@@ -181,12 +207,23 @@ export default function InscricoesPage() {
             <details name="registration-details" className="regAccordion">
               <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="schedule" /></span>
-                <span className="accordionTitle"><strong>Programação</strong><small>29 de abril a 2 de maio de 2027</small></span>
+                <span className="accordionTitle"><strong>Programação</strong><small>28 de abril a 2 de maio de 2027</small></span>
                 <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
               </summary>
               <div className="accordionBody">
-                <div className="scheduleList">{schedule.map(([date,stage,route])=><div className="scheduleItem" key={date}><time>{date}</time><strong>{stage}</strong><span>{route}</span></div>)}</div>
-                <p className="scheduleNote">Os horários oficiais de credenciamento, briefings, largadas, cortes e premiação serão publicados no Manual do Atleta e nas comunicações oficiais da organização.</p>
+                <div className="scheduleList">{schedule.map(day=><section className="scheduleDay" key={day.date}><div className="scheduleItem"><time>{day.date}</time><strong>{day.stage}</strong><span>{day.route}</span></div><div className="scheduleEvents">{day.events.map(([time,label])=><div className="scheduleEvent" key={`${day.date}-${time}`}><strong>{time}</strong><span>{label}</span></div>)}</div></section>)}</div>
+                <p className="scheduleNote">A programação poderá receber ajustes operacionais. Qualquer alteração será publicada no Manual do Atleta e nos canais oficiais da organização.</p>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="lodging" /></span>
+                <span className="accordionTitle"><strong>Hospedagens conveniadas</strong><small>Opções nas quatro cidades-base · atualização em 15/09</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="lodgingNotice"><div><p className="eyebrow">Em cadastramento</p><h3>Rede de hospedagens conveniadas</h3><p>As hospedagens conveniadas de Canela, São Francisco de Paula, Gramado e Nova Petrópolis estão sendo cadastradas. A relação completa, com contatos, condições e orientações para reservas, será publicada nesta página.</p></div><div className="lodgingDate"><span>Atualização prevista</span><strong>15/09/2026</strong></div></div>
               </div>
             </details>
 
