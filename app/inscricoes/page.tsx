@@ -169,6 +169,28 @@ export default function InscricoesPage() {
 
             <details name="registration-details" className="regAccordion">
               <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="included" /></span>
+                <span className="accordionTitle"><strong>O que está incluído</strong><small>18 entregas da organização + itens de responsabilidade do atleta</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="columns"><div><p className="eyebrow">Incluído</p><ul className="checkList">{included.map(item=><li key={item}>{item}</li>)}</ul></div><div><p className="eyebrow">Não incluído</p><ul className="checkList minus">{notIncluded.map(item=><li key={item}>{item}</li>)}</ul></div></div>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="premium" /></span>
+                <span className="accordionTitle"><strong>Kit Premium</strong><small>Kit completo {launchConfig.premiumKitPrice} · camisa {launchConfig.cyclingJerseyOnlyPrice}</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="premiumOptions"><article className="premiumOption featured"><span className="premiumBadge">Melhor opção</span><div><h3>Kit Premium</h3><p>O conjunto completo de ciclismo da Legends para quem quer levar a identidade da prova para cada quilômetro da jornada.</p><div className="premiumItems">{launchConfig.premiumKitItems.map(item=><span key={item}>{item}</span>)}</div></div><div className="price"><small>Kit completo</small>{launchConfig.premiumKitPrice}</div></article><article className="premiumOption"><div><h3>Camisa de ciclismo</h3><p>Camisa oficial de ciclismo Legends Bike Race, disponível também para compra individual.</p></div><div className="price"><small>Somente camisa</small>{launchConfig.cyclingJerseyOnlyPrice}</div></article></div>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="modalities" /></span>
                 <span className="accordionTitle"><strong>Modalidades</strong><small>Gravel Race + Legends Experience</small></span>
                 <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
@@ -218,45 +240,23 @@ export default function InscricoesPage() {
 
             <details name="registration-details" className="regAccordion">
               <summary>
-                <span className="accordionIcon"><AccordionLeadIcon kind="lodging" /></span>
-                <span className="accordionTitle"><strong>Hospedagens conveniadas</strong><small>Opções nas quatro cidades-base · atualização em 15/09</small></span>
-                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
-              </summary>
-              <div className="accordionBody">
-                <div className="lodgingNotice"><div><p className="eyebrow">Em cadastramento</p><h3>Rede de hospedagens conveniadas</h3><p>As hospedagens conveniadas de Canela, São Francisco de Paula, Gramado e Nova Petrópolis estão sendo cadastradas. A relação completa, com contatos, condições e orientações para reservas, será publicada nesta página.</p></div><div className="lodgingDate"><span>Atualização prevista</span><strong>15/09/2026</strong></div></div>
-              </div>
-            </details>
-
-            <details name="registration-details" className="regAccordion">
-              <summary>
-                <span className="accordionIcon"><AccordionLeadIcon kind="included" /></span>
-                <span className="accordionTitle"><strong>O que está incluído</strong><small>18 entregas da organização + itens de responsabilidade do atleta</small></span>
-                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
-              </summary>
-              <div className="accordionBody">
-                <div className="columns"><div><p className="eyebrow">Incluído</p><ul className="checkList">{included.map(item=><li key={item}>{item}</li>)}</ul></div><div><p className="eyebrow">Não incluído</p><ul className="checkList minus">{notIncluded.map(item=><li key={item}>{item}</li>)}</ul></div></div>
-              </div>
-            </details>
-
-            <details name="registration-details" className="regAccordion">
-              <summary>
-                <span className="accordionIcon"><AccordionLeadIcon kind="premium" /></span>
-                <span className="accordionTitle"><strong>Kit Premium</strong><small>Kit completo {launchConfig.premiumKitPrice} · camisa {launchConfig.cyclingJerseyOnlyPrice}</small></span>
-                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
-              </summary>
-              <div className="accordionBody">
-                <div className="premiumOptions"><article className="premiumOption featured"><span className="premiumBadge">Melhor opção</span><div><h3>Kit Premium</h3><p>O conjunto completo de ciclismo da Legends para quem quer levar a identidade da prova para cada quilômetro da jornada.</p><div className="premiumItems">{launchConfig.premiumKitItems.map(item=><span key={item}>{item}</span>)}</div></div><div className="price"><small>Kit completo</small>{launchConfig.premiumKitPrice}</div></article><article className="premiumOption"><div><h3>Camisa de ciclismo</h3><p>Camisa oficial de ciclismo Legends Bike Race, disponível também para compra individual.</p></div><div className="price"><small>Somente camisa</small>{launchConfig.cyclingJerseyOnlyPrice}</div></article></div>
-              </div>
-            </details>
-
-            <details name="registration-details" className="regAccordion">
-              <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="documents" /></span>
                 <span className="accordionTitle"><strong>Regulamento e documentos</strong><small>Regulamento · documentação médica · manual do atleta</small></span>
                 <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
               </summary>
               <div className="accordionBody">
                 <div className="docs"><article className="docCard"><span className="eyebrow">01</span><h3>Regulamento</h3><p>Regras esportivas, elegibilidade, categorias, segurança, penalidades, cancelamento e transferência.</p><a href="/regulamento">Consultar regulamento →</a></article><article className="docCard"><span className="eyebrow">02</span><h3>Documento médico</h3><p>Atestado médico e Declaração de Saúde são obrigatórios para liberação do participante.</p><a href="/documentos-medicos">Ver orientações →</a></article><article className="docCard"><span className="eyebrow">03</span><h3>Manual do atleta</h3><p>Logística, SPOT, bag, GPS, equipamentos, Race Engine e rotina das quatro etapas.</p><a href="/manual-do-atleta">Consultar manual →</a></article></div>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="lodging" /></span>
+                <span className="accordionTitle"><strong>Hospedagens conveniadas</strong><small>Opções nas quatro cidades-base · atualização em 15/09</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="lodgingNotice"><div><p className="eyebrow">Em cadastramento</p><h3>Rede de hospedagens conveniadas</h3><p>As hospedagens conveniadas de Canela, São Francisco de Paula, Gramado e Nova Petrópolis estão sendo cadastradas. A relação completa, com contatos, condições e orientações para reservas, será publicada nesta página.</p></div><div className="lodgingDate"><span>Atualização prevista</span><strong>15/09/2026</strong></div></div>
               </div>
             </details>
           </div>

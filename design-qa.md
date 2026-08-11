@@ -11,6 +11,7 @@ A estrutura visual do acordeão foi preservada: fundo marfim, cartões claros, f
 
 ## Focused region evidence
 
+- Sequência final: Valores e lotes; O que está incluído; Kit Premium; Modalidades; Categorias; Etapas; Programação; Regulamento e documentos; Hospedagens conveniadas.
 - Programação aberta no desktop com cinco dias, começando pelo credenciamento de quarta-feira, 28 de abril.
 - Quatro dias de prova apresentam entrega das bags, briefing, largada, resultados e briefing pós-etapa; no último dia, o encerramento substitui o briefing pós-etapa.
 - Hospedagens abertas com status de cadastramento e atualização prevista para 15/09/2026.
