@@ -8,7 +8,7 @@ const links = [
   ["A prova", "/a-prova"],
   ["Percursos", "/percursos"],
   ["O que está incluído", "/#incluido"],
-  ["FAQ", "/faq"],
+  ["FAQ", "/faq#perguntas"],
 ];
 
 export default function MobileMenu() {
