@@ -1,13 +1,14 @@
 "use client";
 
-import { Bed, Bicycle, CalendarDots, CurrencyDollar, FileText, MapTrifold, Minus, Package, Plus, TShirt, UsersThree } from "@phosphor-icons/react";
+import { Bed, Bicycle, CalendarDots, CurrencyDollar, FileText, MapTrifold, Minus, Package, Plus, Trophy, TShirt, UsersThree } from "@phosphor-icons/react";
 
-type IconKind = "values" | "modalities" | "categories" | "stages" | "schedule" | "lodging" | "included" | "premium" | "documents";
+type IconKind = "values" | "modalities" | "categories" | "awards" | "stages" | "schedule" | "lodging" | "included" | "premium" | "documents";
 
 const icons = {
   values: CurrencyDollar,
   modalities: Bicycle,
   categories: UsersThree,
+  awards: Trophy,
   stages: MapTrifold,
   schedule: CalendarDots,
   lodging: Bed,
