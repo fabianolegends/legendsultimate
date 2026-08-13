@@ -767,9 +767,10 @@
   }
 
   .aboutRacePage .raceInfoTrigger {
-    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
-    gap: 10px !important;
-    padding: 18px 2px !important;
+    grid-template-columns: 52px minmax(0, 1fr) 40px !important;
+    gap: 0 !important;
+    min-height: 64px !important;
+    padding: 0 !important;
   }
 
   .aboutRacePage .raceInfoTitle {
@@ -1379,6 +1380,34 @@
 .mobileMenuOverlay{color:var(--legends-cream)!important}
 .mobileMenuTop,.mobileMenuLinks,.mobileMenuLinks a,.mobileMenuActions a{border-color:var(--legends-line)!important}
 .mobileMenuActions a{color:var(--legends-cream)!important}
+
+/* A Prova: mesma sanfona compacta e clara adotada em Inscrições. */
+.aboutRacePage .raceInfoSection{background:#f4f0db!important;color:#0b0d0c!important}
+.aboutRacePage .raceInfoSection .raceInfoMenu{margin-top:0;padding:78px 0 90px;border-top:0}
+.aboutRacePage .raceInfoSection .raceInfoHead{margin-bottom:42px}
+.aboutRacePage .raceInfoSection .raceInfoHead>p{color:#686b65}
+.aboutRacePage .raceInfoSection .raceInfoList{display:grid;gap:10px;border-top:0}
+.aboutRacePage .raceInfoSection .raceInfoItem{overflow:hidden;border:1px solid rgba(17,17,17,.15);background:#fffaf0;box-shadow:0 8px 24px rgba(16,18,15,.06)}
+.aboutRacePage .raceInfoSection .raceInfoTrigger{display:grid;grid-template-columns:74px minmax(0,1fr) 58px;gap:0;min-height:76px;padding:0;background:#fffaf0;color:#0b0d0c}
+.aboutRacePage .raceInfoSection .raceInfoLeadIcon{align-self:stretch;display:grid;place-items:center;background:var(--legends-terracotta);color:#fff}
+.aboutRacePage .raceInfoSection .raceInfoLeadIcon svg{width:27px;height:27px}
+.aboutRacePage .raceInfoSection .raceInfoCopy{display:grid;gap:3px;padding:13px 24px}
+.aboutRacePage .raceInfoSection .raceInfoTitle{font-size:19px;letter-spacing:.12em}
+.aboutRacePage .raceInfoSection .raceInfoSummary{color:#71746e;font:400 12px/1.35 var(--font-legends-body),Arial,sans-serif!important}
+.aboutRacePage .raceInfoSection .raceInfoIcon{justify-self:center;width:22px;height:22px;border:0;color:var(--legends-terracotta)}
+.aboutRacePage .raceInfoSection .raceInfoIcon svg{grid-area:1/1;width:22px;height:22px}
+.aboutRacePage .raceInfoSection .raceInfoMinus{display:none}
+.aboutRacePage .raceInfoSection .raceInfoItem.isOpen .raceInfoPlus{display:none}
+.aboutRacePage .raceInfoSection .raceInfoItem.isOpen .raceInfoMinus{display:block}
+.aboutRacePage .raceInfoSection .raceInfoItem.isOpen .raceInfoIcon{background:transparent;color:var(--legends-terracotta)}
+.aboutRacePage .raceInfoSection .raceInfoTrigger:hover .raceInfoTitle,.aboutRacePage .raceInfoSection .raceInfoTrigger:focus-visible .raceInfoTitle{color:#0b0d0c}
+.aboutRacePage .raceInfoSection .raceInfoItem.isOpen .raceInfoTrigger{border-bottom:1px solid rgba(17,17,17,.14)}
+.aboutRacePage .raceInfoSection .raceInfoPanel{background:#eee6d8}
+.aboutRacePage .raceInfoSection .raceInfoPanel>div{display:block!important;margin:0!important;padding:28px 32px 32px!important}
+.aboutRacePage .raceInfoSection .raceInfoPanelNumber{display:block;margin-bottom:10px;color:var(--legends-terracotta);font:600 11px 'Barlow Condensed';letter-spacing:.16em;text-transform:uppercase}
+.aboutRacePage .raceInfoSection .raceInfoPanel p{max-width:820px;margin:0 0 18px;color:#4d504a;font-size:14px;line-height:1.7}
+.aboutRacePage .raceInfoSection .raceInfoPanel a{display:inline-flex;width:max-content;margin:0;color:var(--legends-terracotta);font:600 12px 'Barlow Condensed';letter-spacing:.16em;text-decoration:none;text-transform:uppercase;border-bottom:1px solid var(--legends-terracotta);padding-bottom:5px}
+@media(max-width:700px){.aboutRacePage .raceInfoSection .raceInfoMenu{padding:58px 0 70px}.aboutRacePage .raceInfoSection .raceInfoTrigger{grid-template-columns:58px minmax(0,1fr) 44px;min-height:68px}.aboutRacePage .raceInfoSection .raceInfoLeadIcon svg{width:23px;height:23px}.aboutRacePage .raceInfoSection .raceInfoCopy{padding:11px 14px}.aboutRacePage .raceInfoSection .raceInfoTitle{font-size:16px}.aboutRacePage .raceInfoSection .raceInfoSummary{font-size:11px}.aboutRacePage .raceInfoSection .raceInfoPanel>div{padding:22px 20px 26px!important}}
 
 /* Correção de contraste — perfil do participante */
 .redesign .profileSection{background:var(--legends-cream)!important;color:var(--legends-black)!important}
