@@ -43,7 +43,7 @@ export default function LaunchHomePreview() {
         desktopNav.insertBefore(registration, desktopNav.firstChild);
       }
       if (!desktopNav.querySelector('[data-launch-link="incluido"]')) {
-        const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href") === "/faq");
+        const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href")?.startsWith("/faq"));
         const included = document.createElement("a");
         included.href = "#incluido";
         included.textContent = "O que está incluído";
@@ -111,7 +111,7 @@ export default function LaunchHomePreview() {
     if (faqSection && !faqSection.querySelector(".launchFaqLink")) {
       const a = document.createElement("a");
       a.className = "launchFaqLink button";
-      a.href = "/faq";
+      a.href = "/faq#perguntas";
       a.innerHTML = "Ver todas as perguntas <span>→</span>";
       faqSection.appendChild(a);
     }
