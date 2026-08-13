@@ -65,7 +65,7 @@ const breadcrumbData = {
 
 export default function RoutesIndex() {
   return (
-    <main className="aboutRacePage">
+    <main className="aboutRacePage routesIndexPage">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
