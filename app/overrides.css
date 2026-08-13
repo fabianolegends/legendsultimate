@@ -1462,3 +1462,154 @@
 
 /* Organização do cabeçalho: navegação à direita e acesso abaixo das redes */
 .heroRedesign .navLinks{margin-left:auto;justify-content:flex-end}.navActionStack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.navActionStack .headerSocials{margin:0}.navActionStack .navCta{padding:8px 14px;font-size:11px}.mobileNavActions{align-items:center}@media(max-width:900px){.navActionStack{display:block}.navActionStack .navCta{padding:9px 11px}}
+
+/* Percursos: estilos próprios — não dependem do CSS local da homepage. */
+.routesIndexPage .routePreview{
+  position:relative;
+  overflow:hidden;
+  padding:96px 0 110px;
+  background:
+    repeating-radial-gradient(ellipse at 82% 34%,transparent 0 38px,rgba(186,112,73,.14) 39px 40px,transparent 41px 59px),
+    repeating-radial-gradient(ellipse at 14% 66%,transparent 0 32px,rgba(186,112,73,.11) 33px 34px,transparent 35px 51px),
+    #0d0f0e;
+  color:var(--legends-cream);
+}
+.routesIndexPage .routePreview>.wide{
+  width:min(1320px,calc(100% - 96px));
+  margin-inline:auto;
+}
+.routesIndexPage .routePreview .sectionHead{
+  display:grid;
+  grid-template-columns:1.08fr .92fr;
+  gap:64px;
+  align-items:end;
+  margin-bottom:46px;
+}
+.routesIndexPage .routePreview .kicker{
+  margin:0 0 16px;
+  color:var(--legends-terracotta);
+  font:600 14px 'Barlow Condensed',sans-serif;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.routesIndexPage .routePreview .sectionHead h2{
+  margin:0;
+  color:var(--legends-cream);
+  font:700 clamp(52px,5.5vw,82px)/.88 'Barlow Condensed',sans-serif;
+  letter-spacing:-.015em;
+  text-transform:uppercase;
+}
+.routesIndexPage .routePreview .sectionHead h2 em{
+  color:var(--legends-terracotta);
+  font-style:normal;
+}
+.routesIndexPage .routePreview .sectionHead>p{
+  max-width:590px;
+  margin:0 0 5px;
+  color:#c9c7bf;
+  font:400 16px/1.7 var(--font-legends-body),Arial,sans-serif;
+}
+.routesIndexPage .stageGridNew{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border:1px solid var(--legends-line);
+  background:rgba(7,9,8,.78);
+  backdrop-filter:blur(8px);
+}
+.routesIndexPage .stageNew{
+  min-width:0;
+  min-height:410px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:27px 23px;
+  border-right:1px solid var(--legends-line);
+  transition:background .25s,transform .25s,box-shadow .25s;
+}
+.routesIndexPage .stageNew:last-child{border-right:0}
+.routesIndexPage .stageNew:hover{
+  z-index:2;
+  background:rgba(40,25,15,.86);
+  box-shadow:inset 0 0 0 1px var(--legends-terracotta),0 0 34px rgba(186,112,73,.14);
+  transform:translateY(-4px);
+}
+.routesIndexPage .stageNew small{
+  color:var(--legends-terracotta);
+  font:600 12px 'Barlow Condensed',sans-serif;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+}
+.routesIndexPage .stageNew img{
+  display:block;
+  width:100%;
+  height:172px;
+  margin:17px 0;
+  object-fit:contain;
+  opacity:.82;
+  filter:sepia(1) saturate(3.1) hue-rotate(338deg) brightness(1.04);
+}
+.routesIndexPage .stageNew h3{
+  margin:0 0 12px;
+  color:var(--legends-cream);
+  font:700 clamp(25px,2vw,33px)/.95 'Barlow Condensed',sans-serif;
+  text-transform:uppercase;
+}
+.routesIndexPage .stageNew p{
+  margin:0;
+  color:#cbc7bd;
+  font:600 12px 'Barlow Condensed',sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+@media(max-width:1000px){
+  .routesIndexPage .routePreview>.wide{width:min(100% - 48px,920px)}
+  .routesIndexPage .routePreview .sectionHead{grid-template-columns:1fr;gap:24px}
+  .routesIndexPage .stageGridNew{grid-template-columns:1fr 1fr}
+  .routesIndexPage .stageNew:nth-child(2){border-right:0}
+  .routesIndexPage .stageNew:nth-child(-n+2){border-bottom:1px solid var(--legends-line)}
+}
+
+@media(max-width:640px){
+  .routesIndexPage .stageDetailNav{height:76px}
+  .routesIndexPage .stageDetailNav .detailLogo{height:54px}
+  .routesIndexPage .stageDetailNav .backLink{font-size:11px;letter-spacing:.1em}
+  .routesIndexPage .aboutHero{padding-top:48px!important}
+  .routesIndexPage .aboutHero h1{font-size:44px!important;line-height:.9!important;margin:18px 0!important}
+  .routesIndexPage .aboutLead{font-size:14px!important;line-height:1.55!important}
+  .routesIndexPage .aboutNumbers{grid-template-columns:1fr 1fr;margin-top:32px!important}
+  .routesIndexPage .aboutNumbers div{min-width:0;padding:15px 12px!important}
+  .routesIndexPage .aboutNumbers strong{font-size:28px!important;white-space:nowrap}
+  .routesIndexPage .aboutNumbers span{font-size:9px;letter-spacing:.1em}
+  .routesIndexPage .routePreview{padding:54px 0 64px}
+  .routesIndexPage .routePreview>.wide{width:calc(100% - 32px)}
+  .routesIndexPage .routePreview .sectionHead{gap:14px;margin-bottom:25px}
+  .routesIndexPage .routePreview .kicker{margin-bottom:11px;font-size:11px}
+  .routesIndexPage .routePreview .sectionHead h2{font-size:39px;line-height:.91}
+  .routesIndexPage .routePreview .sectionHead>p{font-size:13px;line-height:1.55}
+  .routesIndexPage .stageGridNew{grid-template-columns:1fr;gap:10px;border:0;background:transparent;backdrop-filter:none}
+  .routesIndexPage .stageNew,
+  .routesIndexPage .stageNew:nth-child(n){
+    min-height:132px;
+    display:grid;
+    grid-template-columns:104px minmax(0,1fr);
+    grid-template-rows:auto 1fr;
+    column-gap:15px;
+    padding:15px;
+    border:1px solid var(--legends-line);
+    background:rgba(7,9,8,.78);
+  }
+  .routesIndexPage .stageNew small{grid-column:2;grid-row:1;font-size:10px}
+  .routesIndexPage .stageNew img{
+    grid-column:1;
+    grid-row:1/3;
+    align-self:center;
+    width:100%;
+    height:98px;
+    margin:0;
+  }
+  .routesIndexPage .stageNew>div{grid-column:2;grid-row:2;align-self:end;min-width:0}
+  .routesIndexPage .stageNew h3{margin-bottom:7px;font-size:21px;line-height:.96}
+  .routesIndexPage .stageNew p{font-size:10px;letter-spacing:.06em}
+  .routesIndexPage .stageDetailFooter{padding-block:30px}
+}
