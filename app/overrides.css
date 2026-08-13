@@ -674,31 +674,41 @@
   }
 
   .redesign .destinationNames a {
-    min-height: 185px !important;
-    padding: 14px 18px 16px !important;
-    justify-content: flex-start !important;
-    gap: 8px !important;
+    min-height: 84px !important;
+    display: grid !important;
+    grid-template-columns: 70px minmax(0, 1fr) 18px !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 10px 12px !important;
   }
 
   .redesign .destinationNames a .cityIcon {
-    width: 100% !important;
-    height: 112px !important;
-    min-height: 112px !important;
+    width: 70px !important;
+    height: 64px !important;
+    min-height: 64px !important;
     overflow: hidden !important;
   }
 
   .redesign .destinationNames a .cityIcon img {
-    width: auto !important;
-    height: auto !important;
-    max-width: 58% !important;
-    max-height: 102px !important;
+    width: 64px !important;
+    height: 60px !important;
+    max-width: 64px !important;
+    max-height: 60px !important;
   }
 
   .redesign .destinationNames strong {
-    width: 100%;
-    font-size: clamp(25px, 7.2vw, 29px) !important;
-    line-height: .92 !important;
+    width: auto;
+    font-size: clamp(21px, 5.8vw, 25px) !important;
+    line-height: 1 !important;
     white-space: nowrap !important;
+  }
+
+  .redesign .destinationNames a > i {
+    position: static !important;
+    align-self: center;
+    opacity: .65 !important;
+    transform: none !important;
+    font-size: 16px !important;
   }
 
   .redesign .destinationNames strong br {
