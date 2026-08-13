@@ -163,7 +163,7 @@ export default function Home() {
         </div>
         <figure className="manifestoKitVisual">
           <img src="/kit-legends-ultimate.webp" alt="Kit oficial da prova Legends Ultimate com vestuário e acessórios" />
-          <figcaption>Kit oficial Legends Ultimate</figcaption>
+          <figcaption>Imagem meramente ilustrativa</figcaption>
         </figure>
       </div></section>
 
