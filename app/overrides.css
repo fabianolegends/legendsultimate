@@ -1613,3 +1613,56 @@
   .routesIndexPage .stageNew p{font-size:10px;letter-spacing:.06em}
   .routesIndexPage .stageDetailFooter{padding-block:30px}
 }
+
+/* Detalhes das quatro etapas: leitura técnica compacta no mobile. */
+@media(max-width:640px){
+  .stagePage .stageDetailNav{height:76px}
+  .stagePage .stageDetailNav .detailLogo{height:54px}
+  .stagePage .stageDetailNav .backLink{max-width:150px;font-size:10px;line-height:1.25;letter-spacing:.09em}
+  .stagePage .stageDetailHero{min-height:680px;background-position:64% center}
+  .stagePage .stageHeroInner{padding-top:54px;padding-bottom:22px}
+  .stagePage .stageKicker{font-size:11px;line-height:1.35;letter-spacing:.11em}
+  .stagePage .stageKicker span{margin-right:9px}
+  .stagePage .stageDetailHero h1{margin:20px 0!important;font-size:51px;line-height:.86}
+  .stagePage .stageDetailHero .stageHeroInner>p{max-width:94%;font-size:14px;line-height:1.55}
+  .stagePage .stageDetailHero .stageFacts{margin-top:30px}
+  .stagePage .stageFacts div{min-width:0;padding:15px 12px}
+  .stagePage .stageFacts strong{font-size:29px;white-space:nowrap}
+  .stagePage .stageFacts span{font-size:9px;letter-spacing:.09em}
+  .stagePage .stageProfile{padding:54px 0}
+  .stagePage .profileIntro{gap:18px;margin-bottom:26px}
+  .stagePage .profileIntro h2{margin-top:13px;font-size:38px;line-height:.92}
+  .stagePage .profileIntro>p{margin:0;font-size:13px;line-height:1.6}
+  .stagePage .performancePanel{box-shadow:0 22px 50px rgba(0,0,0,.22)}
+  .stagePage .surfacePanel{padding:22px 18px}
+  .stagePage .elevationPanel{padding:22px 14px}
+  .stagePage .panelTop{gap:9px}
+  .stagePage .panelTop>span,.stagePage .panelTop p{font-size:10px;letter-spacing:.11em}
+  .stagePage .terrainHero{margin-top:30px;font-size:72px}
+  .stagePage .terrainHero small{font-size:31px}
+  .stagePage .terrainLabel{margin:13px 0 24px;font-size:11px}
+  .stagePage .surfaceLegend{margin-top:17px}
+  .stagePage .surfaceLegend>div{padding:9px 0}
+  .stagePage .surfaceLegend p{font-size:11px}
+  .stagePage .profileChartWrap{min-height:145px}
+  .stagePage .profileChartWrap .exactProfile:is(.stageOneProfileExact,.stageTwoProfileExact,.stageThreeProfileExact,.stageFourProfileExact){
+    width:100%;
+    max-width:100%;
+    max-height:190px;
+    margin:0;
+    object-fit:contain;
+  }
+  .stagePage .technicalSource{margin-top:5px;font-size:8px}
+  .stagePage .routeMapPanel{margin-top:14px;padding:14px;box-shadow:0 22px 50px rgba(0,0,0,.2)}
+  .stagePage .mapPanelHead{display:grid;gap:7px;margin-bottom:14px}
+  .stagePage .mapPanelHead>p{margin-top:0;font-size:9px;line-height:1.35;letter-spacing:.08em}
+  .stagePage .routeMapPanel>img{width:100%;height:auto;max-height:230px;object-fit:contain;background:#0b0d0c}
+  .stagePage .routeMapPanel>a{margin-top:16px;font-size:10px;line-height:1.35;letter-spacing:.1em}
+  .stagePage .stageData{padding:54px 0}
+  .stagePage .stageDataGrid{gap:38px}
+  .stagePage .dataList{margin-top:18px}
+  .stagePage .dataList div{gap:15px;padding:13px 0}
+  .stagePage .dataList dt{font-size:11px;line-height:1.35;letter-spacing:.07em}
+  .stagePage .dataList dd{max-width:58%;font-size:16px;line-height:1.2;overflow-wrap:anywhere}
+  .stagePage .stageDetailFooter{padding-block:30px}
+}
