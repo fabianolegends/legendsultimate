@@ -1421,7 +1421,8 @@
 :root{--legends-terracotta:#ba7049;--legends-cream:#f5f0dc;--legends-black:#000;--legends-line:rgba(186,112,73,.34)}
 .redesign,.destinationPage,.faqPage,.priorityPage{--paper:var(--legends-cream)!important;--ink:var(--legends-black)!important;--copper:var(--legends-terracotta)!important;--line:var(--legends-line)!important}
 .enginePage{--ink:var(--legends-black)!important;--panel:#090909!important;--paper:var(--legends-cream)!important;--orange:var(--legends-terracotta)!important;--line:var(--legends-line)!important}
-.redesign .manifestoRedesign,.redesign .modes,.redesign .routePreview,.redesign .destinationStory,.enginePage .capabilities,.destinationPage,.faqPage,.priorityPage{background-color:var(--legends-cream)!important}
+.redesign .manifestoRedesign,.redesign .modes,.redesign .routePreview,.redesign .destinationStory,.enginePage .capabilities,.destinationPage,.priorityPage{background-color:var(--legends-cream)!important}
+.faqPage{background-color:var(--legends-black)!important}
 .redesign .factsBand,.redesign .engineHome,.redesign .includedSection,.redesign .safetySection,.redesign .profileSection,.redesign .priorityCta,.enginePage,.enginePage .journey,.enginePage .modesCompare,.enginePage .integrity,.aboutRacePage,.stagePage,.access-page,.mobileMenuOverlay{background-color:var(--legends-black)!important}
 .redesign .navCta,.redesign .button.primary,.redesign .manifestoButton,.redesign .engineLink,.redesign .priorityButton,.enginePage .engineButton,.priorityPage button,.access-page .access-button,.mobileMenuActions a:first-child{background:var(--legends-terracotta)!important}
 .redesign .kicker,.redesign .manifestoQuote em,.redesign .tag,.redesign .fact>span,.enginePage .eyebrow,.enginePage em,.enginePage .tag,.destinationPage .eyebrow,.faqPage .eyebrow,.priorityPage .eyebrow,.aboutRacePage .kicker,.stagePage .stageKicker,.access-page .access-kicker,.mobileMenuTop button,.mobileMenuLinks small,.mobileMenuLinks b{color:var(--legends-terracotta)!important}
@@ -1456,12 +1457,6 @@
 .aboutRacePage .raceInfoSection .raceInfoPanel p{max-width:820px;margin:0 0 18px;color:#4d504a;font-size:14px;line-height:1.7}
 .aboutRacePage .raceInfoSection .raceInfoPanel a{display:inline-flex;width:max-content;margin:0;color:var(--legends-terracotta);font:600 12px 'Barlow Condensed';letter-spacing:.16em;text-decoration:none;text-transform:uppercase;border-bottom:1px solid var(--legends-terracotta);padding-bottom:5px}
 @media(max-width:700px){.aboutRacePage .raceInfoSection .raceInfoMenu{padding:58px 0 70px}.aboutRacePage .raceInfoSection .raceInfoTrigger{grid-template-columns:58px minmax(0,1fr) 44px;min-height:68px}.aboutRacePage .raceInfoSection .raceInfoLeadIcon svg{width:23px;height:23px}.aboutRacePage .raceInfoSection .raceInfoCopy{padding:11px 14px}.aboutRacePage .raceInfoSection .raceInfoTitle{font-size:16px}.aboutRacePage .raceInfoSection .raceInfoSummary{font-size:11px}.aboutRacePage .raceInfoSection .raceInfoPanel>div{padding:22px 20px 26px!important}}
-
-/* Correção de contraste — perfil do participante */
-.redesign .profileSection{background:var(--legends-cream)!important;color:var(--legends-black)!important}
-
-/* Organização do cabeçalho: navegação à direita e acesso abaixo das redes */
-.heroRedesign .navLinks{margin-left:auto;justify-content:flex-end}.navActionStack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.navActionStack .headerSocials{margin:0}.navActionStack .navCta{padding:8px 14px;font-size:11px}.mobileNavActions{align-items:center}@media(max-width:900px){.navActionStack{display:block}.navActionStack .navCta{padding:9px 11px}}
 
 /* Percursos: estilos próprios — não dependem do CSS local da homepage. */
 .routesIndexPage .routePreview{
@@ -1666,3 +1661,9 @@
   .stagePage .dataList dd{max-width:58%;font-size:16px;line-height:1.2;overflow-wrap:anywhere}
   .stagePage .stageDetailFooter{padding-block:30px}
 }
+
+/* Correção de contraste — perfil do participante */
+.redesign .profileSection{background:var(--legends-cream)!important;color:var(--legends-black)!important}
+
+/* Organização do cabeçalho: navegação à direita e acesso abaixo das redes */
+.heroRedesign .navLinks{margin-left:auto;justify-content:flex-end}.navActionStack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.navActionStack .headerSocials{margin:0}.navActionStack .navCta{padding:8px 14px;font-size:11px}.mobileNavActions{align-items:center}@media(max-width:900px){.navActionStack{display:block}.navActionStack .navCta{padding:9px 11px}}
