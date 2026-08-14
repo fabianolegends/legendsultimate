@@ -1,4 +1,4 @@
-"use client";
+"use client";
 
 import { usePathname } from "next/navigation";
 import PrivacyPreferencesButton from "./PrivacyPreferencesButton";
@@ -53,9 +53,15 @@ export default function LegendsGlobalFooter() {
       <section className="legendsFooterBase">
         <div className="legendsFooterShell legendsFooterGrid">
           <div className="legendsFooterBrand">
-            <a href="/" aria-label="Ir para a página inicial da Legends Bike Race">
-              <img src="/legends-logo-official.png" alt="Legends Bike Race" />
-            </a>
+            <div className="legendsFooterBrandMarks">
+              <a href="/" aria-label="Ir para a página inicial da Legends Bike Race">
+                <img className="legendsFooterLegendsLogo" src="/legends-logo-official.png" alt="Legends Bike Race" />
+              </a>
+              <div className="legendsFooterProducer">
+                <img src="/tr3-logo-footer-exact.svg" alt="Threerace Sports" />
+                <p><span>Um produto</span><strong>Threerace Sports</strong></p>
+              </div>
+            </div>
             <p>Gravel, territórios e histórias que continuam depois da linha de chegada.</p>
           </div>
 
