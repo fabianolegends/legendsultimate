@@ -5,9 +5,11 @@ import "./globals.css";
 import "./overrides.css";
 import "./tr3-footer.css";
 import "./font-aliases.css";
+import "./legends-footer.css";
 import BikeOfficialSection from "./BikeOfficialSection";
 import LaunchHomePreview from "./LaunchHomePreview";
 import CookieConsent from "./CookieConsent";
+import LegendsGlobalFooter from "./LegendsGlobalFooter";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -99,10 +101,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="pt-BR" className={barlowCondensed.variable}>
       <head><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /></head>
-      <body className={`${manrope.className} ${manrope.variable} antialiased`}>
+      <body id="topo" className={`${manrope.className} ${manrope.variable} antialiased`}>
         {children}
         <LaunchHomePreview />
         <BikeOfficialSection />
+        <LegendsGlobalFooter />
         <CookieConsent />
       </body>
     </html>

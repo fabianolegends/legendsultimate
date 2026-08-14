@@ -124,10 +124,6 @@ export default function RoutesIndex() {
         </div>
       </section>
 
-      <footer className="stageDetailFooter shell">
-        <a href="/">← Voltar ao site</a>
-        <p>Legends Ultimate · Serra Gaúcha</p>
-      </footer>
     </main>
   );
 }

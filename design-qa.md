@@ -38,3 +38,41 @@ A estrutura visual do acordeão foi preservada: fundo marfim, cartões claros, f
 - `git diff --check`: aprovado.
 
 final result: passed
+
+---
+
+# Design QA — rodapé global Legends
+
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/b4d13f4b-6e90-42a2-b63e-33bad6523b71.png` (2048 × 1280 px).
+- Implementation routes: páginas públicas da Legends, com exclusão das áreas operacionais, resultados, eventos e formulários médicos de impressão.
+- Desktop capture: cloud browser em 1363 × 936 CSS px, página inicial posicionada no rodapé.
+- Estado comparado: rodapé completo, links disponíveis e controle “Topo”.
+
+## Full-view comparison evidence
+
+A referência foi traduzida para a identidade Legends: grande chamada de encerramento em fundo claro, faixa de comunidade, base escura com navegação institucional e linha inferior de utilidades. O terracota, o marfim, o preto e a tipografia condensada preservam os tokens visuais do projeto.
+
+## Focused region evidence
+
+- Chamada final: “A jornada termina. A lenda continua.”
+- Faixa de comunidade com acesso funcional às inscrições e à lista prioritária.
+- Colunas de navegação para páginas institucionais, documentos, contato e redes sociais.
+- Logo oficial da Legends, política de privacidade, preferências de cookies e botão “Topo”.
+- Em telas menores, as colunas reorganizam-se em grade de duas colunas; marca e contato ocupam a largura total.
+
+## Interações e rotas
+
+- Botão “Topo”: aprovado; atualiza o hash para `#topo` e retorna a página para `scrollY = 0`.
+- Links internos, e-mail, WhatsApp e redes sociais: destinos conferidos.
+- Rodapé visível em `/`, `/faq`, `/a-prova`, `/percursos` e `/inscricoes`.
+- Rodapé oculto em `/passport`, `/eventos`, `/resultados` e nos formulários médicos destinados à impressão.
+- Sem rolagem horizontal no viewport desktop verificado.
+
+## Validações técnicas
+
+- Build de produção com webpack: aprovado; TypeScript aprovado e 83 páginas geradas.
+- `git diff --check`: aprovado.
+- Nenhum problema P0, P1 ou P2 encontrado.
+- Produção não alterada.
+
+final result: passed

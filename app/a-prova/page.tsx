@@ -140,7 +140,6 @@ export default function AboutRace() {
         <div><h2>Leia. Entenda.<br /><em>Prepare-se.</em></h2><p>A participação exige Atestado Médico e Declaração de Saúde oficiais, além do cumprimento das exigências de equipamento, navegação e segurança previstas no Regulamento.</p><a className="button aboutButton" href="/regulamento">Consultar regulamento <span>→</span></a></div>
       </section>
 
-      <footer className="stageDetailFooter shell"><a href="/">← Voltar ao site</a><p>Legends Bike Race · 29 ABR — 02 MAI 2027</p></footer>
     </main>
   );
 }
