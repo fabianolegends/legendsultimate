@@ -38,7 +38,7 @@ type Registration = {
   city: string | null;
   status: string;
   claimed_at: string | null;
-  source: "windfit" | "manual" | "online";
+  source: "windfit" | "manual";
   external_registration_id: string | null;
   payment_status: string;
   phone?: string | null;
@@ -50,15 +50,6 @@ type Registration = {
   address_number?: string | null;
   address_complement?: string | null;
   province?: string | null;
-  payment_provider?: string | null;
-  payment_amount_cents?: number | null;
-  payment_checkout_id?: string | null;
-  payment_checkout_url?: string | null;
-  payment_checkout_status?: string | null;
-  payment_expires_at?: string | null;
-  payment_confirmed_at?: string | null;
-  payment_refunded_at?: string | null;
-  last_payment_event_at?: string | null;
   registration_lot_name?: string | null;
   registration_base_fee_cents?: number | null;
   senior_discount_applied?: boolean;
@@ -359,20 +350,6 @@ function locationFields(item: Registration) {
       : countryLabel(item.country_code),
   };
 }
-function serviceFeeCents(item: Registration) {
-  if (
-    typeof item.payment_amount_cents !== "number" ||
-    typeof item.registration_base_fee_cents !== "number"
-  )
-    return null;
-  const subtotalCents = Math.max(
-    0,
-    item.registration_base_fee_cents -
-      (item.senior_discount_cents ?? 0) +
-      (item.premium_kit_fee_cents ?? 0),
-  );
-  return Math.max(0, item.payment_amount_cents - subtotalCents);
-}
 function formatDocument(value?: string | null) {
   const digits = String(value ?? "").replace(/\D/g, "");
   if (digits.length === 11)
@@ -400,17 +377,11 @@ function paymentLabel(value: string) {
     ? "Pago"
     : value === "pending"
       ? "Pendente"
-      : value === "refunded"
-        ? "Reembolsado"
-        : value === "cancelled"
-          ? "Cancelado"
-          : value === "failed"
-            ? "Falhou"
-            : value === "chargeback"
-              ? "Chargeback"
-              : value === "risk_analysis"
-                ? "Em análise"
-                : "Cortesia";
+    : value === "refunded"
+      ? "Reembolsado"
+      : value === "cancelled"
+        ? "Cancelado"
+        : "Cortesia";
 }
 function statusLabel(value: string) {
   return value === "confirmed"
@@ -423,12 +394,9 @@ function statusLabel(value: string) {
           ? "Cancelado"
           : value;
 }
-function paymentOrigin(item: Registration) {
-  if (item.payment_provider === "asaas")
-    return { label: "Asaas", className: "asaas" };
+function registrationOrigin(item: Registration) {
   if (item.source === "windfit")
     return { label: "Windfit", className: "windfit" };
-  if (item.source === "online") return { label: "Online", className: "online" };
   return { label: "Manual", className: "manual" };
 }
 
@@ -454,7 +422,6 @@ export default function RegistrationsPage() {
   const [moduleReady, setModuleReady] = useState(true);
   const [windfitReady, setWindfitReady] = useState(true);
   const [detailsReady, setDetailsReady] = useState(true);
-  const [paymentReady, setPaymentReady] = useState(true);
   const [billingReady, setBillingReady] = useState(true);
   const [numberingReady, setNumberingReady] = useState(true);
   const [identityReady, setIdentityReady] = useState(true);
@@ -478,7 +445,6 @@ export default function RegistrationsPage() {
     setModuleReady(payload.module_ready !== false);
     setWindfitReady(payload.windfit_ready !== false);
     setDetailsReady(payload.details_ready !== false);
-    setPaymentReady(payload.payment_ready !== false);
     setBillingReady(payload.billing_ready !== false);
     setEvents(payload.events ?? []);
     const nextEvent = selected || payload.events?.[0]?.id || "";
@@ -731,7 +697,7 @@ export default function RegistrationsPage() {
       if (!response.ok)
         throw new Error(payload.error ?? "Falha na sincronização.");
       setMessage(
-        `${payload.imported} registros Windfit importados ou atualizados.`,
+        `${payload.imported} registros Windfit importados ou atualizados${payload.duplicates_ignored ? `; ${payload.duplicates_ignored} linha(s) duplicada(s) consolidada(s)` : ""}.`,
       );
       setDrawer(null);
       await load(eventId);
@@ -902,15 +868,7 @@ export default function RegistrationsPage() {
       "Benefício 60+ aplicado",
       "Desconto 60+ (R$)",
       "Valor Kit Premium (R$)",
-      "Taxa de serviço 7,5% (R$)",
-      "Valor total cobrado (R$)",
       "Status do pagamento",
-      "Provedor do pagamento",
-      "Status do checkout",
-      "ID do checkout",
-      "Link do checkout",
-      "Pagamento confirmado em",
-      "Pagamento reembolsado em",
       "Status da inscrição",
       "Origem",
       "ID externo",
@@ -924,7 +882,7 @@ export default function RegistrationsPage() {
     ];
     const rows = filtered.map((item) => {
       const location = locationFields(item);
-      const origin = paymentOrigin(item);
+      const origin = registrationOrigin(item);
       return [
         item.registration_code,
         item.bib_number,
@@ -956,21 +914,9 @@ export default function RegistrationsPage() {
         item.senior_discount_applied ? "Sim" : "Não",
         csvMoney(item.senior_discount_cents),
         csvMoney(item.premium_kit_fee_cents),
-        csvMoney(serviceFeeCents(item)),
-        csvMoney(item.payment_amount_cents),
         paymentLabel(item.payment_status),
-        origin.label,
-        item.payment_checkout_status,
-        item.payment_checkout_id,
-        item.payment_checkout_url,
-        item.payment_confirmed_at
-          ? formatDateTime(item.payment_confirmed_at)
-          : "",
-        item.payment_refunded_at
-          ? formatDateTime(item.payment_refunded_at)
-          : "",
         statusLabel(item.status),
-        item.source,
+        origin.label,
         item.external_registration_id,
         formatDateTime(item.registered_at ?? item.created_at),
         item.regulation_version,
@@ -1014,7 +960,7 @@ export default function RegistrationsPage() {
   return (
     <main className="registrations-page">
       <style>{`
-    .registrations-page{min-height:calc(100vh - 72px);overflow-x:hidden;background:#0d100d;color:#f2eee5;padding:42px 3vw 80px;font-family:Arial,sans-serif;box-sizing:border-box}.shell{width:min(1480px,100%);margin:auto;min-width:0}.kicker{color:#d47b2d;letter-spacing:.2em;text-transform:uppercase;font-size:12px;font-weight:900}.head{display:flex;align-items:end;justify-content:space-between;gap:25px}.head h1{font-size:clamp(42px,5vw,70px);line-height:.9;text-transform:uppercase;margin:13px 0}.head p{color:#aeb3ab;max-width:720px;line-height:1.7}.sync{margin-top:16px;color:#efb078;font-size:13px}.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid #3c4138;margin:28px 0}.metric{padding:17px;border-right:1px solid #3c4138;min-width:0}.metric:last-child{border:0}.metric strong{display:block;font-size:28px}.metric span{font-size:11px;color:#9fa49c;text-transform:uppercase}.workspace{display:grid;grid-template-columns:minmax(320px,420px) minmax(0,1fr);gap:20px;align-items:start}.panel{min-width:0;border:1px solid #373c35;background:#151815;padding:24px;box-sizing:border-box}.panel.light{background:#eee5d8;color:#171917;min-height:0}.panel h2{margin:0 0 12px;text-transform:uppercase}.panel-intro{color:#9fa49c;font-size:13px;line-height:1.55}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:6px;min-width:0}.field.wide{grid-column:1/-1}.field label{font-size:12px;font-weight:800}.field input,.field select{width:100%;min-width:0;box-sizing:border-box;padding:12px;background:#0d100d;color:#fff;border:1px solid #50564c}.field-hint{min-height:16px;color:#efb078;font-size:11px;font-weight:400}.primary{width:100%;margin-top:16px;padding:14px;border:0;background:#e86619;color:#fff;font-weight:900;cursor:pointer}.secondary{width:100%;margin-top:10px;padding:12px;border:1px solid #555b51;background:transparent;color:#ddd8cf;font-weight:800;cursor:pointer}.import{margin-top:20px;padding-top:18px;border-top:1px solid #3c4138}.import input{width:100%;box-sizing:border-box;padding:12px;border:1px dashed #d47b2d;color:#ddd8cf}.filters{display:grid;grid-template-columns:minmax(220px,1.3fr) minmax(150px,.8fr) minmax(150px,.8fr);gap:10px;margin-bottom:15px}.filters input,.filters select{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #bcae9d;background:#fffaf2}.view-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 18px;padding-bottom:14px;border-bottom:1px solid #c6b9a9}.view-tab{border:1px solid #bcae9d;background:#f8f1e7;color:#3f413d;padding:10px 14px;font-size:11px;font-weight:900;letter-spacing:.06em;cursor:pointer}.view-tab.active{border-color:#b65c17;background:#b65c17;color:#fff}.table-wrap{max-width:100%;overflow:auto;border:1px solid #d3c8b9;background:#f8f1e7}.table{width:100%;border-collapse:collapse}.table.registration-table{min-width:1420px}.table.contact-table{min-width:2200px}.table.financial-table{min-width:2200px}.table th{position:sticky;top:0;z-index:2;text-align:left;white-space:nowrap;background:#eee5d8;color:#b65c17;font-size:10px;letter-spacing:.1em;padding:12px;border-bottom:1px solid #c6b9a9}.table td{padding:11px 12px;border-bottom:1px solid #d3c8b9;font-size:12px;vertical-align:middle;white-space:nowrap}.table td.name-cell{min-width:190px;white-space:normal;font-weight:800}.table td.address-cell{min-width:220px;white-space:normal}.table tr:hover td{background:#fffaf2}.table strong,.table span{display:block}.table span{color:#6a6e67}.table a{display:inline-block;color:#276e55;font-size:11px;font-weight:800}.empty-state{display:grid;place-items:center;min-height:260px;padding:34px;text-align:center;border:1px dashed #c4b7a6;background:#f8f1e7}.empty-state strong{display:block;font-size:24px;margin-bottom:10px}.empty-state p{max-width:520px;color:#686c66;line-height:1.6;margin:0}.edit{border:0;background:#171917;color:#fff;padding:9px 12px;cursor:pointer}.linked{color:#28734a!important;font-weight:800}.unlinked{color:#a45e24!important}.message{margin:16px 0;color:#efb078}.not-ready{padding:22px;border:1px solid #9c5a22;background:#261b10}.code{font-family:monospace;font-weight:800}.copy-code{display:grid;gap:2px;border:1px solid transparent;background:transparent;color:#171917;font:inherit;font-weight:900;text-align:left;padding:5px 7px;cursor:pointer}.copy-code:hover,.copy-code:focus-visible{border-color:#b65c17;outline:0}.copy-code small{color:#b65c17;font-family:Arial,sans-serif;font-size:9px;letter-spacing:.12em}.status{font-weight:800}.paid{color:#28734a;font-weight:800}.pending,.risk_analysis{color:#a45e24;font-weight:800}.refunded,.cancelled,.failed,.chargeback{color:#a23d35;font-weight:800}.source{font-size:11px;text-transform:uppercase;font-weight:900}.windfit{color:#255f87}.asaas{color:#168b66}.online{color:#5f4b8b}.manual{color:#7b5b2a}
+    .registrations-page{min-height:calc(100vh - 72px);overflow-x:hidden;background:#0d100d;color:#f2eee5;padding:42px 3vw 80px;font-family:Arial,sans-serif;box-sizing:border-box}.shell{width:min(1480px,100%);margin:auto;min-width:0}.kicker{color:#d47b2d;letter-spacing:.2em;text-transform:uppercase;font-size:12px;font-weight:900}.head{display:flex;align-items:end;justify-content:space-between;gap:25px}.head h1{font-size:clamp(42px,5vw,70px);line-height:.9;text-transform:uppercase;margin:13px 0}.head p{color:#aeb3ab;max-width:720px;line-height:1.7}.sync{margin-top:16px;color:#efb078;font-size:13px}.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid #3c4138;margin:28px 0}.metric{padding:17px;border-right:1px solid #3c4138;min-width:0}.metric:last-child{border:0}.metric strong{display:block;font-size:28px}.metric span{font-size:11px;color:#9fa49c;text-transform:uppercase}.workspace{display:grid;grid-template-columns:minmax(320px,420px) minmax(0,1fr);gap:20px;align-items:start}.panel{min-width:0;border:1px solid #373c35;background:#151815;padding:24px;box-sizing:border-box}.panel.light{background:#eee5d8;color:#171917;min-height:0}.panel h2{margin:0 0 12px;text-transform:uppercase}.panel-intro{color:#9fa49c;font-size:13px;line-height:1.55}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:6px;min-width:0}.field.wide{grid-column:1/-1}.field label{font-size:12px;font-weight:800}.field input,.field select{width:100%;min-width:0;box-sizing:border-box;padding:12px;background:#0d100d;color:#fff;border:1px solid #50564c}.field-hint{min-height:16px;color:#efb078;font-size:11px;font-weight:400}.primary{width:100%;margin-top:16px;padding:14px;border:0;background:#e86619;color:#fff;font-weight:900;cursor:pointer}.secondary{width:100%;margin-top:10px;padding:12px;border:1px solid #555b51;background:transparent;color:#ddd8cf;font-weight:800;cursor:pointer}.import{margin-top:20px;padding-top:18px;border-top:1px solid #3c4138}.import input{width:100%;box-sizing:border-box;padding:12px;border:1px dashed #d47b2d;color:#ddd8cf}.filters{display:grid;grid-template-columns:minmax(220px,1.3fr) minmax(150px,.8fr) minmax(150px,.8fr);gap:10px;margin-bottom:15px}.filters input,.filters select{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #bcae9d;background:#fffaf2}.view-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 18px;padding-bottom:14px;border-bottom:1px solid #c6b9a9}.view-tab{border:1px solid #bcae9d;background:#f8f1e7;color:#3f413d;padding:10px 14px;font-size:11px;font-weight:900;letter-spacing:.06em;cursor:pointer}.view-tab.active{border-color:#b65c17;background:#b65c17;color:#fff}.table-wrap{max-width:100%;overflow:auto;border:1px solid #d3c8b9;background:#f8f1e7}.table{width:100%;border-collapse:collapse}.table.registration-table{min-width:1420px}.table.contact-table{min-width:2200px}.table.financial-table{min-width:1500px}.table th{position:sticky;top:0;z-index:2;text-align:left;white-space:nowrap;background:#eee5d8;color:#b65c17;font-size:10px;letter-spacing:.1em;padding:12px;border-bottom:1px solid #c6b9a9}.table td{padding:11px 12px;border-bottom:1px solid #d3c8b9;font-size:12px;vertical-align:middle;white-space:nowrap}.table td.name-cell{min-width:190px;white-space:normal;font-weight:800}.table td.address-cell{min-width:220px;white-space:normal}.table tr:hover td{background:#fffaf2}.table strong,.table span{display:block}.table span{color:#6a6e67}.table a{display:inline-block;color:#276e55;font-size:11px;font-weight:800}.empty-state{display:grid;place-items:center;min-height:260px;padding:34px;text-align:center;border:1px dashed #c4b7a6;background:#f8f1e7}.empty-state strong{display:block;font-size:24px;margin-bottom:10px}.empty-state p{max-width:520px;color:#686c66;line-height:1.6;margin:0}.edit{border:0;background:#171917;color:#fff;padding:9px 12px;cursor:pointer}.linked{color:#28734a!important;font-weight:800}.unlinked{color:#a45e24!important}.message{margin:16px 0;color:#efb078}.not-ready{padding:22px;border:1px solid #9c5a22;background:#261b10}.code{font-family:monospace;font-weight:800}.copy-code{display:grid;gap:2px;border:1px solid transparent;background:transparent;color:#171917;font:inherit;font-weight:900;text-align:left;padding:5px 7px;cursor:pointer}.copy-code:hover,.copy-code:focus-visible{border-color:#b65c17;outline:0}.copy-code small{color:#b65c17;font-family:Arial,sans-serif;font-size:9px;letter-spacing:.12em}.status{font-weight:800}.paid{color:#28734a;font-weight:800}.pending{color:#a45e24;font-weight:800}.refunded,.cancelled{color:#a23d35;font-weight:800}.source{font-size:11px;text-transform:uppercase;font-weight:900}.windfit{color:#255f87}.manual{color:#7b5b2a}
     .actions-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:18px 0}.actions-main{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.action-button{border:1px solid #d47b2d;background:transparent;color:#f3eee5;padding:12px 16px;font-weight:900;cursor:pointer}.action-button.primary-action{background:#e86619;border-color:#e86619}.workspace{display:block}.panel.light{width:100%;box-sizing:border-box}.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);border:0;z-index:1190}.drawer-panel{position:fixed;right:0;top:0;width:min(600px,94vw);height:100vh;overflow:auto;z-index:1200;border:0;border-left:1px solid #4d5349;background:#151815;padding:28px;box-sizing:border-box;box-shadow:-18px 0 50px rgba(0,0,0,.4)}.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px}.drawer-head h2{margin:0}.drawer-close{border:1px solid #555b51;background:transparent;color:#fff;width:38px;height:38px;font-size:22px;cursor:pointer}.drawer-panel .import{margin-top:0;padding-top:0;border-top:0}.drawer-panel .import input{margin-top:14px}.drawer-panel:not(.import-only) .import{display:none}.drawer-panel.import-only .manual-fields{display:none}.drawer-panel.numbering .manual-fields,.drawer-panel.numbering .import{display:none}.numbering-intro{color:#aeb3ab;line-height:1.6;font-size:13px}.sequence-list{display:grid;gap:10px;margin-top:20px}.sequence-row{display:grid;grid-template-columns:minmax(0,1fr) 115px 82px;gap:8px;align-items:end;padding:14px;border:1px solid #3c4138}.sequence-row label{display:grid;gap:6px;font-size:11px;color:#aaa}.sequence-row strong{font-size:13px;line-height:1.25}.sequence-row input{width:100%;box-sizing:border-box;padding:11px;background:#0d100d;color:#fff;border:1px solid #50564c}.sequence-current{color:#efb078;font-size:10px;margin-top:4px}.records-count{color:#aeb3ab;font-size:13px}.identity-box,.identity-history{margin-top:18px;padding-top:16px;border-top:1px solid #3c4138}.identity-box select{width:100%;box-sizing:border-box;padding:12px;background:#0d100d;color:#fff;border:1px solid #50564c}.identity-history h3,.identity-box h3{margin:0 0 8px;font-size:14px;text-transform:uppercase;color:#efb078}.audit-item{padding:9px 0;border-top:1px solid #30352f;font-size:12px}.audit-item span{display:block;color:#9fa49c;margin-top:3px}
     @media(max-width:1180px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.registrations-page{padding:28px 14px 60px}.head{display:block}.metrics{grid-template-columns:1fr 1fr}.form-grid,.filters{grid-template-columns:1fr}.field.wide{grid-column:auto}.panel{padding:18px}.actions-bar{align-items:flex-start}.actions-main{width:100%;display:grid;grid-template-columns:1fr 1fr}.action-button{padding:11px 8px;font-size:11px}.drawer-panel{width:100vw;padding:22px 18px}.records-count{display:none}.view-tabs{display:grid;grid-template-columns:1fr}.view-tab{text-align:left}}
   `}</style>
@@ -1026,9 +972,9 @@ export default function RegistrationsPage() {
           </div>
           <div>
             <p>
-              O Legends Engine reúne inscrições do Asaas, Windfit, convites e
-              correções manuais. A elegibilidade esportiva só é liberada após
-              pagamento confirmado ou cortesia autorizada.
+              A Windfit é a fonte oficial das inscrições e pagamentos. O
+              Legends Engine recebe as importações e mantém correções manuais
+              somente para cortesias, convidados e exceções administrativas.
             </p>
             <div className="sync">
               Última sincronização externa:{" "}
@@ -1051,12 +997,6 @@ export default function RegistrationsPage() {
           <div className="not-ready">
             Execute a migration 010_windfit_registration_details.sql para
             importar telefone, localização e data da inscrição.
-          </div>
-        ) : null}
-        {moduleReady && !paymentReady ? (
-          <div className="not-ready">
-            Execute a migration 022_asaas_checkout.sql para ativar checkout e
-            confirmação automática do Asaas.
           </div>
         ) : null}
         {moduleReady && !billingReady ? (
@@ -1151,9 +1091,8 @@ export default function RegistrationsPage() {
                 <div className="manual-fields">
                   <p className="panel-intro">
                     Use o cadastro manual somente para cortesia, convidado ou
-                    correção administrativa. As inscrições comerciais entram
-                    pelo checkout Asaas ou pela importação Windfit, conforme a
-                    configuração do evento.
+                    correção administrativa. Todas as inscrições comerciais e
+                    confirmações de pagamento entram pela importação Windfit.
                   </p>
                   <div className="form-grid">
                     <div className="field wide">
@@ -1677,11 +1616,8 @@ export default function RegistrationsPage() {
                 <option value="all">Todos os pagamentos</option>
                 <option value="paid">Pagos</option>
                 <option value="pending">Pendentes</option>
-                <option value="risk_analysis">Em análise</option>
                 <option value="refunded">Reembolsados</option>
                 <option value="cancelled">Cancelados</option>
-                <option value="failed">Falharam</option>
-                <option value="chargeback">Chargeback</option>
                 <option value="courtesy">Cortesias</option>
               </select>
             </div>
@@ -1705,7 +1641,7 @@ export default function RegistrationsPage() {
                 className={`view-tab ${registrationView === "financial" ? "active" : ""}`}
                 onClick={() => setRegistrationView("financial")}
               >
-                FINANCEIRO E INTEGRAÇÕES
+                PAGAMENTO E WINDFIT
               </button>
             </div>
             {filtered.length ? (
@@ -1827,11 +1763,7 @@ export default function RegistrationsPage() {
                         <th>Benefício 60+</th>
                         <th>Desconto 60+</th>
                         <th>Valor do kit</th>
-                        <th>Taxa de serviço</th>
-                        <th>Total cobrado</th>
                         <th>Origem</th>
-                        <th>Status checkout</th>
-                        <th>Confirmado em</th>
                         <th>ID externo</th>
                         <th>Código</th>
                         <th>Ride with GPS</th>
@@ -1841,7 +1773,7 @@ export default function RegistrationsPage() {
                     </thead>
                     <tbody>
                       {filtered.map((item) => {
-                        const origin = paymentOrigin(item);
+                        const origin = registrationOrigin(item);
                         return (
                           <tr key={item.id}>
                             <td>{item.bib_number ?? "—"}</td>
@@ -1866,33 +1798,9 @@ export default function RegistrationsPage() {
                               {formatMoney(item.premium_kit_fee_cents) ?? "—"}
                             </td>
                             <td>
-                              {formatMoney(serviceFeeCents(item)) ?? "—"}
-                            </td>
-                            <td>
-                              {formatMoney(item.payment_amount_cents) ?? "—"}
-                            </td>
-                            <td>
                               <span className={`source ${origin.className}`}>
                                 {origin.label}
                               </span>
-                            </td>
-                            <td>
-                              {item.payment_checkout_status ?? "—"}
-                              {item.payment_checkout_url &&
-                              item.payment_status === "pending" ? (
-                                <a
-                                  href={item.payment_checkout_url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  ABRIR CHECKOUT ↗
-                                </a>
-                              ) : null}
-                            </td>
-                            <td>
-                              {item.payment_confirmed_at
-                                ? formatDateTime(item.payment_confirmed_at)
-                                : "—"}
                             </td>
                             <td>{item.external_registration_id ?? "—"}</td>
                             <td className="code">
@@ -1948,10 +1856,9 @@ export default function RegistrationsPage() {
                 <div>
                   <strong>Nenhum inscrito encontrado</strong>
                   <p>
-                    As inscrições confirmadas pelo Asaas, os participantes
-                    importados da Windfit e as exceções manuais aparecerão aqui
-                    com pagamento, categoria, elegibilidade e vínculo com o Ride
-                    with GPS.
+                    Os participantes importados da Windfit e as exceções
+                    manuais aparecerão aqui com pagamento, categoria,
+                    elegibilidade e vínculo com o Ride with GPS.
                   </p>
                 </div>
               </div>

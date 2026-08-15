@@ -536,7 +536,7 @@ export default function StewardingPage() {
           <p>
             {stage?.results_locked
               ? "Os resultados estão bloqueados. Reabra somente se precisar corrigir uma decisão."
-              : "Resultados em revisão ou duplicidades pendentes impedem a publicação."}
+              : "A publicação exige percurso ativo, atividades processadas, validações concluídas e resultados calculados pela fórmula oficial."}
           </p>
           <input
             value={stageNote}

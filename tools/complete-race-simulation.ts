@@ -9,7 +9,7 @@ import { type GeoPoint, validateActivity } from "../lib/race-engine/index";
 const athleteCount = Math.max(20, Math.min(5000, Number(process.argv[2] ?? 1000)));
 const stageCount = 4;
 const eventDate = "2026-09-01";
-const stageWeights = [1, 1, 1, 4];
+const stageWeights = [1.15, 1, 1.2, .65];
 const profiles = [
   { gender: "male", birthDate: "1995-05-10", modality: "gravel_race" },
   { gender: "male", birthDate: "1984-02-20", modality: "gravel_race" },

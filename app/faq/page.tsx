@@ -44,7 +44,7 @@ const groups = [
     ["Quais são as categorias masculinas?", "Open Masculino 18–29, Master A 30–39, Master B 40–49 e Senior 50+. A idade considerada é a que o atleta completa no ano-base da competição."],
     ["Quais são as categorias femininas?", "Feminino A 18–40 e Feminino B 41+, considerando a idade no ano-base da competição."],
     ["Existe número mínimo por categoria?", "Sim. São necessários cinco atletas inscritos e confirmados por categoria. Se o mínimo não for atingido, a categoria será incorporada à imediatamente anterior conforme o Regulamento."],
-    ["Como funciona a classificação geral?", "A Gravel Race utiliza pontos. A referência é: 1.000 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa. Os coeficientes são 1,15; 1,00; 1,20 e 0,65."],
+    ["Como funciona a classificação geral?", "A Gravel Race utiliza pontos. A referência é: 100 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa. Os coeficientes são 1,15; 1,00; 1,20 e 0,65."],
     ["Qual é o prazo para protesto ou revisão?", "Até 30 minutos após a publicação do resultado provisório da etapa, pelo canal definido pela Organização."],
   ]],
 ];

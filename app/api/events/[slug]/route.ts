@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
-import { isAsaasSandboxEnvironment } from "@/lib/asaas";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import {
   nextRegistrationLot,
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       );
     const supabase = createSupabaseAdmin();
     let eventQuery = supabase.from("events")
-      .select("id, slug, name, description, location, starts_on, ends_on, event_type, scoring_mode, registration_source, access_mode, participant_limit, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, is_test, status")
+      .select("id, slug, name, description, location, starts_on, ends_on, event_type, scoring_mode, registration_source, access_mode, participant_limit, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, is_test, status")
       .eq("slug", slug);
     if (!internalTestMode) eventQuery = eventQuery.eq("status", "published");
     const { data: event, error } = await eventQuery.maybeSingle();
@@ -35,19 +34,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         { error: "Este evento não está habilitado para testes internos." },
         { status: 403 },
       );
-    if (
-      internalTestMode &&
-      event.registration_source === "asaas" &&
-      !isAsaasSandboxEnvironment()
-    )
-      return NextResponse.json(
-        {
-          error:
-            "Teste bloqueado: configure ASAAS_ENVIRONMENT como sandbox antes de continuar.",
-        },
-        { status: 503 },
-      );
-
     const [{ data: stages, error: stageError }, { count, error: countError }, lotResult] = await Promise.all([
       supabase.from("stages").select("id, stage_number, name, route_label, stage_date, distance_km, elevation_m").eq("event_id", event.id).order("stage_number"),
       supabase.from("registrations").select("id", { count: "exact", head: true }).eq("event_id", event.id).neq("status", "cancelled"),
@@ -72,10 +58,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({
       event,
       test_mode: internalTestMode,
-      payment_environment:
-        internalTestMode && event.registration_source === "asaas"
-          ? "sandbox"
-          : null,
       stages: stages ?? [],
       pricing: {
         lots,

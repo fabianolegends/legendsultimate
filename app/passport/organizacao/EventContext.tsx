@@ -25,8 +25,6 @@ export type OrganizationEvent = {
   terms_url?: string | null;
   registration_fee_cents?: number | null;
   experience_fee_cents?: number | null;
-  asaas_checkout_expires_minutes?: number;
-  asaas_max_installments?: number;
   premium_kit_enabled?: boolean;
   premium_kit_fee_cents?: number | null;
   casual_shirt_required?: boolean;

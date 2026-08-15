@@ -2,13 +2,14 @@ import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { recordAdminAudit } from "@/lib/admin-audit";
+import { classifyStage, type StageClassificationInput } from "@/lib/classification-engine";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
 const athletes = [
   "André Horizonte", "Bruno Serra", "Carlos Vale", "Diego Campo", "Eduardo Trilha",
   "Ana Pedreira", "Beatriz Lago", "Carolina Mata", "Daniela Rocha", "Elisa Caminho",
 ];
-const basePoints = [100, 85, 72, 61, 52];
+const officialStageWeights = [1.15, 1, 1.2, .65];
 
 function routePoints(stage: number) {
   const lat = -29.95 + stage * .04;
@@ -72,11 +73,11 @@ export async function POST(request: NextRequest) {
       max_continuous_off_route_km: 1.5,
       auto_validate_min_checkpoint_ratio: .95,
       review_min_checkpoint_ratio: .8,
-      classification_weight: stage === 2 ? 4 : 1,
+      classification_weight: officialStageWeights[stage - 1],
       time_limit_s: 7200,
       results_published: false,
       results_locked: false,
-    }))).select("id, stage_number, stage_date");
+    }))).select("id, stage_number, stage_date, classification_weight, time_limit_s");
     if (stageError || !stages?.length) throw stageError ?? new Error("Não foi possível criar as etapas.");
 
     const checkpoints: Array<Record<string, unknown>> = [];
@@ -256,29 +257,67 @@ export async function POST(request: NextRequest) {
     const { error: passageError } = await supabase.from("checkpoint_passages").insert(passageRows);
     if (passageError) throw passageError;
 
-    const resultRows: Array<Record<string, unknown>> = [];
+    const resultCandidates = new Map<string, Array<{
+      activity: (typeof activityRows)[number];
+      registration: (typeof registrations)[number];
+      officialTimeS: number;
+      timePenaltyS: number;
+      adminNote: string | null;
+      input: StageClassificationInput;
+    }>>();
     for (const activity of activityRows) {
       const index = athleteIndex.get(activity.athlete_id)!;
       const stage = stageById.get(activity.stage_id)!;
       const rejected = stage.stage_number === 2 && index === 8;
       if (rejected) continue;
       const review = stage.stage_number === 1 && index === 7;
-      const categoryIndex = index < 5 ? index : index - 5;
-      const position = review ? null : categoryIndex + 1 - (stage.stage_number === 2 && index === 9 ? 1 : 0);
       const penalty = stage.stage_number === 2 && index === 4;
       const registration = registrationsByAthlete.get(activity.athlete_id)!;
-      const base = position ? basePoints[position - 1] ?? 0 : 0;
-      resultRows.push({
-        event_id: event.id, stage_id: activity.stage_id, athlete_id: activity.athlete_id,
-        registration_id: registration.id, activity_id: activity.id, full_name: registration.full_name,
-        bib_number: registration.bib_number, category: registration.category, modality: "gravel_race",
-        official_time_s: activity.moving_time_s, time_penalty_s: penalty ? 60 : 0,
-        points_penalty: penalty ? 10 : 0, final_time_s: Number(activity.moving_time_s) + (penalty ? 60 : 0),
-        position, base_points: base, weighted_points: Math.max(0, base * (stage.stage_number === 2 ? 4 : 1) - (penalty ? 10 : 0)),
-        status: review ? "review" : "provisional",
-        integrity_status: "clean",
-        admin_note: penalty ? "Simulação: penalidade de 1 minuto e 10 pontos." : review ? "Simulação: decisão do comissário pendente." : null,
+      const officialTimeS = Number(activity.moving_time_s);
+      const timePenaltyS = penalty ? 60 : 0;
+      const current = resultCandidates.get(activity.stage_id) ?? [];
+      current.push({
+        activity,
+        registration,
+        officialTimeS,
+        timePenaltyS,
+        adminNote: penalty ? "Simulação: penalidade de 1 minuto e 10 pontos." : review ? "Simulação: decisão do comissário pendente." : null,
+        input: {
+          id: activity.id,
+          athlete_id: activity.athlete_id,
+          registration_id: registration.id,
+          full_name: registration.full_name,
+          category: registration.category,
+          final_time_s: officialTimeS + timePenaltyS,
+          points_penalty: penalty ? 10 : 0,
+          status: review ? "review" : "provisional",
+        },
       });
+      resultCandidates.set(activity.stage_id, current);
+    }
+
+    const resultRows: Array<Record<string, unknown>> = [];
+    for (const stage of stages) {
+      const candidates = resultCandidates.get(stage.id) ?? [];
+      const metaById = new Map(candidates.map((candidate) => [candidate.input.id, candidate]));
+      const classified = classifyStage(
+        candidates.map((candidate) => candidate.input),
+        Number(stage.classification_weight),
+        Number(stage.time_limit_s),
+      );
+      for (const result of classified) {
+        const meta = metaById.get(result.id)!;
+        resultRows.push({
+          event_id: event.id, stage_id: stage.id, athlete_id: result.athlete_id,
+          registration_id: meta.registration.id, activity_id: meta.activity.id, full_name: meta.registration.full_name,
+          bib_number: meta.registration.bib_number, category: result.category, modality: "gravel_race",
+          official_time_s: meta.officialTimeS, time_penalty_s: meta.timePenaltyS,
+          points_penalty: Number(result.points_penalty ?? 0), final_time_s: result.final_time_s,
+          position: result.position, base_points: result.base_points, weighted_points: result.weighted_points,
+          scoring_formula_version: "proportional_v1", status: result.status,
+          integrity_status: "clean", admin_note: meta.adminNote,
+        });
+      }
     }
     const { error: resultError } = await supabase.from("stage_results").insert(resultRows);
     if (resultError) throw resultError;

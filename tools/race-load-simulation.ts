@@ -6,6 +6,7 @@ import { type GeoPoint, validateActivity } from "../lib/race-engine/index";
 
 const athleteCount = Math.max(10, Math.min(5000, Number(process.argv[2] ?? 500)));
 const stageCount = 4;
+const stageWeights = [1.15, 1, 1.2, .65];
 const categories = ["Masculino Master 36–49", "Masculino 50+", "Feminino 18–40", "Feminino 41+", "Livre"];
 
 function route(stage: number): GeoPoint[] {
@@ -44,7 +45,7 @@ for (let stage = 1; stage <= stageCount; stage += 1) {
     checkpointPassages += detectCheckpointPassages({ activityPoints: activity, elapsedSeconds: elapsed, activityDistanceMeters: distances, startedAt: "2026-09-01T09:00:00Z", checkpoints }).filter(item => item.passed).length;
     candidates.push({ id: `r-${stage}-${athlete}`, athlete_id: `a-${athlete}`, registration_id: `reg-${athlete}`, full_name: `Atleta ${String(athlete).padStart(4, "0")}`, category: categories[athlete % categories.length], final_time_s: movingTime, points_penalty: athlete % 89 === 0 ? 10 : 0, status: report.status === "rejected" ? "dnf" : "provisional" });
   }
-  const classified = classifyStage(candidates, stage === 4 ? 4 : 1);
+  const classified = classifyStage(candidates, stageWeights[stage - 1]);
   for (const result of classified) overallRows.push({ athlete_id: result.athlete_id, registration_id: result.registration_id, full_name: result.full_name, bib_number: String(Number(result.athlete_id.slice(2)) + 100), category: result.category, stage_id: `stage-${stage}`, stage_number: stage, position: result.position, final_time_s: result.final_time_s, weighted_points: result.weighted_points, status: result.status });
 }
 

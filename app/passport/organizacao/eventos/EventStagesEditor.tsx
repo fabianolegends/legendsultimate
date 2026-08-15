@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import type { OrganizationEvent, OrganizationStage } from "../EventContext";
 
 type StageForm = { name: string; route_label: string; stage_date: string; classification_weight: number; time_limit_hours: string };
+const officialStageWeights = [1.15, 1, 1.2, 0.65];
 
 function nextDate(event: OrganizationEvent) {
   const value = new Date(`${event.starts_on}T12:00:00.000Z`);
@@ -13,7 +14,13 @@ function nextDate(event: OrganizationEvent) {
 
 function newStage(event: OrganizationEvent): StageForm {
   const number = (event.stages?.length ?? 0) + 1;
-  return { name: `Dia ${number}`, route_label: `Percurso ${number}`, stage_date: nextDate(event), classification_weight: 1, time_limit_hours: "" };
+  return {
+    name: `Dia ${number}`,
+    route_label: `Percurso ${number}`,
+    stage_date: nextDate(event),
+    classification_weight: officialStageWeights[number - 1] ?? 1,
+    time_limit_hours: "",
+  };
 }
 
 function fromStage(stage: OrganizationStage): StageForm {

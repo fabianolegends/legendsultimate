@@ -101,9 +101,10 @@ export async function GET(request: NextRequest) {
     const activityIdsWithValidation = new Set(validations.map((validation) => validation.activity_id));
     const unprocessedActivities = allActivities.filter((activity) => !activityIdsWithValidation.has(activity.id));
     const pendingDecisions = (results ?? []).filter((result) =>
-      !result.admin_note
-      || result.status === "review"
-      || (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate",
+      result.status === "review"
+      || (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate"
+      || ((Number(result.time_penalty_s) > 0 || Number(result.points_penalty) > 0)
+        && !String(result.admin_note ?? "").trim()),
     );
     const stagePipeline = (stages ?? []).map((stage) => {
       const stageActivities = allActivities.filter((activity) => activity.stage_id === stage.id);
@@ -113,8 +114,10 @@ export async function GET(request: NextRequest) {
         (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate",
       ).length;
       const decisionCount = stageResults.filter((result) =>
-        !result.admin_note || result.status === "review"
-        || (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate",
+        result.status === "review"
+        || (staleDuplicates.includes(result.id) ? "duplicate" : result.integrity_status) === "duplicate"
+        || ((Number(result.time_penalty_s) > 0 || Number(result.points_penalty) > 0)
+          && !String(result.admin_note ?? "").trim()),
       ).length;
       return {
         stage_id: stage.id,
@@ -218,10 +221,108 @@ export async function POST(request: NextRequest) {
     if (stageError || !stage) return NextResponse.json({ error: "Etapa não encontrada." }, { status: 404 });
     const now = new Date().toISOString();
     if (body.action === "publish") {
-      const { data: blockers, error: blockerError } = await supabase.from("stage_results").select("id, status, integrity_status").eq("stage_id", stageId);
-      if (blockerError) throw blockerError;
-      const pending = (blockers ?? []).filter((result) => result.status === "review" || result.integrity_status === "duplicate");
-      if (pending.length) return NextResponse.json({ error: `Resolva ${pending.length} resultado(s) em revisão ou com duplicidade antes de publicar.` }, { status: 409 });
+      const [resultQuery, validationQuery, activityQuery, routeQuery] =
+        await Promise.all([
+          supabase
+            .from("stage_results")
+            .select(
+              "id, status, integrity_status, time_penalty_s, points_penalty, admin_note, scoring_formula_version",
+            )
+            .eq("stage_id", stageId),
+          supabase
+            .from("validation_results")
+            .select("id, activity_id, status")
+            .eq("stage_id", stageId),
+          supabase.from("activities").select("id").eq("stage_id", stageId),
+          supabase
+            .from("route_versions")
+            .select("id")
+            .eq("stage_id", stageId)
+            .eq("is_active", true)
+            .limit(1),
+        ]);
+      if (migrationMissing(resultQuery.error))
+        return NextResponse.json(
+          {
+            error:
+              "Execute a migration 027_proportional_classification.sql antes de publicar.",
+          },
+          { status: 409 },
+        );
+      if (resultQuery.error) throw resultQuery.error;
+      if (validationQuery.error) throw validationQuery.error;
+      if (activityQuery.error) throw activityQuery.error;
+      if (routeQuery.error) throw routeQuery.error;
+
+      const results = resultQuery.data ?? [];
+      if (!results.length)
+        return NextResponse.json(
+          { error: "Calcule a classificação antes de publicar a etapa." },
+          { status: 409 },
+        );
+      if (!routeQuery.data?.length)
+        return NextResponse.json(
+          { error: "Defina uma versão ativa do percurso antes de publicar." },
+          { status: 409 },
+        );
+      const validations = validationQuery.data ?? [];
+      const pendingValidations = validations.filter((validation) =>
+        ["pending", "review"].includes(validation.status),
+      );
+      if (pendingValidations.length)
+        return NextResponse.json(
+          {
+            error: `Resolva ${pendingValidations.length} validação(ões) pendente(s) ou em revisão antes de publicar.`,
+          },
+          { status: 409 },
+        );
+      const validatedActivityIds = new Set(
+        validations.map((validation) => validation.activity_id),
+      );
+      const unprocessedActivities = (activityQuery.data ?? []).filter(
+        (activity) => !validatedActivityIds.has(activity.id),
+      );
+      if (unprocessedActivities.length)
+        return NextResponse.json(
+          {
+            error: `Processe ${unprocessedActivities.length} atividade(s) recebida(s) antes de publicar.`,
+          },
+          { status: 409 },
+        );
+      const pendingResults = results.filter(
+        (result) =>
+          result.status === "review" || result.integrity_status === "duplicate",
+      );
+      if (pendingResults.length)
+        return NextResponse.json(
+          {
+            error: `Resolva ${pendingResults.length} resultado(s) em revisão ou com duplicidade antes de publicar.`,
+          },
+          { status: 409 },
+        );
+      const undocumentedPenalties = results.filter(
+        (result) =>
+          (Number(result.time_penalty_s) > 0 ||
+            Number(result.points_penalty) > 0) &&
+          !String(result.admin_note ?? "").trim(),
+      );
+      if (undocumentedPenalties.length)
+        return NextResponse.json(
+          {
+            error: `Registre o motivo de ${undocumentedPenalties.length} penalidade(s) antes de publicar.`,
+          },
+          { status: 409 },
+        );
+      const legacyFormulaResults = results.filter(
+        (result) => result.scoring_formula_version !== "proportional_v1",
+      );
+      if (legacyFormulaResults.length)
+        return NextResponse.json(
+          {
+            error: `Recalcule ${legacyFormulaResults.length} resultado(s) com a fórmula oficial antes de publicar.`,
+          },
+          { status: 409 },
+        );
       const { error: resultError } = await supabase.from("stage_results").update({ status: "official", published_at: now, updated_at: now }).eq("stage_id", stageId).eq("status", "provisional");
       if (resultError) throw resultError;
       const { error } = await supabase.from("stages").update({ results_published: true, results_locked: true, results_published_at: now, updated_at: now }).eq("id", stageId);

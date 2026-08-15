@@ -69,10 +69,6 @@ export default function AthletePassportPage() {
   }
 
   useEffect(()=>{
-    try {
-      const pending=window.localStorage.getItem("legends-pending-registration");
-      if(pending){const parsed=JSON.parse(pending) as {code?:string;email?:string};setRegistrationCode(parsed.code??"");setRegistrationEmail(parsed.email??"");}
-    } catch { window.localStorage.removeItem("legends-pending-registration"); }
     loadDashboard().catch((error)=>setMessage(error.message));
   },[]);
   const stage=useMemo(()=>dashboard?.stages.find((item)=>item.id===stageId)??null,[dashboard,stageId]);
@@ -91,7 +87,7 @@ export default function AthletePassportPage() {
     try{
       const response=await fetch("/api/athlete/claim-registration",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:registrationCode,email:registrationEmail})});
       const payload=await response.json();if(!response.ok)throw new Error(payload.error??"Falha ao vincular a inscrição.");
-      setMessage("Evento vinculado ao seu Passport.");setRegistrationCode("");setRegistrationEmail("");setShowClaimForm(false);window.localStorage.removeItem("legends-pending-registration");await loadDashboard(payload.registration?.event_id);
+      setMessage("Evento vinculado ao seu Passport.");setRegistrationCode("");setRegistrationEmail("");setShowClaimForm(false);await loadDashboard(payload.registration?.event_id);
     }catch(error){setMessage(error instanceof Error?error.message:"Falha ao vincular a inscrição.");}finally{setLinking(false);}
   }
 

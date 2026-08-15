@@ -93,7 +93,7 @@ export default function AboutRace() {
           <div className="pointsTableWrap">
             <div className="pointsTableHead"><p className="detailEyebrow">Fórmula oficial de referência</p><span>Regulamento Oficial v1.1</span></div>
             <div style={{padding:"34px",border:"1px solid rgba(198,122,59,.3)",fontFamily:"Barlow Condensed",fontSize:"clamp(24px,3vw,40px)",fontWeight:700,textTransform:"uppercase",lineHeight:1.15}}>
-              Pontos = 1.000 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa
+              Pontos = 100 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa
             </div>
           </div>
 

@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { recordAdminAudit } from "@/lib/admin-audit";
 import {
   normalizeRegistrationCode,
   normalizeRegistrationEmail,
@@ -187,7 +188,7 @@ function normalizeInput(
   input: RegistrationInput,
   options?: {
     forcedEventId?: string;
-    forcedSource?: "windfit" | "manual" | "online";
+    forcedSource?: "windfit" | "manual";
   },
 ) {
   const eventId = String(options?.forcedEventId ?? input.event_id ?? "").trim();
@@ -198,11 +199,7 @@ function normalizeInput(
 
   const source =
     options?.forcedSource ??
-    (input.source === "windfit"
-      ? "windfit"
-      : input.source === "online"
-        ? "online"
-        : "manual");
+    (input.source === "windfit" ? "windfit" : "manual");
   let status = normalizeStatus(input.status);
   const paymentStatus = normalizePaymentStatus(
     input.payment_status,
@@ -288,8 +285,7 @@ export async function GET(request: NextRequest) {
     const baseFields =
       "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
     const detailFields = `${baseFields}, phone, location, registered_at, terms_accepted_at, privacy_accepted_at`;
-    const paymentFields = `${detailFields}, payment_provider, payment_amount_cents, payment_checkout_id, payment_checkout_url, payment_checkout_status, payment_expires_at, payment_confirmed_at, payment_refunded_at, last_payment_event_at`;
-    const billingFields = `${paymentFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
+    const billingFields = `${detailFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
     const fields = `${billingFields}, registration_lot_id, registration_lot_name, registration_base_fee_cents, senior_discount_applied, senior_discount_cents, premium_kit_selected, premium_kit_fee_cents, casual_shirt_size, jersey_size, regulation_version`;
     let query = supabase
       .from("registrations")
@@ -298,7 +294,6 @@ export async function GET(request: NextRequest) {
     if (eventId) query = query.eq("event_id", eventId);
     let { data: registrations, error } = await query;
     let detailsReady = true;
-    let paymentReady = true;
     let billingReady = true;
     let commerceReady = true;
     if (error?.code === "42703") {
@@ -313,35 +308,24 @@ export async function GET(request: NextRequest) {
       error = fallback.error;
       if (error?.code === "42703") {
         billingReady = false;
-        let paymentQuery = supabase
+        let detailQuery = supabase
           .from("registrations")
-          .select(paymentFields)
+          .select(detailFields)
           .order("full_name", { ascending: true });
-        if (eventId) paymentQuery = paymentQuery.eq("event_id", eventId);
-        const payment = await paymentQuery;
-        registrations = payment.data as typeof registrations;
-        error = payment.error;
+        if (eventId) detailQuery = detailQuery.eq("event_id", eventId);
+        const detail = await detailQuery;
+        registrations = detail.data as typeof registrations;
+        error = detail.error;
         if (error?.code === "42703") {
-          paymentReady = false;
-          let detailQuery = supabase
+          detailsReady = false;
+          let legacyQuery = supabase
             .from("registrations")
-            .select(detailFields)
+            .select(baseFields)
             .order("full_name", { ascending: true });
-          if (eventId) detailQuery = detailQuery.eq("event_id", eventId);
-          const detail = await detailQuery;
-          registrations = detail.data as typeof registrations;
-          error = detail.error;
-          if (error?.code === "42703") {
-            detailsReady = false;
-            let legacyQuery = supabase
-              .from("registrations")
-              .select(baseFields)
-              .order("full_name", { ascending: true });
-            if (eventId) legacyQuery = legacyQuery.eq("event_id", eventId);
-            const legacy = await legacyQuery;
-            registrations = legacy.data as typeof registrations;
-            error = legacy.error;
-          }
+          if (eventId) legacyQuery = legacyQuery.eq("event_id", eventId);
+          const legacy = await legacyQuery;
+          registrations = legacy.data as typeof registrations;
+          error = legacy.error;
         }
       }
     }
@@ -445,9 +429,6 @@ export async function GET(request: NextRequest) {
       !detailsReady
         ? "Execute a migration 010_windfit_registration_details.sql para importar telefone, localização e data da inscrição."
         : null,
-      !paymentReady
-        ? "Execute a migration 022_asaas_checkout.sql para ativar os pagamentos Asaas."
-        : null,
       !billingReady
         ? "Execute a migration 023_registration_billing_data.sql para armazenar CPF e endereço."
         : null,
@@ -459,7 +440,6 @@ export async function GET(request: NextRequest) {
       module_ready: true,
       windfit_ready: true,
       details_ready: detailsReady,
-      payment_ready: paymentReady,
       billing_ready: billingReady,
       commerce_ready: commerceReady,
       numbering_ready: numberingReady,
@@ -642,33 +622,98 @@ export async function POST(request: NextRequest) {
             .filter(Boolean),
         ),
       ];
-      const { data: existing, error: existingError } = emails.length
-        ? await supabase
-            .from("registrations")
-            .select("email, registration_code")
-            .eq("event_id", eventId)
-            .in("email", emails)
-        : { data: [], error: null };
-      if (existingError) throw existingError;
-      const codeByEmail = new Map(
+      const externalIds = [
+        ...new Set(
+          rows
+            .map((row) => cleanNullable(row.external_registration_id))
+            .filter((value): value is string => Boolean(value)),
+        ),
+      ];
+      const [existingByEmailResult, existingByExternalIdResult] =
+        await Promise.all([
+          emails.length
+            ? supabase
+                .from("registrations")
+                .select("email, registration_code, external_registration_id")
+                .eq("event_id", eventId)
+                .in("email", emails)
+            : Promise.resolve({ data: [], error: null }),
+          externalIds.length
+            ? supabase
+                .from("registrations")
+                .select("email, external_registration_id")
+                .eq("event_id", eventId)
+                .in("external_registration_id", externalIds)
+            : Promise.resolve({ data: [], error: null }),
+        ]);
+      if (existingByEmailResult.error) throw existingByEmailResult.error;
+      if (existingByExternalIdResult.error)
+        throw existingByExternalIdResult.error;
+      const existing = existingByEmailResult.data ?? [];
+      const codeByEmail = new Map<string, string>(
         (existing ?? []).map((registration) => [
           normalizeRegistrationEmail(registration.email),
-          registration.registration_code,
+          String(registration.registration_code),
         ]),
       );
-      const normalized = rows.map((row) =>
-        normalizeInput(
-          {
-            ...row,
-            registration_code:
-              row.registration_code ||
-              codeByEmail.get(
-                normalizeRegistrationEmail(String(row.email ?? "")),
-              ),
-          },
-          { forcedEventId: eventId, forcedSource: "windfit" },
-        ),
+      const emailByExternalId = new Map<string, string>(
+        (existingByExternalIdResult.data ?? [])
+          .filter((registration) => registration.external_registration_id)
+          .map((registration) => [
+            String(registration.external_registration_id),
+            normalizeRegistrationEmail(registration.email),
+          ]),
       );
+      const normalizedByEmail = new Map<
+        string,
+        ReturnType<typeof normalizeInput>
+      >();
+      const externalIdOwners = new Map<string, string>();
+      let duplicateRows = 0;
+      rows.forEach((row, index) => {
+        let normalizedRow: ReturnType<typeof normalizeInput>;
+        try {
+          normalizedRow = normalizeInput(
+            {
+              ...row,
+              registration_code:
+                row.registration_code ||
+                codeByEmail.get(
+                  normalizeRegistrationEmail(String(row.email ?? "")),
+                ),
+            },
+            { forcedEventId: eventId, forcedSource: "windfit" },
+          );
+        } catch (error) {
+          throw new Error(
+            `Linha ${index + 2}: ${error instanceof Error ? error.message : "dados inválidos."}`,
+          );
+        }
+        const previous = normalizedByEmail.get(normalizedRow.email);
+        if (previous) duplicateRows += 1;
+        if (normalizedRow.external_registration_id) {
+          const currentEmail = emailByExternalId.get(
+            normalizedRow.external_registration_id,
+          );
+          if (currentEmail && currentEmail !== normalizedRow.email)
+            throw new Error(
+              `Linha ${index + 2}: o ID Windfit ${normalizedRow.external_registration_id} já está vinculado ao e-mail ${currentEmail}. Corrija o cadastro antes de importar.`,
+            );
+          const owner = externalIdOwners.get(
+            normalizedRow.external_registration_id,
+          );
+          if (owner && owner !== normalizedRow.email)
+            throw new Error(
+              `O ID Windfit ${normalizedRow.external_registration_id} aparece para mais de um e-mail no arquivo.`,
+            );
+          externalIdOwners.set(
+            normalizedRow.external_registration_id,
+            normalizedRow.email,
+          );
+        }
+        normalizedByEmail.set(normalizedRow.email, normalizedRow);
+      });
+      const normalized = [...normalizedByEmail.values()];
       const { data, error } = await supabase
         .from("registrations")
         .upsert(normalized, { onConflict: "event_id,email" })
@@ -684,8 +729,21 @@ export async function POST(request: NextRequest) {
       if (error) throw error;
       for (const registration of data ?? [])
         await syncLinkedAthlete(supabase, registration);
+      await recordAdminAudit(request, {
+        action: "windfit.registrations_imported",
+        resourceType: "event",
+        resourceId: eventId,
+        eventId,
+        details: {
+          received_rows: rows.length,
+          imported_rows: data?.length ?? 0,
+          duplicate_rows: duplicateRows,
+        },
+      });
       return NextResponse.json({
         imported: data?.length ?? 0,
+        received: rows.length,
+        duplicates_ignored: duplicateRows,
         synced_at: new Date().toISOString(),
       });
     }
@@ -733,12 +791,7 @@ export async function PATCH(request: NextRequest) {
       .eq("id", id)
       .single();
     if (currentError) throw currentError;
-    const forcedSource =
-      current?.source === "windfit"
-        ? "windfit"
-        : current?.source === "online"
-          ? "online"
-          : "manual";
+    const forcedSource = current?.source === "windfit" ? "windfit" : "manual";
     const normalized = normalizeInput(body.registration ?? {}, {
       forcedSource,
     });

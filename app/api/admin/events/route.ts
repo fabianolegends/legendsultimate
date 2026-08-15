@@ -3,8 +3,9 @@ import { isAdminRequest } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { recordAdminAudit } from "@/lib/admin-audit";
 
-const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, asaas_checkout_expires_minutes, asaas_max_installments, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, created_at, updated_at";
+const extendedFields = "id, slug, name, timezone, status, starts_on, ends_on, description, location, event_type, scoring_mode, registration_source, access_mode, participant_limit, is_test, registration_open, registration_closes_at, windfit_registration_url, terms_url, registration_fee_cents, experience_fee_cents, premium_kit_enabled, premium_kit_fee_cents, casual_shirt_required, senior_discount_enabled, senior_discount_percent, regulation_version, created_at, updated_at";
 const baseFields = "id, slug, name, timezone, status, starts_on, ends_on, created_at, updated_at";
+const officialStageWeights = [1.15, 1, 1.2, 0.65];
 
 function unauthorized() {
   return NextResponse.json({ error: "Sessão administrativa inválida ou expirada." }, { status: 401 });
@@ -40,6 +41,18 @@ function optionalPositiveInteger(value: unknown) {
 function boundedInteger(value: unknown, fallback: number, min: number, max: number) {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed >= min && parsed <= max ? parsed : fallback;
+}
+
+function normalizedWindfitUrl(value: unknown) {
+  const text = String(value ?? "").trim();
+  if (!text) return null;
+  try {
+    const url = new URL(text);
+    if (url.protocol !== "https:") throw new Error();
+    return url.toString();
+  } catch {
+    throw new Error("Informe um link HTTPS válido da Windfit.");
+  }
 }
 
 function normalizedLots(value: unknown) {
@@ -187,7 +200,12 @@ export async function POST(request: NextRequest) {
     if (!slug) return NextResponse.json({ error: "Informe um nome válido para gerar o endereço do evento." }, { status: 400 });
 
     const participantLimit = body.participant_limit ? Number(body.participant_limit) : null;
-    const registrationSource = String(body.registration_source ?? "mixed");
+    const isTest = body.is_test === true;
+    const registrationSource = isTest ? "manual" : "windfit";
+    const registrationOpen = body.registration_open === true;
+    const windfitRegistrationUrl = normalizedWindfitUrl(
+      body.windfit_registration_url,
+    );
     const registrationFeeCents = optionalPositiveInteger(body.registration_fee_cents);
     const experienceFeeCents = optionalPositiveInteger(body.experience_fee_cents);
     const premiumKitEnabled = body.premium_kit_enabled === true;
@@ -195,9 +213,11 @@ export async function POST(request: NextRequest) {
       body.premium_kit_fee_cents,
     );
     const lots = normalizedLots(body.registration_lots);
-    if (registrationSource === "asaas" && !registrationFeeCents) {
-      return NextResponse.json({ error: "Informe o valor da inscrição para ativar o checkout Asaas." }, { status: 400 });
-    }
+    if (registrationSource === "windfit" && registrationOpen && !windfitRegistrationUrl)
+      return NextResponse.json(
+        { error: "Informe o link da Windfit antes de abrir as inscrições." },
+        { status: 400 },
+      );
     if (premiumKitEnabled && !premiumKitFeeCents)
       return NextResponse.json(
         { error: "Informe o valor do Kit Premium." },
@@ -218,15 +238,13 @@ export async function POST(request: NextRequest) {
       registration_source: registrationSource,
       access_mode: String(body.access_mode ?? "invite"),
       participant_limit: Number.isFinite(participantLimit) ? participantLimit : null,
-      is_test: body.is_test === true,
-      registration_open: body.registration_open === true,
+      is_test: isTest,
+      registration_open: registrationOpen,
       registration_closes_at: String(body.registration_closes_at ?? "").trim() || null,
-      windfit_registration_url: String(body.windfit_registration_url ?? "").trim() || null,
+      windfit_registration_url: windfitRegistrationUrl,
       terms_url: String(body.terms_url ?? "").trim() || null,
       registration_fee_cents: registrationFeeCents,
       experience_fee_cents: experienceFeeCents,
-      asaas_checkout_expires_minutes: boundedInteger(body.asaas_checkout_expires_minutes, 120, 10, 1440),
-      asaas_max_installments: boundedInteger(body.asaas_max_installments, 1, 1, 21),
       premium_kit_enabled: premiumKitEnabled,
       premium_kit_fee_cents: premiumKitEnabled ? premiumKitFeeCents : null,
       casual_shirt_required: body.casual_shirt_required === true,
@@ -240,17 +258,22 @@ export async function POST(request: NextRequest) {
       regulation_version:
         String(body.regulation_version ?? "").trim() || null,
     }).select(extendedFields).single();
-    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012, 022 e 024 no Supabase." }, { status: 409 });
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012, 024 e 028 no Supabase." }, { status: 409 });
     if (error?.code === "23505") return NextResponse.json({ error: "Já existe um evento com esse identificador." }, { status: 409 });
     if (error) throw error;
 
+    const usesOfficialFourStageScoring =
+      String(body.scoring_mode ?? "weighted_points") === "weighted_points" &&
+      stageCount === officialStageWeights.length;
     const stages = Array.from({ length: stageCount }, (_, index) => ({
       event_id: event.id,
       stage_number: index + 1,
       name: stageCount === 1 ? name : `Dia ${index + 1}`,
       route_label: `Percurso ${index + 1}`,
       stage_date: dateAtOffset(startsOn, index),
-      classification_weight: 1,
+      classification_weight: usesOfficialFourStageScoring
+        ? officialStageWeights[index]
+        : 1,
     }));
     const { error: stagesError } = await supabase.from("stages").insert(stages);
     if (stagesError) throw stagesError;
@@ -268,11 +291,31 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json() as Record<string, unknown>;
     const eventId = String(body.event_id ?? "").trim();
     if (!eventId) return NextResponse.json({ error: "Evento não informado." }, { status: 400 });
-    const requestedSource = "registration_source" in body ? String(body.registration_source ?? "") : null;
-    const requestedFee = "registration_fee_cents" in body ? optionalPositiveInteger(body.registration_fee_cents) : undefined;
-    if (requestedSource === "asaas" && !requestedFee) {
-      return NextResponse.json({ error: "Informe o valor da inscrição para ativar o checkout Asaas." }, { status: 400 });
-    }
+    const supabase = createSupabaseAdmin();
+    const currentResult = await supabase
+      .from("events")
+      .select("is_test, registration_open, windfit_registration_url")
+      .eq("id", eventId)
+      .single();
+    if (currentResult.error) throw currentResult.error;
+    const isTest =
+      "is_test" in body
+        ? body.is_test === true
+        : currentResult.data.is_test === true;
+    const registrationSource = isTest ? "manual" : "windfit";
+    const registrationOpen =
+      "registration_open" in body
+        ? body.registration_open === true
+        : currentResult.data.registration_open === true;
+    const windfitRegistrationUrl =
+      "windfit_registration_url" in body
+        ? normalizedWindfitUrl(body.windfit_registration_url)
+        : currentResult.data.windfit_registration_url;
+    if (registrationSource === "windfit" && registrationOpen && !windfitRegistrationUrl)
+      return NextResponse.json(
+        { error: "Informe o link da Windfit antes de abrir as inscrições." },
+        { status: 400 },
+      );
     const premiumKitEnabled =
       "premium_kit_enabled" in body
         ? body.premium_kit_enabled === true
@@ -287,7 +330,7 @@ export async function PATCH(request: NextRequest) {
         { status: 400 },
       );
     const lots = normalizedLots(body.registration_lots);
-    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "registration_source", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "windfit_registration_url", "terms_url", "registration_fee_cents", "experience_fee_cents", "asaas_checkout_expires_minutes", "asaas_max_installments", "premium_kit_enabled", "premium_kit_fee_cents", "casual_shirt_required", "senior_discount_enabled", "senior_discount_percent", "regulation_version"] as const;
+    const fields = ["name", "slug", "starts_on", "ends_on", "timezone", "status", "description", "location", "event_type", "scoring_mode", "access_mode", "participant_limit", "is_test", "registration_open", "registration_closes_at", "terms_url", "registration_fee_cents", "experience_fee_cents", "premium_kit_enabled", "premium_kit_fee_cents", "casual_shirt_required", "senior_discount_enabled", "senior_discount_percent", "regulation_version"] as const;
     const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
     for (const field of fields) {
       if (!(field in body)) continue;
@@ -298,15 +341,14 @@ export async function PATCH(request: NextRequest) {
           body.premium_kit_enabled === false
             ? null
             : optionalPositiveInteger(body[field]);
-      else if (field === "asaas_checkout_expires_minutes") payload[field] = boundedInteger(body[field], 120, 10, 1440);
-      else if (field === "asaas_max_installments") payload[field] = boundedInteger(body[field], 1, 1, 21);
       else if (field === "senior_discount_percent")
         payload[field] = boundedInteger(body[field], 50, 50, 100);
       else payload[field] = body[field];
     }
-    const supabase = createSupabaseAdmin();
+    payload.registration_source = registrationSource;
+    payload.windfit_registration_url = windfitRegistrationUrl;
     const { data, error } = await supabase.from("events").update(payload).eq("id", eventId).select(extendedFields).single();
-    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012, 022 e 024 no Supabase." }, { status: 409 });
+    if (error?.code === "42703") return NextResponse.json({ error: "Execute as migrations 012, 024 e 028 no Supabase." }, { status: 409 });
     if (error) throw error;
     await saveLots(supabase, eventId, lots);
     await recordAdminAudit(request, { action: "event.updated", resourceType: "event", resourceId: eventId, eventId, details: { fields: Object.keys(payload).filter((field) => field !== "updated_at") } });

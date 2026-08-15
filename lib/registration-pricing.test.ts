@@ -3,7 +3,6 @@ import test from "node:test";
 import {
   activeRegistrationLot,
   calculateRegistrationPricing,
-  calculateServiceFeeCents,
   isApparelSize,
   nextRegistrationLot,
   registrationLotForMode,
@@ -69,9 +68,7 @@ test("aplica 50% apenas à inscrição de pessoa com 60 anos", () => {
   assert.equal(pricing.discountedRegistrationFeeCents, 59950);
   assert.equal(pricing.premiumKitFeeCents, 34900);
   assert.equal(pricing.subtotalCents, 94850);
-  assert.equal(pricing.serviceFeePercent, 7.5);
-  assert.equal(pricing.serviceFeeCents, 7114);
-  assert.equal(pricing.totalCents, 101964);
+  assert.equal(pricing.totalCents, 94850);
 });
 
 test("não antecipa o benefício antes do aniversário de 60 anos", () => {
@@ -84,14 +81,7 @@ test("não antecipa o benefício antes do aniversário de 60 anos", () => {
   });
   assert.equal(pricing.age, 59);
   assert.equal(pricing.seniorDiscountCents, 0);
-  assert.equal(pricing.serviceFeeCents, 8993);
-  assert.equal(pricing.totalCents, 128893);
-});
-
-test("calcula 7,5% com arredondamento financeiro em centavos", () => {
-  assert.equal(calculateServiceFeeCents(119900), 8993);
-  assert.equal(calculateServiceFeeCents(139900), 10493);
-  assert.equal(calculateServiceFeeCents(159900), 11993);
+  assert.equal(pricing.totalCents, 119900);
 });
 
 test("valida somente os tamanhos oficiais", () => {

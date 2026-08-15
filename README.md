@@ -59,29 +59,23 @@ confirmadas e pagas ou cortesias são consideradas. A atividade entra automatica
 quando existe exatamente uma etapa elegível, com rota ativa, na mesma data local. Uma
 coincidência ambígua é registrada para tratamento manual e nunca associada por palpite.
 
-## Inscrições e pagamentos pelo Asaas
+## Inscrições e pagamentos pela Windfit
 
-O Legends Engine cria a inscrição como pendente e redireciona o atleta para o
-checkout hospedado pelo Asaas. Pix e cartão ficam fora do site; o Legends não recebe
-nem armazena dados do cartão. A vaga só se torna confirmada quando o webhook do Asaas
-informa o pagamento.
+A Windfit é a fonte exclusiva das inscrições comerciais e dos pagamentos. O site
+da Legends apenas direciona o atleta ao link oficial configurado no evento. O Race
+Engine recebe a lista exportada da Windfit no painel **Inscritos** e mantém exceções
+manuais somente para cortesias, convidados e correções administrativas.
 
-1. Execute `supabase/migrations/022_asaas_checkout.sql`.
-2. Configure `ASAAS_ENVIRONMENT=sandbox`, `ASAAS_API_KEY` e
-   `ASAAS_WEBHOOK_TOKEN` na Vercel.
-3. No Asaas Sandbox, crie um webhook apontando para:
-   `https://www.legendsbikerace.com.br/api/webhooks/asaas`
-4. Use o mesmo valor de `ASAAS_WEBHOOK_TOKEN` no campo de token de autenticação do
-   webhook e habilite, no mínimo, os eventos de checkout criado, pago, cancelado e
-   expirado. Os eventos financeiros de confirmação, estorno, análise de risco e
-   chargeback também são aceitos.
-5. No painel da organização, abra **Eventos**, selecione **Asaas** como origem,
-   defina os preços, o tempo de reserva e o número máximo de parcelas.
-6. Rode `npm run test:payments` e faça uma inscrição completa no Sandbox antes de
-   trocar `ASAAS_ENVIRONMENT` para `production` e usar a chave de produção.
+1. Execute as migrations até `029_remove_asaas_legacy.sql`.
+2. No painel da organização, abra **Eventos** e informe o link HTTPS da Windfit.
+3. Só abra as inscrições depois de validar esse link.
+4. Exporte o CSV da Windfit e importe-o em **Inscritos → Importar Windfit**.
+5. Confira total, pagamentos pendentes, cancelamentos e vínculos antes de numerar.
 
-As URLs de retorno servem apenas para orientar o atleta. A confirmação financeira é
-sempre processada pelo webhook, de forma idempotente.
+A migration 029 remove os registros do checkout descontinuado, o histórico de
+webhooks, as colunas específicas do antigo provedor e as rotas públicas de retorno
+de pagamento. CPF e endereço permanecem porque são dados operacionais do atleta e
+podem ser importados da Windfit.
 
 ## Publicação
 
