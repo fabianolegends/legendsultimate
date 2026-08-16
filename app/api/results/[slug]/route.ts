@@ -32,7 +32,7 @@ export async function GET(
     const { data: results, error: resultError } = stageIds.length
       ? await supabase
         .from("stage_results")
-        .select("id, stage_id, athlete_id, registration_id, full_name, bib_number, category, official_time_s, time_penalty_s, points_penalty, final_time_s, position, weighted_points, status, admin_note, published_at")
+        .select("id, stage_id, athlete_id, registration_id, full_name, bib_number, category, journey_format, official_time_s, time_penalty_s, points_penalty, final_time_s, position, weighted_points, status, admin_note, published_at")
         .in("stage_id", stageIds)
         .in("status", ["official", "disqualified", "dnf"])
         .order("category", { ascending: true })
@@ -49,6 +49,7 @@ export async function GET(
       full_name: result.full_name,
       bib_number: result.bib_number,
       category: result.category,
+      journey_format: result.journey_format ?? "ultimate",
       official_time_s: Number(result.official_time_s),
       time_penalty_s: Number(result.time_penalty_s ?? 0),
       points_penalty: Number(result.points_penalty ?? 0),
@@ -71,13 +72,14 @@ export async function GET(
       full_name: result.full_name,
       bib_number: result.bib_number,
       category: result.category,
+      journey_format: result.journey_format,
       stage_id: result.stage_id,
       stage_number: Number(result.stage?.stage_number ?? 0),
       position: result.position,
       final_time_s: result.final_time_s,
       weighted_points: result.weighted_points,
       status: result.status,
-    })), (stages ?? []).length).map((row) => ({
+    })), (stages ?? []).length, { ultimate: [1, 2, 3, 4], short: [3, 4] }).map((row) => ({
       ...row,
       total_time_s: row.stage_results.reduce((total, result) => total + Number(result.final_time_s), 0),
     }));

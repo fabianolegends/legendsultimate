@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     let registrations: any[] = [];
 
     if (eventIds.length) {
-      const modernFields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, source, external_registration_id, payment_status, last_synced_at";
+      const modernFields = "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, journey_format, country_code, city, status, claimed_at, source, external_registration_id, payment_status, last_synced_at";
       let result = await supabase
         .from("registrations")
         .select(modernFields)
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           .select("id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at")
           .eq("athlete_id", athlete.id)
           .order("created_at", { ascending: false });
-        result = { data: (fallback.data ?? []).map((item: any) => ({ ...item, source: "manual", payment_status: "courtesy" })), error: fallback.error } as any;
+        result = { data: (fallback.data ?? []).map((item: any) => ({ ...item, journey_format: "ultimate", source: "manual", payment_status: "courtesy" })), error: fallback.error } as any;
       }
 
       if (result.error?.code === "42P01") {
@@ -94,10 +94,11 @@ export async function GET(request: NextRequest) {
 
     const eligibleRegistrations = registrations.filter((item) => item.status === "confirmed" && registrationPaymentAllowsAccess(item.payment_status));
     const eligibleEventIds = new Set(eligibleRegistrations.map((item) => item.event_id));
+    const hasUltimateRegistration = eligibleRegistrations.some((item) => (item.journey_format ?? "ultimate") === "ultimate");
     const visibleStages = registrationRequired
       ? []
       : eligibleEventIds.size
-        ? (stageRows ?? []).filter((stage: any) => eligibleEventIds.has(stage.event_id))
+        ? (stageRows ?? []).filter((stage: any) => eligibleEventIds.has(stage.event_id) && (hasUltimateRegistration || Number(stage.stage_number) >= 3))
         : stageRows ?? [];
 
     const { data: activities, error: activityError } = await supabase
@@ -187,24 +188,25 @@ export async function GET(request: NextRequest) {
     if (eventIds.length && certificateByEvent.size) {
       const { data: officialResults } = await supabase
         .from("stage_results")
-        .select("event_id, stage_id, athlete_id, registration_id, full_name, bib_number, category, final_time_s, position, weighted_points, status")
+        .select("event_id, stage_id, athlete_id, registration_id, full_name, bib_number, category, journey_format, final_time_s, position, weighted_points, status")
         .in("event_id", eventIds)
         .in("status", ["official", "disqualified", "dnf"]);
       for (const eventId of eventIds) {
         const eventStages = normalizedStages.filter((stage: any) => stage.event_id === eventId);
-        if (!eventStages.length || !eventStages.every((stage: any) => stage.results_published === true)) continue;
-        const stageById = new Map(eventStages.map((stage: any) => [stage.id, stage]));
+        const publishedStages = eventStages.filter((stage: any) => stage.results_published === true);
+        if (!publishedStages.length) continue;
+        const stageById = new Map(publishedStages.map((stage: any) => [stage.id, stage]));
         const source = (officialResults ?? []).filter((item: any) => item.event_id === eventId && stageById.has(item.stage_id));
         const overall = buildOverallClassification(source.map((item: any) => ({
           athlete_id: item.athlete_id, registration_id: item.registration_id, full_name: item.full_name,
-          bib_number: item.bib_number, category: item.category, stage_id: item.stage_id,
+          bib_number: item.bib_number, category: item.category, journey_format: item.journey_format ?? "ultimate", stage_id: item.stage_id,
           stage_number: Number((stageById.get(item.stage_id) as any)?.stage_number ?? 0), position: item.position,
           final_time_s: Number(item.final_time_s), weighted_points: Number(item.weighted_points), status: item.status,
-        })), eventStages.length);
+        })), eventStages.length, { ultimate: [1, 2, 3, 4], short: [3, 4] });
         for (const item of overall) {
           const value = { ...item, total_time_s: item.stage_results.reduce((total, result) => total + Number(result.final_time_s), 0) };
           certificateResultByIdentity.set(`${eventId}:${item.registration_id || item.athlete_id}`, value);
-          certificateResultByIdentity.set(`${eventId}:${item.athlete_id}`, value);
+          certificateResultByIdentity.set(`${eventId}:${item.athlete_id}:${item.journey_format}`, value);
         }
       }
     }
@@ -212,14 +214,14 @@ export async function GET(request: NextRequest) {
       const event = eventById.get(registration.event_id) ?? null;
       const config = certificateByEvent.get(registration.event_id);
       const classification = certificateResultByIdentity.get(`${registration.event_id}:${registration.id}`)
-        ?? certificateResultByIdentity.get(`${registration.event_id}:${registration.athlete_id}`);
+        ?? certificateResultByIdentity.get(`${registration.event_id}:${registration.athlete_id}:${registration.journey_format ?? "ultimate"}`);
       const templateUrl = config?.certificate_template_path
         ? supabase.storage.from("certificate-templates").getPublicUrl(config.certificate_template_path).data.publicUrl
         : null;
       return {
         ...registration,
         event,
-        stage_count: normalizedStages.filter((stage: any) => stage.event_id === registration.event_id).length,
+        stage_count: normalizedStages.filter((stage: any) => stage.event_id === registration.event_id && ((registration.journey_format ?? "ultimate") === "ultimate" || Number(stage.stage_number) >= 3)).length,
         certificate: {
           enabled: config?.certificate_enabled === true && Boolean(templateUrl),
           available: config?.certificate_enabled === true && Boolean(templateUrl) && classification?.eligible_for_title === true,

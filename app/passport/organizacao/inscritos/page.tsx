@@ -34,6 +34,7 @@ type Registration = {
   gender: string | null;
   category: string | null;
   modality: string;
+  journey_format: "ultimate" | "short";
   country_code: string | null;
   city: string | null;
   status: string;
@@ -107,6 +108,7 @@ type FormState = {
   gender: string;
   category: string;
   modality: string;
+  journey_format: string;
   country_code: string;
   city: string;
   status: string;
@@ -127,12 +129,12 @@ type FormState = {
 type RegistrationView = "registration" | "contact" | "financial";
 
 const categories = [
-  "Masculino Open 18–35",
-  "Masculino Master 36–49",
-  "Masculino Sênior 50+",
-  "Feminino 18–40",
-  "Feminino 41+",
-  "Feminino única",
+  "Open 18–29",
+  "Master A 30–39",
+  "Master B 40–49",
+  "Senior 50+",
+  "Feminino A 18–40",
+  "Feminino B 41+",
   "Experience",
 ];
 const emptyForm: FormState = {
@@ -145,6 +147,7 @@ const emptyForm: FormState = {
   gender: "",
   category: "",
   modality: "gravel_race",
+  journey_format: "ultimate",
   country_code: "BR",
   city: "",
   status: "confirmed",
@@ -223,6 +226,7 @@ function parseCsv(text: string) {
     gender: ["sexo", "genero", "gender"],
     category: ["categoria", "category"],
     modality: ["modalidade", "produto", "prova", "modality"],
+    journey_format: ["formato", "formato_da_jornada", "jornada", "journey_format", "produto"],
     country_code: ["pais", "country", "country_code"],
     city: ["cidade", "city"],
     location: ["cidade_estado_pais", "localizacao", "location"],
@@ -276,6 +280,7 @@ function parseCsv(text: string) {
         return index >= 0 ? (values[index] ?? "") : "";
       };
       const modalityText = read("modality").toLowerCase();
+      const journeyText = read("journey_format").toLowerCase();
       const registrationStatus = read("status");
       return {
         full_name: read("full_name"),
@@ -289,6 +294,7 @@ function parseCsv(text: string) {
           modalityText.includes("turismo")
             ? "experience"
             : "gravel_race",
+        journey_format: journeyText.includes("short") ? "short" : "ultimate",
         country_code: read("country_code") || "BR",
         city: read("city") || null,
         status: registrationStatus || "confirmed",
@@ -570,6 +576,7 @@ export default function RegistrationsPage() {
       gender: item.gender ?? "",
       category: item.category ?? "",
       modality: item.modality,
+      journey_format: item.journey_format ?? "ultimate",
       country_code: item.country_code ?? "",
       city: item.city ?? "",
       status: item.status,
@@ -1300,6 +1307,16 @@ export default function RegistrationsPage() {
                       </select>
                     </div>
                     <div className="field">
+                      <label>Formato da jornada</label>
+                      <select
+                        value={form.journey_format}
+                        onChange={(e) => setForm({ ...form, journey_format: e.target.value })}
+                      >
+                        <option value="ultimate">Legends Ultimate · 4 etapas</option>
+                        <option value="short">Legends Short · Stages 03 e 04</option>
+                      </select>
+                    </div>
+                    <div className="field">
                       <label>Modalidade</label>
                       <select
                         value={form.modality}
@@ -1653,6 +1670,7 @@ export default function RegistrationsPage() {
                         <th>Nº</th>
                         <th>Nome completo</th>
                         <th>Categoria</th>
+                        <th>Formato</th>
                         <th>Modalidade</th>
                         <th>Camiseta casual</th>
                         <th>Kit Premium</th>
@@ -1669,6 +1687,7 @@ export default function RegistrationsPage() {
                           <td>{item.bib_number ?? "—"}</td>
                           <td className="name-cell">{item.full_name}</td>
                           <td>{item.category ?? "—"}</td>
+                          <td>{item.journey_format === "short" ? "Short" : "Ultimate"}</td>
                           <td>{modalityLabel(item.modality)}</td>
                           <td>{item.casual_shirt_size ?? "—"}</td>
                           <td>{item.premium_kit_selected ? "Sim" : "Não"}</td>

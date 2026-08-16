@@ -20,6 +20,7 @@ type RegistrationInput = {
   gender?: string | null;
   category?: string | null;
   modality?: string;
+  journey_format?: string;
   country_code?: string | null;
   city?: string | null;
   status?: string;
@@ -184,6 +185,11 @@ function normalizeModality(value: unknown) {
     : "gravel_race";
 }
 
+function normalizeJourneyFormat(value: unknown) {
+  const text = normalizeText(value);
+  return text.includes("short") ? "short" : "ultimate";
+}
+
 function normalizeInput(
   input: RegistrationInput,
   options?: {
@@ -227,6 +233,7 @@ function normalizeInput(
     gender: normalizeGender(input.gender),
     category: cleanNullable(input.category),
     modality: normalizeModality(input.modality),
+    journey_format: normalizeJourneyFormat(input.journey_format),
     country_code: cleanNullable(input.country_code)?.toUpperCase() ?? null,
     city: cleanNullable(input.city),
     status,

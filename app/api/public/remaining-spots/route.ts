@@ -6,7 +6,7 @@ export async function GET() {
     const supabase = createSupabaseAdmin();
     const { data, error } = await supabase
       .from("events")
-      .select("participant_limit, public_remaining_spots")
+      .select("participant_limit, public_remaining_spots, public_remaining_spots_ultimate, public_remaining_spots_short")
       .eq("starts_on", "2027-04-29")
       .eq("is_test", false)
       .order("updated_at", { ascending: false })
@@ -14,19 +14,23 @@ export async function GET() {
       .maybeSingle();
 
     if (error?.code === "42703") {
-      return NextResponse.json({ total: 100, remaining: 100, configured: false });
+      return NextResponse.json({ total: 150, remaining: 150, ultimate: { total: 100, remaining: 100 }, short: { total: 50, remaining: 50 }, configured: false });
     }
     if (error) throw error;
 
-    const total = Number(data?.participant_limit ?? 100);
-    const remaining = Number(data?.public_remaining_spots ?? total);
+    const ultimateRemaining = Number(data?.public_remaining_spots_ultimate ?? 100);
+    const shortRemaining = Number(data?.public_remaining_spots_short ?? 50);
+    const total = 150;
+    const remaining = ultimateRemaining + shortRemaining;
 
     return NextResponse.json({
-      total: Number.isFinite(total) && total > 0 ? total : 100,
-      remaining: Number.isFinite(remaining) && remaining >= 0 ? remaining : 100,
+      total,
+      remaining: Number.isFinite(remaining) && remaining >= 0 ? remaining : 150,
+      ultimate: { total: 100, remaining: Number.isFinite(ultimateRemaining) ? ultimateRemaining : 100 },
+      short: { total: 50, remaining: Number.isFinite(shortRemaining) ? shortRemaining : 50 },
       configured: Boolean(data),
     });
   } catch {
-    return NextResponse.json({ total: 100, remaining: 100, configured: false });
+    return NextResponse.json({ total: 150, remaining: 150, ultimate: { total: 100, remaining: 100 }, short: { total: 50, remaining: 50 }, configured: false });
   }
 }

@@ -68,25 +68,15 @@ export default function LaunchHomePreview() {
       if (!spots) {
         spots = document.createElement("div");
         spots.className = "remainingSpotsCard";
-        spots.innerHTML = '<span>RESTAM</span><strong>100</strong><small>VAGAS / DE 100</small>';
+        spots.innerHTML = '<span>ULTIMATE</span><strong>R$ 899</strong><small>100 VAGAS</small>';
         if (links[1]) links[1].insertAdjacentElement("afterend", spots);
         else ctas.appendChild(spots);
       }
 
-      void fetch("/api/public/remaining-spots", { cache: "no-store" })
-        .then((response) => response.json())
-        .then((payload) => {
-          const total = Number(payload.total ?? 100);
-          const remaining = Number(payload.remaining ?? total);
-          if (!spots) return;
-          spots.innerHTML = `<span>RESTAM</span><strong>${remaining}</strong><small>VAGAS / DE ${total}</small>`;
-        })
-        .catch(() => undefined);
-
       if (!ctas.querySelector(".launchPrice")) {
         const price = document.createElement("div");
         price.className = "launchPrice";
-        price.innerHTML = '<span>LOTE 01</span><strong>R$ 1.199</strong><small>próximo lote R$ 1.399</small>';
+        price.innerHTML = '<span>SHORT</span><strong>R$ 699</strong><small>50 VAGAS</small>';
         ctas.appendChild(price);
       }
     }
@@ -122,10 +112,10 @@ export default function LaunchHomePreview() {
       const h2 = priority.querySelector<HTMLElement>("h2");
       const p = priority.querySelector<HTMLElement>("p:not(.kicker)");
       const a = priority.querySelector<HTMLAnchorElement>("a");
-      if (pk) pk.textContent = "29 ABR — 02 MAI 2027 · LOTE 01 · R$ 1.199";
-      if (h2) h2.innerHTML = "Quero ser um<br><em>dos 100.</em>";
+      if (pk) pk.textContent = "ULTIMATE R$ 899 · SHORT R$ 699";
+      if (h2) h2.innerHTML = "Quero escolher<br><em>minha jornada.</em>";
       if (p) p.textContent = "Confira modalidade, documentos e condições. Nesta prévia, a compra continua bloqueada até a abertura oficial.";
-      if (a) { a.href = "/inscricoes"; a.innerHTML = "Quero ser um dos 100 <span>→</span>"; }
+      if (a) { a.href = "/inscricoes#jornadas"; a.innerHTML = "Comparar Ultimate e Short <span>→</span>"; }
     }
 
     const oldIncluded = home.querySelector<HTMLElement>(".includedSection");
@@ -154,7 +144,7 @@ export default function LaunchHomePreview() {
 
     {journeyTarget && createPortal(
       <section className="launchJourney"><div className="wrap">
-        <div className="launchJourneyHead"><div><p className="eyebrow">Como funciona a jornada</p><h2>Você pedala.<br />A jornada segue.</h2></div><p>Sem complicar a decisão com tecnologia e regulamento. O essencial é entender como seus quatro dias funcionam na prática.</p></div>
+        <div className="launchJourneyHead"><div><p className="eyebrow">Como funciona a jornada</p><h2>Você pedala.<br />A jornada segue.</h2></div><p>Sem complicar a decisão com tecnologia e regulamento. O essencial é entender como a jornada escolhida funciona na prática.</p></div>
         <div className="journeySteps">
           <article><b>01</b><h3>Largue</h3><p>Com o GPX oficial, sua estratégia de hidratação, alimentação e equipamento.</p></article>
           <article><b>02</b><h3>Pedale</h3><p>Siga a rota por GPS e complete os checkpoints previstos para a etapa.</p></article>

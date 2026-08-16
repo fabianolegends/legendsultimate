@@ -83,18 +83,17 @@ export default function ListaPrioritaria() {
 
       <section className="content wrap">
         <div>
-          <p className="kicker">A primeira edição está sendo construída</p>
-          <h1 className="headline">Seja um dos 100 Legends.</h1>
+          <p className="kicker">Inscrições 2027</p>
+          <h1 className="headline">Escolha sua jornada Legends.</h1>
           <p className="lead">
-            Entre para a lista prioritária e receba antes do público a data oficial,
-            os valores, a abertura das inscrições, os hotéis parceiros e as novidades
-            da primeira edição.
+            Entre para a lista prioritária e receba primeiro o link de abertura das
+            inscrições, os hotéis conveniados e as atualizações oficiais da primeira edição.
           </p>
           <div className="facts">
-            <div className="fact"><strong>100</strong><span>vagas previstas</span></div>
-            <div className="fact"><strong>04</strong><span>dias de travessia</span></div>
-            <div className="fact"><strong>370,3</strong><span>quilômetros</span></div>
-            <div className="fact"><strong>6.302</strong><span>metros de ascensão</span></div>
+            <div className="fact"><strong>100</strong><span>vagas Ultimate</span></div>
+            <div className="fact"><strong>50</strong><span>vagas Short</span></div>
+            <div className="fact"><strong>04</strong><span>etapas Ultimate</span></div>
+            <div className="fact"><strong>02</strong><span>etapas Short</span></div>
           </div>
         </div>
 

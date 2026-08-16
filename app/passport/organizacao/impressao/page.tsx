@@ -18,6 +18,7 @@ type StageResult = {
   full_name: string;
   bib_number: string | null;
   category: string;
+  journey_format: "ultimate" | "short";
   official_time_s: number;
   time_penalty_s: number;
   points_penalty: number;
@@ -39,6 +40,7 @@ type OverallResult = {
   full_name: string;
   bib_number: string | null;
   category: string;
+  journey_format: "ultimate" | "short";
   overall_position: number;
   total_points: number;
   stages_completed: number;
@@ -87,6 +89,7 @@ export default function PrintResultsPage() {
   const [stageId, setStageId] = useState("");
   const [view, setView] = useState<"stage" | "overall">("stage");
   const [category, setCategory] = useState("all");
+  const [journeyFormat, setJourneyFormat] = useState<"ultimate" | "short">("ultimate");
   const [includeCheckpoints, setIncludeCheckpoints] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -115,16 +118,23 @@ export default function PrintResultsPage() {
       .catch((error) => setMessage(error.message));
   }, [activeEventId]);
 
+  const availableStages = useMemo(
+    () => (payload?.stages ?? []).filter((row) => journeyFormat === "ultimate" || row.stage_number >= 3),
+    [payload, journeyFormat],
+  );
+  useEffect(() => {
+    if (!availableStages.some((row) => row.id === stageId)) setStageId(availableStages[0]?.id ?? "");
+  }, [availableStages, stageId]);
   const categories = useMemo(
     () =>
       [
         ...new Set(
-          (view === "stage" ? payload?.results : payload?.overall)?.map(
-            (row) => row.category,
-          ) ?? [],
+          (view === "stage" ? payload?.results : payload?.overall)
+            ?.filter((row) => row.journey_format === journeyFormat)
+            .map((row) => row.category) ?? [],
         ),
       ].sort((left, right) => left.localeCompare(right, "pt-BR")),
-    [payload, view],
+    [payload, view, journeyFormat],
   );
   const stage = payload?.stages.find((row) => row.id === stageId) ?? null;
   const stageRows = useMemo(
@@ -132,16 +142,17 @@ export default function PrintResultsPage() {
       (payload?.results ?? []).filter(
         (row) =>
           row.stage_id === stageId &&
+          row.journey_format === journeyFormat &&
           (category === "all" || row.category === category),
       ),
-    [payload, stageId, category],
+    [payload, stageId, category, journeyFormat],
   );
   const overallRows = useMemo(
     () =>
       (payload?.overall ?? []).filter(
-        (row) => category === "all" || row.category === category,
+        (row) => row.journey_format === journeyFormat && (category === "all" || row.category === category),
       ),
-    [payload, category],
+    [payload, category, journeyFormat],
   );
   const groups = useMemo(
     () =>
@@ -157,6 +168,7 @@ export default function PrintResultsPage() {
         (row.registration_id
           ? result.registration_id === row.registration_id
           : result.athlete_id === row.athlete_id) &&
+        result.journey_format === row.journey_format &&
         (result.time_penalty_s > 0 || result.points_penalty > 0),
     );
   }
@@ -164,7 +176,7 @@ export default function PrintResultsPage() {
   return (
     <main className="print-page">
       <style>{`
-        .print-page{min-height:calc(100vh - 82px);background:#ece4d7;color:#151814;padding:36px 4vw 80px;font-family:Arial,sans-serif}.print-shell{max-width:1500px;margin:auto}.screen-title{display:flex;justify-content:space-between;align-items:end;gap:20px}.screen-title h1{font-size:clamp(38px,5vw,68px);line-height:.9;margin:8px 0;text-transform:uppercase}.kicker{color:#bf5e19;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}.print-controls{display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:10px;margin:26px 0}.print-controls select,.print-controls button{padding:14px;border:1px solid #59584f;background:#f7f1e8;color:#171917;font-weight:800}.print-controls button{background:#e86619;border-color:#e86619;color:white;cursor:pointer}.checkpoint-option{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #59584f;background:#f7f1e8;font-weight:800;white-space:nowrap}.checkpoint-option input{width:18px;height:18px;accent-color:#e86619}.message{padding:14px;border:1px solid #a96e3a;color:#8b4819;margin:18px 0}.category-sheet{background:white;border:1px solid #b9b2a7;margin:22px 0;padding:26px}.document-head{display:flex;justify-content:space-between;gap:24px;border-bottom:3px solid #e86619;padding-bottom:14px;margin-bottom:18px}.document-head h2{font-size:30px;margin:4px 0}.document-side{display:flex;align-items:flex-start;justify-content:flex-end;gap:18px}.document-logo{width:82px;height:auto;object-fit:contain}.document-meta{text-align:right;color:#555}.document-meta strong,.document-meta span{display:block}.result-table{width:100%;border-collapse:collapse}.result-table th,.result-table td{padding:9px 7px;border-bottom:1px solid #d2cdc5;text-align:left;vertical-align:top;font-size:12px}.result-table th{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#9a4d17}.position{font-size:18px;font-weight:900}.bib,.points{font-weight:900;color:#c65b14}.athlete strong,.athlete small,.penalty strong,.penalty small{display:block}.athlete small,.penalty small{color:#666;margin-top:4px}.penalty small{max-width:220px}.checkpoint-list{display:grid;grid-template-columns:repeat(9,minmax(42px,1fr));gap:3px;min-width:410px;white-space:nowrap}.checkpoint-time{border:1px solid #ccc;padding:4px 3px;min-width:0;text-align:center}.checkpoint-time strong,.checkpoint-time small{display:block}.checkpoint-time strong{font-size:10px;letter-spacing:-.03em}.checkpoint-time small{font-size:7px;color:#666;margin-bottom:2px}.stage-cell{min-width:88px}.stage-cell strong,.stage-cell small{display:block}.stage-cell strong{font-size:13px}.stage-cell small{font-size:10px;color:#c65b14;font-weight:900;margin-top:4px}.totals strong,.totals small{display:block}.totals small{color:#c65b14;font-weight:900;margin-top:4px}.empty{padding:50px;text-align:center;border:1px solid #aaa}.document-footer{display:flex;justify-content:space-between;margin-top:22px;padding-top:10px;border-top:1px solid #bbb;color:#666;font-size:10px}.official-badge{color:#18733d;font-weight:900}.provisional-badge{color:#a55819;font-weight:900}@media(max-width:850px){.print-controls{grid-template-columns:1fr}.document-head{display:block}.document-side{justify-content:space-between;margin-top:15px}.document-meta{text-align:left}.category-sheet{padding:14px;overflow:auto}}
+        .print-page{min-height:calc(100vh - 82px);background:#ece4d7;color:#151814;padding:36px 4vw 80px;font-family:Arial,sans-serif}.print-shell{max-width:1500px;margin:auto}.screen-title{display:flex;justify-content:space-between;align-items:end;gap:20px}.screen-title h1{font-size:clamp(38px,5vw,68px);line-height:.9;margin:8px 0;text-transform:uppercase}.kicker{color:#bf5e19;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}.print-controls{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto auto;gap:10px;margin:26px 0}.print-controls select,.print-controls button{padding:14px;border:1px solid #59584f;background:#f7f1e8;color:#171917;font-weight:800}.print-controls button{background:#e86619;border-color:#e86619;color:white;cursor:pointer}.checkpoint-option{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #59584f;background:#f7f1e8;font-weight:800;white-space:nowrap}.checkpoint-option input{width:18px;height:18px;accent-color:#e86619}.message{padding:14px;border:1px solid #a96e3a;color:#8b4819;margin:18px 0}.category-sheet{background:white;border:1px solid #b9b2a7;margin:22px 0;padding:26px}.document-head{display:flex;justify-content:space-between;gap:24px;border-bottom:3px solid #e86619;padding-bottom:14px;margin-bottom:18px}.document-head h2{font-size:30px;margin:4px 0}.document-side{display:flex;align-items:flex-start;justify-content:flex-end;gap:18px}.document-logo{width:82px;height:auto;object-fit:contain}.document-meta{text-align:right;color:#555}.document-meta strong,.document-meta span{display:block}.result-table{width:100%;border-collapse:collapse}.result-table th,.result-table td{padding:9px 7px;border-bottom:1px solid #d2cdc5;text-align:left;vertical-align:top;font-size:12px}.result-table th{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#9a4d17}.position{font-size:18px;font-weight:900}.bib,.points{font-weight:900;color:#c65b14}.athlete strong,.athlete small,.penalty strong,.penalty small{display:block}.athlete small,.penalty small{color:#666;margin-top:4px}.penalty small{max-width:220px}.checkpoint-list{display:grid;grid-template-columns:repeat(9,minmax(42px,1fr));gap:3px;min-width:410px;white-space:nowrap}.checkpoint-time{border:1px solid #ccc;padding:4px 3px;min-width:0;text-align:center}.checkpoint-time strong,.checkpoint-time small{display:block}.checkpoint-time strong{font-size:10px;letter-spacing:-.03em}.checkpoint-time small{font-size:7px;color:#666;margin-bottom:2px}.stage-cell{min-width:88px}.stage-cell strong,.stage-cell small{display:block}.stage-cell strong{font-size:13px}.stage-cell small{font-size:10px;color:#c65b14;font-weight:900;margin-top:4px}.totals strong,.totals small{display:block}.totals small{color:#c65b14;font-weight:900;margin-top:4px}.empty{padding:50px;text-align:center;border:1px solid #aaa}.document-footer{display:flex;justify-content:space-between;margin-top:22px;padding-top:10px;border-top:1px solid #bbb;color:#666;font-size:10px}.official-badge{color:#18733d;font-weight:900}.provisional-badge{color:#a55819;font-weight:900}@media(max-width:850px){.print-controls{grid-template-columns:1fr}.document-head{display:block}.document-side{justify-content:space-between;margin-top:15px}.document-meta{text-align:left}.category-sheet{padding:14px;overflow:auto}}
         @media print{@page{size:A4 landscape;margin:8mm}html,body,.print-page,.print-shell{background:#fff!important;min-height:100%!important}.org-nav,.print-controls,.screen-title,.message{display:none!important}.print-page{padding:0;color:black}.print-shell{max-width:none}.category-sheet{background:#fff!important;border:0;margin:0;padding:0;break-after:page;page-break-after:always}.category-sheet:last-child{break-after:auto;page-break-after:auto}.result-table th,.result-table td{padding:5px 4px;font-size:9px}.document-head h2{font-size:22px}.document-logo{width:72px}.document-footer{position:relative}.penalty small{color:#333}.checkpoint-list{min-width:380px;gap:2px}.checkpoint-time{padding:3px 2px}.checkpoint-time strong{font-size:8px}.checkpoint-time small{font-size:6px}.stage-cell{min-width:72px}}
       `}</style>
       <div className="print-shell">
@@ -191,11 +203,21 @@ export default function PrintResultsPage() {
             disabled={view === "overall"}
             onChange={(event) => setStageId(event.target.value)}
           >
-            {payload?.stages.map((row) => (
+            {availableStages.map((row) => (
               <option key={row.id} value={row.id}>
                 Stage {row.stage_number} · {row.name}
               </option>
             ))}
+          </select>
+          <select
+            value={journeyFormat}
+            onChange={(event) => {
+              setJourneyFormat(event.target.value as "ultimate" | "short");
+              setCategory("all");
+            }}
+          >
+            <option value="ultimate">Legends Ultimate</option>
+            <option value="short">Legends Short</option>
           </select>
           <select
             value={category}
@@ -233,7 +255,7 @@ export default function PrintResultsPage() {
                 <div>
                   <p className="kicker">Legends Bike Race · Resultado</p>
                   <h2>{activeEvent?.name ?? "Evento"}</h2>
-                  <strong>{groupName}</strong>
+                  <strong>{journeyFormat === "short" ? "Legends Short" : "Legends Ultimate"} · {groupName}</strong>
                 </div>
                 <div className="document-side">
                   <div className="document-meta">
@@ -348,7 +370,7 @@ export default function PrintResultsPage() {
                       <th>Pos.</th>
                       <th>Nº</th>
                       <th>Atleta</th>
-                      {payload?.stages.map((currentStage) => (
+                      {availableStages.map((currentStage) => (
                         <th key={currentStage.id}>
                           Stage {currentStage.stage_number}
                         </th>
@@ -366,13 +388,13 @@ export default function PrintResultsPage() {
                         0,
                       );
                       return (
-                        <tr key={row.registration_id ?? row.athlete_id}>
+                        <tr key={`${row.journey_format}:${row.registration_id ?? row.athlete_id}`}>
                           <td className="position">{row.overall_position}</td>
                           <td className="bib">{row.bib_number ?? "—"}</td>
                           <td className="athlete">
                             <strong>{row.full_name}</strong>
                           </td>
-                          {payload?.stages.map((currentStage) => {
+                          {availableStages.map((currentStage) => {
                             const result = row.stage_results.find(
                               (item) => item.stage_id === currentStage.id,
                             );
@@ -412,7 +434,7 @@ export default function PrintResultsPage() {
                             {row.overall_position}º
                             <small style={{ display: "block", fontSize: 9 }}>
                               {row.stages_completed}/
-                              {payload?.stages.length ?? 0} etapas
+                              {availableStages.length} etapas
                             </small>
                           </td>
                         </tr>
@@ -422,7 +444,7 @@ export default function PrintResultsPage() {
                 </table>
               )}
               <footer className="document-footer">
-                <span>Categoria: {groupName}</span>
+                <span>{journeyFormat === "short" ? "Legends Short" : "Legends Ultimate"} · Categoria: {groupName}</span>
                 <span>
                   Emitido em {new Date().toLocaleString("pt-BR")} · Legends Core
                 </span>

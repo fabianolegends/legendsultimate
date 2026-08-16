@@ -7,6 +7,7 @@ export type StageClassificationInput = {
   registration_id?: string | null;
   full_name: string;
   category: string;
+  journey_format?: "ultimate" | "short" | string;
   final_time_s: number;
   points_penalty?: number;
   status: "provisional" | "review" | "official" | "disqualified" | "dnf" | string;
@@ -24,6 +25,7 @@ export type OverallStageResult = {
   full_name: string;
   bib_number?: string | null;
   category: string;
+  journey_format?: "ultimate" | "short" | string;
   stage_id: string;
   stage_number: number;
   position: number | null;
@@ -38,6 +40,7 @@ export type OverallClassificationResult = {
   full_name: string;
   bib_number?: string | null;
   category: string;
+  journey_format: string;
   overall_position: number;
   total_points: number;
   stages_completed: number;
@@ -88,9 +91,10 @@ export function classifyStage(
 
   const byCategory = new Map<string, typeof initial>();
   for (const candidate of initial) {
-    const current = byCategory.get(candidate.category) ?? [];
+    const groupKey = `${candidate.journey_format ?? "ultimate"}:${candidate.category}`;
+    const current = byCategory.get(groupKey) ?? [];
     current.push(candidate);
-    byCategory.set(candidate.category, current);
+    byCategory.set(groupKey, current);
   }
 
   for (const categoryResults of byCategory.values()) {
@@ -115,7 +119,8 @@ export function classifyStage(
     });
   }
 
-  return initial.sort((left, right) => left.category.localeCompare(right.category, "pt-BR")
+  return initial.sort((left, right) => (left.journey_format ?? "ultimate").localeCompare(right.journey_format ?? "ultimate", "pt-BR")
+    || left.category.localeCompare(right.category, "pt-BR")
     || (left.position ?? Number.MAX_SAFE_INTEGER) - (right.position ?? Number.MAX_SAFE_INTEGER)
     || left.full_name.localeCompare(right.full_name, "pt-BR"));
 }
@@ -134,16 +139,18 @@ function compareOverallSportingCriteria(left: OverallClassificationResult, right
 export function buildOverallClassification(
   results: OverallStageResult[],
   totalStages: number,
+  expectedStagesByFormat: Record<string, number[]> = {},
 ): OverallClassificationResult[] {
   const athletes = new Map<string, OverallClassificationResult>();
   for (const result of results.filter((item) => isClassifiable(item.status))) {
-    const identity = result.registration_id || result.athlete_id;
+    const identity = `${result.journey_format ?? "ultimate"}:${result.registration_id || result.athlete_id}`;
     const current = athletes.get(identity) ?? {
       athlete_id: result.athlete_id,
       registration_id: result.registration_id,
       full_name: result.full_name,
       bib_number: result.bib_number,
       category: result.category,
+      journey_format: result.journey_format ?? "ultimate",
       overall_position: 0,
       total_points: 0,
       stages_completed: 0,
@@ -169,16 +176,20 @@ export function buildOverallClassification(
   for (const athlete of athletes.values()) {
     athlete.stage_results.sort((left, right) => left.stage_number - right.stage_number);
     athlete.stages_completed = new Set(athlete.stage_results.map((result) => result.stage_id)).size;
-    athlete.eligible_for_title = totalStages > 0 && athlete.stages_completed === totalStages;
+    const expectedStages = expectedStagesByFormat[athlete.journey_format];
+    athlete.eligible_for_title = expectedStages?.length
+      ? expectedStages.every((stageNumber) => athlete.stage_results.some((result) => result.stage_number === stageNumber))
+      : totalStages > 0 && athlete.stages_completed === totalStages;
     athlete.stage3_points = Number(athlete.stage_results.find((result) => result.stage_number === 3)?.weighted_points ?? 0);
     athlete.stage4_position = athlete.stage_results.find((result) => result.stage_number === 4)?.position ?? null;
   }
 
   const byCategory = new Map<string, OverallClassificationResult[]>();
   for (const athlete of athletes.values()) {
-    const current = byCategory.get(athlete.category) ?? [];
+    const groupKey = `${athlete.journey_format}:${athlete.category}`;
+    const current = byCategory.get(groupKey) ?? [];
     current.push(athlete);
-    byCategory.set(athlete.category, current);
+    byCategory.set(groupKey, current);
   }
 
   const final: OverallClassificationResult[] = [];
@@ -198,5 +209,5 @@ export function buildOverallClassification(
     for (const athlete of categoryResults) athlete.shared_position = (positionFrequency.get(athlete.overall_position) ?? 0) > 1;
     final.push(...categoryResults);
   }
-  return final.sort((left, right) => left.category.localeCompare(right.category, "pt-BR") || left.overall_position - right.overall_position);
+  return final.sort((left, right) => left.journey_format.localeCompare(right.journey_format, "pt-BR") || left.category.localeCompare(right.category, "pt-BR") || left.overall_position - right.overall_position);
 }

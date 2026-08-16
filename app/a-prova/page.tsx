@@ -3,16 +3,16 @@ import RaceInfoMenu from "./RaceInfoMenu";
 
 export const metadata: Metadata = {
   title: "A Prova",
-  description: "Como funciona a Legends Bike Race 2027: quatro etapas, autonavegação, categorias, pontos, Race Engine e estrutura na Serra Gaúcha.",
+  description: "Como funcionam Legends Ultimate e Legends Short: formatos, etapas, autonavegação, categorias, pontos e Race Engine.",
   alternates: { canonical: "/a-prova" },
   openGraph: { url: "/a-prova", title: "A Prova | Legends Bike Race 2027", description: "Conheça a jornada, as modalidades e as regras esportivas da Legends Bike Race 2027." },
 };
 
 const numbers = [
-  ["04", "dias"],
-  ["370,3 km", "de percurso"],
-  ["6.302 m+", "de ascensão"],
-  ["100", "vagas"],
+  ["02", "formatos"],
+  ["4 ou 2", "etapas"],
+  ["370,3 km", "percurso máximo"],
+  ["150", "vagas totais"],
 ];
 
 const journey = [
@@ -34,13 +34,18 @@ export default function AboutRace() {
       <section className="aboutHero">
         <div className="shell">
           <p className="aboutKicker">A prova · 29 ABR — 02 MAI 2027</p>
-          <h1>Quatro dias.<br /><em>Uma única travessia.</em></h1>
-          <p className="aboutLead">Uma stage race que conecta Canela, São Francisco de Paula, Gramado e Nova Petrópolis em 370,3 km e 6.302 m+ pela Serra Gaúcha.</p>
+          <h1>Duas jornadas.<br /><em>Uma mesma essência.</em></h1>
+          <p className="aboutLead">Legends Ultimate percorre as quatro etapas da travessia. Legends Short reúne as duas etapas finais, com classificação e premiação independentes.</p>
           <div className="aboutNumbers">{numbers.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
         </div>
       </section>
 
       <section className="raceInfoSection"><div className="shell"><RaceInfoMenu /></div></section>
+
+      <section className="aboutNavigation shell" id="formatos">
+        <div><p className="detailEyebrow">Formatos da jornada</p><h2>Escolha quanto<br /><em>da história viver.</em></h2></div>
+        <div className="navigationText"><p><strong>Legends Ultimate</strong><br />29 de abril a 2 de maio · 4 etapas · 370,3 km · 6.302 m+ · 100 vagas · troféus do 1º ao 5º por categoria.</p><p><strong>Legends Short</strong><br />1º e 2 de maio · Stages 03 e 04 · 169,3 km · 3.098 m+ · 50 vagas · troféus do 1º ao 3º por categoria.</p><a className="button aboutButton" href="/inscricoes#jornadas">Comparar formatos <span>→</span></a></div>
+      </section>
 
       <section className="aboutConcept" id="conceito">
         <div className="shell aboutConceptGrid">
@@ -48,7 +53,7 @@ export default function AboutRace() {
           <div>
             <h2>Não é circuito.<br /><em>É travessia.</em></h2>
             <div className="aboutCopyCols">
-              <p>A Legends é disputada em quatro etapas consecutivas. Cada dia apresenta um novo percurso e exige que o participante administre esforço, equipamento, alimentação, navegação e recuperação.</p>
+              <p>A Legends oferece uma jornada completa de quatro etapas e uma jornada Short com as duas etapas finais. Cada formato exige que o participante administre esforço, equipamento, alimentação, navegação e recuperação.</p>
               <p>As vias poderão permanecer abertas ao trânsito. Autonomia e pilotagem defensiva fazem parte da experiência, sempre respeitando o Regulamento, as autoridades e as orientações de segurança.</p>
             </div>
           </div>
@@ -80,7 +85,7 @@ export default function AboutRace() {
         <div className="shell">
           <div className="classificationIntro">
             <p className="detailEyebrow">Classificação geral</p>
-            <div><h2>O tempo valida a etapa.<br /><em>Os pontos fazem a geral.</em></h2><p>A Gravel Race utiliza uma fórmula proporcional ao melhor tempo válido de cada categoria. O resultado de cada etapa é multiplicado pelo coeficiente correspondente, e a classificação geral é formada pela soma dos pontos válidos.</p></div>
+            <div><h2>O tempo valida a etapa.<br /><em>Os pontos fazem a geral.</em></h2><p>A Gravel Race utiliza uma fórmula proporcional ao melhor tempo válido de cada categoria. Ultimate e Short possuem classificações independentes: a Ultimate soma as quatro etapas; a Short soma apenas as Stages 03 e 04.</p></div>
           </div>
 
           <div className="stageWeights">
@@ -113,7 +118,9 @@ export default function AboutRace() {
             <div className="rulesBlock">
               <p className="detailEyebrow">Regras da geral</p>
               <ul>
-                <li>A classificação geral é formada pela soma dos pontos válidos das etapas.</li>
+                <li>Ultimate e Short possuem classificações gerais separadas.</li>
+                <li>A Ultimate soma os pontos das Stages 01 a 04; a Short soma os pontos das Stages 03 e 04.</li>
+                <li>A premiação contempla do 1º ao 5º na Ultimate e do 1º ao 3º na Short, em cada categoria.</li>
                 <li>DNS significa não largou; DNF significa largou e não concluiu validamente; DSQ significa desclassificado.</li>
                 <li>Um DNF pode ser autorizado a largar a etapa seguinte, sem recuperar a pontuação perdida.</li>
                 <li>Penalizações podem resultar em tempo, perda de pontos, DNF ou DSQ.</li>

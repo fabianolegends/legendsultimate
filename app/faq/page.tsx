@@ -9,20 +9,21 @@ export const metadata: Metadata = {
 
 const groups = [
   ["Participação", [
-    ["Quando será a Legends Bike Race 2027?", "De 29 de abril a 2 de maio de 2027, na Serra Gaúcha, em quatro etapas consecutivas."],
-    ["Quantas vagas haverá?", "A edição terá limite inicial de 100 participantes."],
-    ["A Legends é indicada para iniciantes?", "Não. Não é necessário ser atleta profissional, mas é indispensável estar preparado para quatro dias consecutivos, longa distância, altimetria elevada, estradas não pavimentadas e autonavegação."],
+    ["Quais são os formatos da Legends Bike Race 2027?", "A Legends Ultimate acontece de 29 de abril a 2 de maio, com quatro etapas. A Legends Short acontece em 1º e 2 de maio e reúne as Stages 03 e 04."],
+    ["Quantas vagas haverá?", "A Legends Ultimate terá 100 vagas e a Legends Short terá 50 vagas, com inscrições e controles independentes."],
+    ["Ultimate e Short pedalam juntas?", "Sim. Nas Stages 03 e 04 os participantes dos dois formatos compartilham o percurso e a estrutura, mas as classificações e premiações da Gravel Race são separadas."],
+    ["A Legends é indicada para iniciantes?", "Não. Não é necessário ser atleta profissional, mas é indispensável estar preparado para as distâncias, altimetria, estradas não pavimentadas e autonavegação do formato escolhido."],
     ["Posso participar com MTB?", "Sim, exclusivamente na Legends Experience, modalidade não competitiva, sem classificação ou premiação esportiva."],
     ["E-Bike é permitida?", "Sim, exclusivamente na Legends Experience e somente E-Bikes de pedal assistido. Bicicletas com acelerador ou propulsão independente da pedalada não são permitidas."],
     ["Cyclocross pode participar?", "Sim. Gravel e Cyclocross sem assistência elétrica podem participar da Legends Gravel Race."],
   ]],
   ["Inscrição e documentos", [
-    ["Quais são os valores?", "Lote 01: R$ 1.199; Lote 02: R$ 1.399; Lote 03: R$ 1.599. As datas de cada lote estão na página de inscrições."],
+    ["Quais são os valores?", "Legends Ultimate: Lote 01 R$ 899, Lote 02 R$ 1.199 e Lote 03 R$ 1.399. Legends Short: Lote 01 R$ 699, Lote 02 R$ 799 e Lote 03 R$ 899."],
     ["Onde será feita a inscrição?", "A inscrição e o pagamento serão processados pela plataforma oficial Windfit. O botão será ativado no site no momento autorizado para abertura."],
     ["O atestado médico é obrigatório?", "Sim. Para liberação do participante serão obrigatórios o Atestado Médico e a Declaração de Saúde oficial da Legends Bike Race, devidamente preenchidos e assinados."],
     ["Como funciona o cancelamento?", "Além dos direitos legalmente obrigatórios, o Regulamento prevê percentuais de reembolso conforme a antecedência do pedido. Consulte a seção de cancelamento no Regulamento Oficial."],
     ["Posso transferir minha inscrição?", "Sim, uma vez e até 30 dias antes do evento. No mesmo lote, a taxa é de R$ 100. Se a transferência ocorrer em lote posterior, será cobrada a diferença para o lote vigente, respeitado o mínimo de R$ 100."],
-    ["Posso trocar de modalidade?", "Sim, até 15 dias antes do evento, mediante disponibilidade, aprovação da Organização e eventual regularização de diferença financeira."],
+    ["Posso trocar de formato ou modalidade?", "Sim, até 15 dias antes do evento, mediante disponibilidade, aprovação da Organização e eventual regularização de diferença financeira."],
   ]],
   ["Navegação, checkpoints e Race Engine", [
     ["Como funciona a navegação?", "A Legends utiliza autonavegação. O percurso oficial será disponibilizado em GPX e cada participante é responsável por carregar a rota, conhecer seu GPS e manter autonomia suficiente de bateria."],
@@ -44,7 +45,9 @@ const groups = [
     ["Quais são as categorias masculinas?", "Open Masculino 18–29, Master A 30–39, Master B 40–49 e Senior 50+. A idade considerada é a que o atleta completa no ano-base da competição."],
     ["Quais são as categorias femininas?", "Feminino A 18–40 e Feminino B 41+, considerando a idade no ano-base da competição."],
     ["Existe número mínimo por categoria?", "Sim. São necessários cinco atletas inscritos e confirmados por categoria. Se o mínimo não for atingido, a categoria será incorporada à imediatamente anterior conforme o Regulamento."],
-    ["Como funciona a classificação geral?", "A Gravel Race utiliza pontos. A referência é: 100 × (melhor tempo válido da categoria ÷ tempo válido do atleta) × coeficiente da etapa. Os coeficientes são 1,15; 1,00; 1,20 e 0,65."],
+    ["As categorias são iguais nos dois formatos?", "Sim. Ultimate e Short usam as mesmas quatro categorias masculinas e duas femininas na Gravel Race, sempre com rankings separados."],
+    ["Como funciona a classificação geral?", "A Gravel Race utiliza pontos. A Ultimate soma as Stages 01 a 04; a Short soma somente as Stages 03 e 04. As classificações são independentes."],
+    ["Como funciona a premiação?", "Na Ultimate, recebem troféus do 1º ao 5º de cada categoria. Na Short, recebem troféus do 1º ao 3º de cada categoria."],
     ["Qual é o prazo para protesto ou revisão?", "Até 30 minutos após a publicação do resultado provisório da etapa, pelo canal definido pela Organização."],
   ]],
 ];

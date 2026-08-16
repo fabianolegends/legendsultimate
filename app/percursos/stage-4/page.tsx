@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Stage 04: Nova Petrópolis a Canela",
-  description: "Conheça a etapa final da Legends Bike Race: 70 km e 1.576 m+ entre Nova Petrópolis e Canela.",
+  description: "Conheça a etapa final da Legends Ultimate e da Legends Short: 70 km e 1.576 m+ entre Nova Petrópolis e Canela.",
   alternates: { canonical: "/percursos/stage-4" },
-  openGraph: { url: "/percursos/stage-4", title: "Stage 04: Nova Petrópolis a Canela", description: "70 km e 1.576 m+ na etapa final da Legends Bike Race." },
+  openGraph: { url: "/percursos/stage-4", title: "Stage 04: Nova Petrópolis a Canela", description: "70 km e 1.576 m+ na etapa final da Legends Ultimate e da Legends Short." },
 };
 
 const facts = [["70,0 km", "Distância"],["1.576 m", "Ascensão"],["1.316 m", "Descida"],["62%", "Não pavimentado"]];
@@ -21,7 +21,7 @@ export default function StageFour() {
         <div className="routeMapPanel"><div className="mapPanelHead"><div><span>03</span><p>Mapa do trajeto</p></div><p>Nova Petrópolis → Canela · 70,0 km</p></div><img src="/stage-4-map-rwgps-v2.jpg" alt="Mapa oficial do percurso da Stage 4" /></div>
       </section>
       <section className="stageData"><div className="shell stageDataGrid"><div><p className="detailEyebrow">Características</p><dl className="dataList"><div><dt>Largada</dt><dd>Nova Petrópolis</dd></div><div><dt>Chegada</dt><dd>Canela</dd></div><div><dt>Ponto mais alto</dt><dd>850 m</dd></div><div><dt>Ponto mais baixo</dt><dd>500 m</dd></div><div><dt>Tempo estimado</dt><dd>3h41</dd></div><div><dt>Inclinação máxima</dt><dd>+12,2% / -13,1%</dd></div><div><dt>Tempo-limite</dt><dd>6 horas</dd></div></dl></div><div><p className="detailEyebrow">Superfícies</p><dl className="dataList">{surfaces.map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div></div></section>
-      <footer className="stageDetailFooter shell"><a href="/percursos">← Todas as etapas</a><p>Legends Bike Race · Serra Gaúcha</p></footer>
+      <footer className="stageDetailFooter shell"><a href="/percursos">← Todas as etapas</a><p>Legends Ultimate + Short · Serra Gaúcha</p></footer>
     </main>
   );
 }

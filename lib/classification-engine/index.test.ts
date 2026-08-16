@@ -79,12 +79,14 @@ function row(
   weightedPoints: number,
   position: number,
   finalTimeS: number,
+  journeyFormat: "ultimate" | "short" = "ultimate",
 ): OverallStageResult {
   return {
     athlete_id: athlete,
     registration_id: `reg-${athlete}`,
     full_name: `Atleta ${athlete}`,
     category: "Master",
+    journey_format: journeyFormat,
     stage_id: `s${stageNumber}`,
     stage_number: stageNumber,
     position,
@@ -154,4 +156,38 @@ test("mantém colocação compartilhada quando todos os critérios continuam igu
 
   assert.deepEqual(overall.map((item) => item.overall_position), [1, 1]);
   assert.ok(overall.every((item) => item.shared_position));
+});
+
+test("mantém rankings independentes para Ultimate e Short na mesma categoria", () => {
+  const stage = classifyStage([
+    { id: "ultimate", athlete_id: "u", full_name: "Ultimate", category: "Open", journey_format: "ultimate", final_time_s: 100, status: "official" },
+    { id: "short", athlete_id: "s", full_name: "Short", category: "Open", journey_format: "short", final_time_s: 200, status: "official" },
+  ], 1);
+
+  assert.deepEqual(stage.map((item) => item.weighted_points), [100, 100]);
+  assert.deepEqual(stage.map((item) => item.position), [1, 1]);
+});
+
+test("Short exige apenas as Stages 03 e 04 enquanto Ultimate exige as quatro etapas", () => {
+  const overall = buildOverallClassification([
+    row("u", 1, 115, 1, 100), row("u", 2, 100, 1, 100), row("u", 3, 120, 1, 100), row("u", 4, 65, 1, 100),
+    row("s", 3, 120, 1, 100, "short"), row("s", 4, 65, 1, 100, "short"),
+  ], 4, { ultimate: [1, 2, 3, 4], short: [3, 4] });
+
+  const ultimate = overall.find((item) => item.journey_format === "ultimate");
+  const short = overall.find((item) => item.journey_format === "short");
+  assert.equal(ultimate?.eligible_for_title, true);
+  assert.equal(ultimate?.total_points, 400);
+  assert.equal(short?.eligible_for_title, true);
+  assert.equal(short?.total_points, 185);
+  assert.equal(short?.stages_completed, 2);
+});
+
+test("não mistura o mesmo atleta quando há resultados sem registration_id nos dois formatos", () => {
+  const ultimate = { ...row("mesmo", 3, 120, 1, 100), registration_id: null };
+  const short = { ...row("mesmo", 3, 120, 1, 100, "short"), registration_id: null };
+  const overall = buildOverallClassification([ultimate, short], 4, { ultimate: [1, 2, 3, 4], short: [3, 4] });
+
+  assert.equal(overall.length, 2);
+  assert.deepEqual(new Set(overall.map((item) => item.journey_format)), new Set(["ultimate", "short"]));
 });

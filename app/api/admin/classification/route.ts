@@ -40,19 +40,19 @@ async function getClassification(supabase: any, requestedEventId?: string | null
     .order("stage_number", { ascending: true });
   if (migrationMissing(stageError)) return {
     module_ready: false, events: events ?? [], event_id: eventId, stages: [], results: [], overall: [],
-    message: "Execute as migrations 011_official_classification.sql e 027_proportional_classification.sql no Supabase.",
+    message: "Execute as migrations 011_official_classification.sql, 027_proportional_classification.sql e 030_journey_formats.sql no Supabase.",
   };
   if (stageError) throw stageError;
 
   const { data: results, error: resultError } = await supabase
     .from("stage_results")
-    .select("id, event_id, stage_id, athlete_id, registration_id, activity_id, full_name, bib_number, category, modality, official_time_s, manual_time_s, time_penalty_s, points_penalty, final_time_s, position, base_points, weighted_points, scoring_formula_version, status, admin_note, calculated_at, published_at")
+    .select("id, event_id, stage_id, athlete_id, registration_id, activity_id, full_name, bib_number, category, modality, journey_format, official_time_s, manual_time_s, time_penalty_s, points_penalty, final_time_s, position, base_points, weighted_points, scoring_formula_version, status, admin_note, calculated_at, published_at")
     .eq("event_id", eventId)
     .order("category", { ascending: true })
     .order("position", { ascending: true, nullsFirst: false });
   if (migrationMissing(resultError)) return {
     module_ready: false, events: events ?? [], event_id: eventId, stages: stages ?? [], results: [], overall: [],
-    message: "Execute as migrations 011_official_classification.sql e 027_proportional_classification.sql no Supabase.",
+    message: "Execute as migrations 011_official_classification.sql, 027_proportional_classification.sql e 030_journey_formats.sql no Supabase.",
   };
   if (resultError) throw resultError;
 
@@ -85,11 +85,11 @@ async function getClassification(supabase: any, requestedEventId?: string | null
     const stage: any = stageMap.get(result.stage_id);
     return {
       athlete_id: result.athlete_id, registration_id: result.registration_id, full_name: result.full_name,
-      bib_number: result.bib_number, category: result.category, stage_id: result.stage_id,
+      bib_number: result.bib_number, category: result.category, journey_format: result.journey_format ?? "ultimate", stage_id: result.stage_id,
       stage_number: Number(stage?.stage_number ?? 0), position: result.position,
       final_time_s: Number(result.final_time_s), weighted_points: Number(result.weighted_points), status: result.status,
     };
-  }), (stages ?? []).length);
+  }), (stages ?? []).length, { ultimate: [1, 2, 3, 4], short: [3, 4] });
   return { module_ready: true, events: events ?? [], event_id: eventId, stages: stages ?? [], results: enriched, overall };
 }
 
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       .select("id, event_id, stage_number, name, classification_weight, time_limit_s, results_locked")
       .eq("event_id", eventId)
       .order("stage_number", { ascending: true });
-    if (migrationMissing(stageError)) return NextResponse.json({ error: "Execute as migrations 011_official_classification.sql e 027_proportional_classification.sql no Supabase." }, { status: 409 });
+    if (migrationMissing(stageError)) return NextResponse.json({ error: "Execute as migrations 011_official_classification.sql, 027_proportional_classification.sql e 030_journey_formats.sql no Supabase." }, { status: 409 });
     if (stageError) throw stageError;
     if ((stages ?? []).some((stage: any) => stage.results_locked)) {
       return NextResponse.json({ error: "Há etapa publicada e bloqueada. Reabra a apuração antes de recalcular." }, { status: 423 });
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
       : { data: [], error: null };
     if (activityError) throw activityError;
     const { data: registrations, error: registrationError } = await supabase.from("registrations")
-        .select("id, event_id, athlete_id, full_name, bib_number, category, modality, status, payment_status")
+        .select("id, event_id, athlete_id, full_name, bib_number, category, modality, journey_format, status, payment_status")
         .eq("event_id", eventId).eq("status", "confirmed").in("payment_status", ["paid", "courtesy"]);
     if (registrationError) throw registrationError;
 
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       .from("stage_results")
       .select("*")
       .eq("event_id", eventId);
-    if (migrationMissing(existingError)) return NextResponse.json({ error: "Execute as migrations 011_official_classification.sql e 027_proportional_classification.sql no Supabase." }, { status: 409 });
+    if (migrationMissing(existingError)) return NextResponse.json({ error: "Execute as migrations 011_official_classification.sql, 027_proportional_classification.sql e 030_journey_formats.sql no Supabase." }, { status: 409 });
     if (existingError) throw existingError;
 
     const stageMap = new Map((stages ?? []).map((stage: any) => [stage.id, stage]));
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       current.push(registration);
       registrationsByAthlete.set(registration.athlete_id, current);
     }
-    const existingMap = new Map((existing ?? []).map((result: any) => [`${result.stage_id}:${result.athlete_id}`, result]));
+    const existingMap = new Map((existing ?? []).map((result: any) => [`${result.stage_id}:${result.athlete_id}:${result.journey_format ?? "ultimate"}`, result]));
     const passageMap = new Map((passages ?? []).map((passage: any) => [`${passage.activity_id}:${passage.checkpoint_id}`, passage]));
     const checkpointsByStage = new Map<string, any[]>();
     for (const checkpoint of checkpoints ?? []) {
@@ -185,6 +185,7 @@ export async function POST(request: NextRequest) {
         ?? (registrationsByAthlete.get(activity.athlete_id)?.length === 1 ? registrationsByAthlete.get(activity.athlete_id)?.[0] : null);
       if (!registration) { excluded.missing_registration += 1; continue; }
       if (registration.modality === "experience") { excluded.experience += 1; continue; }
+      if ((registration.journey_format ?? "ultimate") === "short" && Number(stage.stage_number) < 3) continue;
       const stageCheckpoints = checkpointsByStage.get(stage.id) ?? [];
       const start = stageCheckpoints.find((checkpoint) => checkpoint.checkpoint_kind === "start") ?? stageCheckpoints[0];
       const finish = stageCheckpoints.find((checkpoint) => checkpoint.checkpoint_kind === "finish") ?? stageCheckpoints.at(-1);
@@ -215,7 +216,8 @@ export async function POST(request: NextRequest) {
     const metaByKey = new Map<string, any>();
     for (const candidate of bestCandidate.values()) {
       const { stage, activity, registration, validation, officialTime } = candidate;
-      const existingResult: any = existingMap.get(`${stage.id}:${activity.athlete_id}`);
+      const journeyFormat = registration.journey_format ?? "ultimate";
+      const existingResult: any = existingMap.get(`${stage.id}:${activity.athlete_id}:${journeyFormat}`);
       const manualTime = existingResult?.manual_time_s ? Number(existingResult.manual_time_s) : null;
       const timePenalty = Math.max(0, Number(existingResult?.time_penalty_s ?? 0));
       const input: StageClassificationInput = {
@@ -224,6 +226,7 @@ export async function POST(request: NextRequest) {
         registration_id: registration.id,
         full_name: registration.full_name,
         category: registration.category || "Sem categoria",
+        journey_format: registration.journey_format ?? "ultimate",
         final_time_s: (manualTime ?? officialTime) + timePenalty,
         points_penalty: Math.max(0, Number(existingResult?.points_penalty ?? 0)),
         status: resultStatus(
@@ -235,19 +238,19 @@ export async function POST(request: NextRequest) {
       const current = candidateByStage.get(stage.id) ?? [];
       current.push(input);
       candidateByStage.set(stage.id, current);
-      metaByKey.set(`${stage.id}:${activity.athlete_id}`, { candidate, existingResult, manualTime, timePenalty });
+      metaByKey.set(`${stage.id}:${activity.athlete_id}:${journeyFormat}`, { candidate, existingResult, manualTime, timePenalty });
     }
 
     const rows: any[] = [];
     for (const stage of stages ?? []) {
       const classified = classifyStage(candidateByStage.get(stage.id) ?? [], Number(stage.classification_weight), stage.time_limit_s ? Number(stage.time_limit_s) : null);
       for (const result of classified) {
-        const meta = metaByKey.get(`${stage.id}:${result.athlete_id}`);
+        const meta = metaByKey.get(`${stage.id}:${result.athlete_id}:${result.journey_format ?? "ultimate"}`);
         const { activity, registration, officialTime } = meta.candidate;
         rows.push({
           event_id: eventId, stage_id: stage.id, athlete_id: result.athlete_id, registration_id: registration.id,
           activity_id: activity.id, full_name: registration.full_name, bib_number: registration.bib_number,
-          category: result.category, modality: registration.modality || "gravel_race", official_time_s: officialTime,
+          category: result.category, modality: registration.modality || "gravel_race", journey_format: registration.journey_format ?? "ultimate", official_time_s: officialTime,
           manual_time_s: meta.manualTime, time_penalty_s: meta.timePenalty,
           points_penalty: Number(result.points_penalty ?? 0), final_time_s: result.final_time_s,
           position: result.position, base_points: result.base_points, weighted_points: result.weighted_points,
@@ -258,16 +261,16 @@ export async function POST(request: NextRequest) {
       }
     }
     if (rows.length) {
-      const { error } = await supabase.from("stage_results").upsert(rows, { onConflict: "stage_id,athlete_id" });
+      const { error } = await supabase.from("stage_results").upsert(rows, { onConflict: "stage_id,athlete_id,journey_format" });
       if (error) throw error;
     }
     const currentResultKeys = new Set(
-      rows.map((row) => `${row.stage_id}:${row.athlete_id}`),
+      rows.map((row) => `${row.stage_id}:${row.athlete_id}:${row.journey_format ?? "ultimate"}`),
     );
     const staleResultIds = (existing ?? [])
       .filter(
         (result: any) =>
-          !currentResultKeys.has(`${result.stage_id}:${result.athlete_id}`) &&
+          !currentResultKeys.has(`${result.stage_id}:${result.athlete_id}:${result.journey_format ?? "ultimate"}`) &&
           ["provisional", "review", "dnf"].includes(result.status),
       )
       .map((result: any) => result.id);
