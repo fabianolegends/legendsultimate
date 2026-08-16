@@ -28,9 +28,9 @@ export default function LegendsGlobalFooter() {
         <div className="legendsFooterShell">
           <p className="legendsFooterEyebrow">Da Serra Gaúcha para o mundo.</p>
           <h2>
-            A jornada termina.
+            Quando a jornada termina,
             <br />
-            <em>A lenda continua.</em>
+            <em>a lenda permanece.</em>
           </h2>
         </div>
       </section>
