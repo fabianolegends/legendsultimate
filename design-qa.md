@@ -76,3 +76,24 @@ A referência foi traduzida para a identidade Legends: grande chamada de encerra
 - Produção não alterada.
 
 final result: passed
+
+---
+
+# Design QA — hero de inscrições
+
+- Implementation route: `/inscricoes`
+- Desktop capture: cloud browser em 1363 × 936 CSS px.
+- Alteração: remoção do quadro lateral “Formato selecionado” e troca da fotografia do hero.
+
+## Verificação visual
+
+- Nova fotografia carregada como fundo do hero.
+- Degradê mantém título e parágrafo legíveis.
+- Quadro “Formato selecionado” ausente no hero (`launchCardCount: 0`).
+- Conteúdo principal alinhado à esquerda, sem espaço reservado para a coluna removida.
+- A seção “Escolha sua jornada” permanece como único local de seleção do formato.
+- Hero mantém altura de 640 px no desktop.
+- Breakpoint mobile usa enquadramento próprio (`background-position: 25% center`) e conteúdo fluido.
+- Nenhum erro da aplicação no carregamento; apenas uma mensagem externa da extensão do navegador.
+
+final result: passed
