@@ -79,7 +79,7 @@ A referência foi traduzida para a identidade Legends: grande chamada de encerra
 
 ## Focused region evidence
 
-- Chamada final: “A jornada termina. A lenda continua.”
+- Chamada final: “Quando a jornada termina, a lenda permanece.”, com fonte 20% menor.
 - Faixa de comunidade com acesso funcional às inscrições e à lista prioritária.
 - Colunas de navegação para páginas institucionais, documentos, contato e redes sociais.
 - Logo oficial da Legends, política de privacidade, preferências de cookies e botão “Topo”.
