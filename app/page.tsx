@@ -4,7 +4,7 @@ import MobileMenu from "./MobileMenu";
 import RouteExplorer from "./RouteExplorer";
 
 export const metadata: Metadata = {
-  title: "Legends Ultimate Gravel Race",
+  title: { absolute: "Legends Bike Race 2027 · Ultimate e Short" },
   description: "Uma stage race de gravel com duas jornadas: Legends Ultimate, em quatro etapas, e Legends Short, com as duas etapas finais.",
   alternates: { canonical: "/" },
   openGraph: { url: "/", title: "Legends Bike Race", description: "Escolha entre Legends Ultimate e Legends Short para viver a travessia de gravel pela Serra Gaúcha." },
@@ -137,7 +137,7 @@ export default function Home() {
             <span className="navDivider" aria-hidden="true" />
             <div className="headerSocials" aria-label="Redes sociais da Legends"><a href="https://www.instagram.com/legends.race/" target="_blank" rel="noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" className="fillIcon"/></svg></a><a href="https://www.facebook.com/1272724699251164" target="_blank" rel="noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.7.3-1 1-1Z" className="fillIcon"/></svg></a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.8A8 8 0 0 1 8.1 18.8L4 20l1.2-4A8 8 0 1 1 20 11.8Z"/><path d="M9 8.5c.3 2.5 2 4.2 4.5 5l1.2-1.2c.3-.3.6-.3.9-.1l2 1c.3.2.4.5.3.8-.5 1.5-1.7 2.2-3.2 2-4.2-.7-7-3.5-7.7-7.7-.2-1.5.5-2.7 2-3.2.3-.1.6 0 .8.3l1 2c.2.3.2.6-.1.9L9 8.5Z" className="fillIcon"/></svg></a><a href="https://www.youtube.com/@legendsbikerace" target="_blank" rel="noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" className="fillIcon"/></svg></a></div>
             <span className="navDivider" aria-hidden="true" />
-            <a className="navCta" href="/acesso">Área do atleta</a>
+            <a className="navCta" href="/passport/acesso">Área do atleta</a>
           </div>
           <div className="mobileNavActions"><MobileMenu /></div>
         </nav>

@@ -155,13 +155,13 @@ html {
   right: 22px;
   bottom: 86px;
   z-index: 1200;
-  min-width: 92px;
+  min-width: 82px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
-  padding: 10px 15px;
+  padding: 10px 13px;
   border: 1px solid rgba(186, 112, 73, .72);
   border-radius: 999px;
   background: rgba(8, 16, 19, .92);
@@ -195,10 +195,11 @@ html {
 @media (max-width: 640px) {
   .globalBackToTop {
     right: 14px;
-    bottom: 78px;
-    min-width: 78px;
-    min-height: 40px;
-    padding: 9px 12px;
-    font-size: 11px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0;
   }
+
+  .globalBackToTop strong { display: none; }
 }

@@ -5,7 +5,7 @@
 }
 
 .redesign .manifestoRedesign > .wide.manifestoFeature {
-  width: 100vw !important;
+  width: 100% !important;
   max-width: none !important;
   min-height: 820px !important;
   margin: 0 !important;
@@ -16,7 +16,7 @@
   background:
     linear-gradient(90deg, rgba(247,243,235,.98) 0%, rgba(247,243,235,.92) 27%, rgba(247,243,235,.54) 45%, rgba(247,243,235,.10) 66%, rgba(247,243,235,0) 80%),
     linear-gradient(0deg, rgba(11,13,10,.28) 0%, transparent 40%),
-    url('/legends-manifesto-v2.png') center / cover no-repeat !important;
+    url('/legends-manifesto-v2.webp') center / cover no-repeat !important;
 }
 
 .redesign .manifestoRedesign .manifestoContent {
@@ -103,7 +103,7 @@
     min-height: 820px !important;
     background:
       linear-gradient(180deg, rgba(247,243,235,.99) 0%, rgba(247,243,235,.93) 42%, rgba(247,243,235,.43) 66%, rgba(10,12,9,.58) 100%),
-      url('/legends-manifesto-v2.png') 64% center / cover no-repeat !important;
+      url('/legends-manifesto-v2.webp') 64% center / cover no-repeat !important;
   }
   .redesign .manifestoRedesign .manifestoContent { width: 100% !important; max-width: none !important; align-self: start; padding: 49px 22px 30px !important; }
   .redesign .manifestoRedesign .kicker { margin-bottom: 19px !important; font-size: 13px !important; }

@@ -47,7 +47,7 @@ export default function MobileMenu() {
             ))}
           </nav>
           <div className="mobileMenuActions">
-            <a href="/acesso" onClick={() => setOpen(false)}>Área do atleta <span>→</span></a>
+            <a href="/passport/acesso" onClick={() => setOpen(false)}>Área do atleta <span>→</span></a>
             <a href={getRegistrationHref()} onClick={() => setOpen(false)}>Me inscrever</a>
           </div>
         </div>,

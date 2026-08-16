@@ -54,7 +54,7 @@ export default function LaunchHomePreview() {
     }
 
     const navCta = home.querySelector<HTMLAnchorElement>(".desktopNavCluster .navCta");
-    if (navCta) { navCta.textContent = "Área do atleta"; navCta.href = "/acesso"; }
+    if (navCta) { navCta.textContent = "Área do atleta"; navCta.href = "/passport/acesso"; }
 
     const kicker = home.querySelector<HTMLElement>(".heroCopy .kicker");
     if (kicker) kicker.textContent = "29 ABR — 02 MAI 2027 · SERRA GAÚCHA";

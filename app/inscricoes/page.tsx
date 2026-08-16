@@ -3,7 +3,7 @@ import { getJourneyFormat, getRegistrationHref, getRegistrationLabel, launchConf
 import { AccordionLeadIcon, AccordionToggleIcons } from "./AccordionIcons";
 
 export const metadata: Metadata = {
-  title: "Inscrições | Legends Bike Race 2027",
+  title: "Inscrições 2027",
   description: "Escolha sua jornada na Legends Bike Race 2027: Legends Ultimate com 4 etapas ou Legends Short com as 2 etapas finais.",
   alternates: { canonical: "/inscricoes" },
 };
