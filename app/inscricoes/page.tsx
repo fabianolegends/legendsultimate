@@ -96,9 +96,10 @@ const schedule = [
   },
 ] as const;
 
-export default async function InscricoesPage({ searchParams }: { searchParams: Promise<{ formato?: string }> }) {
+export default async function InscricoesPage({ searchParams }: { searchParams: Promise<{ formato?: string; detalhes?: string }> }) {
   const params = await searchParams;
   const format = getJourneyFormat(params.formato);
+  const openValues = params.detalhes === "valores";
   const journey = launchConfig.journeys[format];
   const journeyStages = stages.filter((stage) => (journey.stageNumbers as readonly number[]).includes(stage.id));
   const journeySchedule = format === "short"
@@ -156,8 +157,8 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
             <p className="heroLead">Escolha a jornada completa de quatro etapas ou viva as duas etapas finais. Depois, defina se deseja competir na Gravel Race ou completar o desafio na Legends Experience.</p>
           </div>
           <aside className="launchCard">
-            <p className="eyebrow">{journey.name} · Lote 01</p>
-            <strong>{journey.lots[0].price}</strong>
+            <p className="eyebrow">Formato selecionado</p>
+            <strong>{journey.name}</strong>
             <small>{journey.spots} vagas · {journey.days} dias · {journey.distance}</small>
             <a className="mainCta" href={registrationHref} aria-disabled={!launchConfig.registrationOpen}><span>{registrationLabel}</span><span>→</span></a>
           </aside>
@@ -168,7 +169,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         <div className="shell">
           <div className="journeyHead"><h2>Escolha sua jornada.</h2><p>Os dois formatos compartilham a mesma estrutura nas etapas finais, mas possuem inscrições, limites de vagas, classificação e premiação independentes.</p></div>
           <div className="journeyGrid">
-            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}#jornadas`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3>{option.name}</h3><p>{option.dateLabel}<br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>{option.id === format ? "Selecionado ✓" : "Escolher →"}</span></span></a>)}
+            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}&detalhes=valores#valores-e-lotes`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3>{option.name}</h3><p>{option.dateLabel}<br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>{option.id === format ? "Ver valores ↓" : "Escolher →"}</span></span></a>)}
           </div>
         </div>
       </section>
@@ -181,7 +182,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
           </div>
 
           <div className="regAccordions">
-            <details name="registration-details" className="regAccordion">
+            <details name="registration-details" className="regAccordion" id="valores-e-lotes" open={openValues}>
               <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="values" /></span>
                 <span className="accordionTitle"><strong>Valores e lotes</strong><small>{journey.name} · Lote 01 · {journey.lots[0].price} · {journey.spots} vagas</small></span>
