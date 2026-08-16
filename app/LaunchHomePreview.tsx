@@ -68,7 +68,7 @@ export default function LaunchHomePreview() {
       if (!spots) {
         spots = document.createElement("div");
         spots.className = "remainingSpotsCard";
-        spots.innerHTML = '<span>ULTIMATE</span><strong>R$ 899</strong><small>100 VAGAS</small>';
+        spots.innerHTML = '<span>ULTIMATE — 4 DIAS</span><strong>R$ 899</strong><small>100 VAGAS</small>';
         if (links[1]) links[1].insertAdjacentElement("afterend", spots);
         else ctas.appendChild(spots);
       }
@@ -76,7 +76,7 @@ export default function LaunchHomePreview() {
       if (!ctas.querySelector(".launchPrice")) {
         const price = document.createElement("div");
         price.className = "launchPrice";
-        price.innerHTML = '<span>SHORT</span><strong>R$ 699</strong><small>50 VAGAS</small>';
+        price.innerHTML = '<span>SHORT — 2 DIAS</span><strong>R$ 699</strong><small>50 VAGAS</small>';
         ctas.appendChild(price);
       }
     }
