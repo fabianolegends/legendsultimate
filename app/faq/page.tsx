@@ -18,7 +18,7 @@ const groups = [
     ["Cyclocross pode participar?", "Sim. Gravel e Cyclocross sem assistência elétrica podem participar da Legends Gravel Race."],
   ]],
   ["Inscrição e documentos", [
-    ["Quais são os valores?", "Legends Ultimate: Lote 01 R$ 899, Lote 02 R$ 1.199 e Lote 03 R$ 1.399. Legends Short: Lote 01 R$ 699, Lote 02 R$ 799 e Lote 03 R$ 899."],
+    ["Quais são os valores?", "Legends Ultimate: Lote 01 R$ 999, Lote 02 R$ 1.199 e Lote 03 R$ 1.399. Legends Short: Lote 01 R$ 699, Lote 02 R$ 799 e Lote 03 R$ 899."],
     ["Onde será feita a inscrição?", "A inscrição e o pagamento serão processados pela plataforma oficial Windfit. O botão será ativado no site no momento autorizado para abertura."],
     ["O atestado médico é obrigatório?", "Sim. Para liberação do participante serão obrigatórios o Atestado Médico e a Declaração de Saúde oficial da Legends Bike Race, devidamente preenchidos e assinados."],
     ["Como funciona o cancelamento?", "Além dos direitos legalmente obrigatórios, o Regulamento prevê percentuais de reembolso conforme a antecedência do pedido. Consulte a seção de cancelamento no Regulamento Oficial."],

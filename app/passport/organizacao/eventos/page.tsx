@@ -279,7 +279,7 @@ export default function EventsPage() {
         <label>Link da Windfit<input required={form.registration_open && !form.is_test} type="url" value={form.windfit_registration_url} onChange={(e) => update("windfit_registration_url", e.target.value)} placeholder={form.is_test ? "Não usado em testes manuais" : "https://..."}/></label>
         <>
           <div className="wide" style={{borderTop:"1px solid #41463e",paddingTop:18,marginTop:6}}><strong style={{color:"#ef8a43"}}>REFERÊNCIA COMERCIAL DA WINDFIT</strong><p className="muted">Os valores abaixo servem para conferência da organização. A venda e o pagamento acontecem exclusivamente na Windfit.</p></div>
-          <label>Valor de referência (R$)<input min="0.01" step="0.01" type="number" value={form.registration_fee} onChange={(e) => update("registration_fee", e.target.value)} placeholder="899,00"/></label>
+          <label>Valor de referência (R$)<input min="0.01" step="0.01" type="number" value={form.registration_fee} onChange={(e) => update("registration_fee", e.target.value)} placeholder="999,00"/></label>
           <label>Valor Experience (R$)<input min="0.01" step="0.01" type="number" value={form.experience_fee} onChange={(e) => update("experience_fee", e.target.value)} placeholder="Opcional — usa o valor principal"/></label>
           <div className="wide" style={{borderTop:"1px solid #41463e",paddingTop:18,marginTop:6,display:"grid",gap:12}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:16}}>

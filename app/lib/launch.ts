@@ -22,7 +22,7 @@ export const launchConfig = {
       cities: "Canela · São Francisco de Paula · Gramado · Nova Petrópolis",
       awardPlaces: 5,
       lots: [
-        { name: "Lote 01", price: "R$ 899", period: "18/08 a 20/09/2026" },
+        { name: "Lote 01", price: "R$ 999", period: "18/08 a 20/09/2026" },
         { name: "Lote 02", price: "R$ 1.199", period: "21/09 a 10/12/2026" },
         { name: "Lote 03", price: "R$ 1.399", period: "11/12/2026 a 20/03/2027" },
       ],

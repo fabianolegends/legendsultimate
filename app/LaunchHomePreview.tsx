@@ -68,7 +68,7 @@ export default function LaunchHomePreview() {
       if (!spots) {
         spots = document.createElement("div");
         spots.className = "remainingSpotsCard";
-        spots.innerHTML = '<span>ULTIMATE — 4 DIAS</span><strong>R$ 899</strong><small>100 VAGAS</small>';
+        spots.innerHTML = '<span>ULTIMATE — 4 DIAS</span><strong>R$ 999</strong><small>100 VAGAS</small>';
         if (links[1]) links[1].insertAdjacentElement("afterend", spots);
         else ctas.appendChild(spots);
       }
@@ -112,7 +112,7 @@ export default function LaunchHomePreview() {
       const h2 = priority.querySelector<HTMLElement>("h2");
       const p = priority.querySelector<HTMLElement>("p:not(.kicker)");
       const a = priority.querySelector<HTMLAnchorElement>("a");
-      if (pk) pk.textContent = "ULTIMATE R$ 899 · SHORT R$ 699";
+      if (pk) pk.textContent = "ULTIMATE R$ 999 · SHORT R$ 699";
       if (h2) h2.innerHTML = "Quero escolher<br><em>minha jornada.</em>";
       if (p) p.textContent = "Confira modalidade, documentos e condições. Nesta prévia, a compra continua bloqueada até a abertura oficial.";
       if (a) { a.href = "/inscricoes#jornadas"; a.innerHTML = "Comparar Ultimate e Short <span>→</span>"; }
