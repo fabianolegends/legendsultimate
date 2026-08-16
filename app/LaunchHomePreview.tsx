@@ -123,18 +123,6 @@ export default function LaunchHomePreview() {
       faqSection.appendChild(a);
     }
 
-    const priority = home.querySelector<HTMLElement>(".priorityCta");
-    if (priority) {
-      const pk = priority.querySelector<HTMLElement>(".kicker");
-      const h2 = priority.querySelector<HTMLElement>("h2");
-      const p = priority.querySelector<HTMLElement>("p:not(.kicker)");
-      const a = priority.querySelector<HTMLAnchorElement>("a");
-      if (pk) pk.textContent = "ULTIMATE R$ 999 · SHORT R$ 699";
-      if (h2) h2.innerHTML = "Quero escolher<br><em>minha jornada.</em>";
-      if (p) p.textContent = "Confira modalidade, documentos e condições. Nesta prévia, a compra continua bloqueada até a abertura oficial.";
-      if (a) { a.href = getRegistrationHref(); a.innerHTML = "Me inscrever <span>→</span>"; }
-    }
-
     const oldIncluded = home.querySelector<HTMLElement>(".includedSection");
     if (oldIncluded?.parentNode) {
       oldIncluded.classList.add("launchOldIncluded");
