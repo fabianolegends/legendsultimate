@@ -41,6 +41,31 @@ final result: passed
 
 ---
 
+# Design QA — compactação do hero de inscrições
+
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/01-image.png`.
+- Implementation route: `/inscricoes`.
+- Desktop capture: cloud browser em 1363 × 936 CSS px.
+
+## Verificação visual
+
+- Hero reduzido de 640 px para 520 px no desktop, preservando o enquadramento e a leitura sobre a fotografia.
+- Espaçamento superior da seção “Escolha sua jornada” reduzido de 72 px para 44 px.
+- Distância entre o cabeçalho da seção e os quadros de seleção reduzida de 28 px para 20 px.
+- Os quadros de Ultimate e Short passam a aparecer no primeiro viewport desktop.
+- No mobile, o hero foi reduzido para 470 px e a seção recebeu espaçamentos proporcionais de 36 px no topo e 18 px antes dos quadros.
+- Nenhum problema P0, P1 ou P2 encontrado.
+
+## Validações técnicas
+
+- Deploy da prévia Vercel: aprovado.
+- `git diff --check`: aprovado.
+- Produção não alterada.
+
+final result: passed
+
+---
+
 # Design QA — rodapé global Legends
 
 - Source visual truth: `/workspace/scratch/7ff5f007655b/upload/b4d13f4b-6e90-42a2-b63e-33bad6523b71.png` (2048 × 1280 px).
