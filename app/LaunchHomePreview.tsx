@@ -43,13 +43,6 @@ export default function LaunchHomePreview() {
         registration.dataset.launchLink = "inscricoes";
         desktopNav.insertBefore(registration, desktopNav.firstChild);
       }
-      if (!desktopNav.querySelector('[data-launch-link="area-atleta"]')) {
-        const athlete = document.createElement("a");
-        athlete.href = "/acesso";
-        athlete.textContent = "Área do atleta";
-        athlete.dataset.launchLink = "area-atleta";
-        desktopNav.appendChild(athlete);
-      }
       if (!desktopNav.querySelector('[data-launch-link="incluido"]')) {
         const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href")?.startsWith("/faq"));
         const included = document.createElement("a");
@@ -61,7 +54,7 @@ export default function LaunchHomePreview() {
     }
 
     const navCta = home.querySelector<HTMLAnchorElement>(".desktopNavCluster .navCta");
-    if (navCta) { navCta.textContent = "Me inscrever"; navCta.href = getRegistrationHref(); }
+    if (navCta) { navCta.textContent = "Área do atleta"; navCta.href = "/acesso"; }
 
     const kicker = home.querySelector<HTMLElement>(".heroCopy .kicker");
     if (kicker) kicker.textContent = "29 ABR — 02 MAI 2027 · SERRA GAÚCHA";
