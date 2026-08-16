@@ -10,6 +10,7 @@ const hiddenRoutes = [
   "/resultados",
   "/documentos-medicos/atestado",
   "/documentos-medicos/declaracao-saude",
+  "/fontes",
 ];
 
 function isHiddenRoute(pathname: string) {
