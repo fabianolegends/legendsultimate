@@ -146,3 +146,4 @@
     margin:0;
   }
 }
+.stageCityLink{display:inline-flex;align-items:center;gap:28px;margin-top:20px;padding:12px 0 8px;border-bottom:1px solid var(--copper);color:var(--copper);font:600 13px 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase;transition:.2s}.stageCityLink span{font-size:18px}.stageCityLink:hover{color:var(--ivory);border-color:var(--ivory);transform:translateY(-2px)}

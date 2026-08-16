@@ -46,6 +46,7 @@ export default function StageThree() {
             da prova, seguida por uma escalada final que conduz a Nova
             Petrópolis.
           </p>
+          <a className="stageCityLink" href="https://www.gramadoinesquecivel.tur.br/" target="_blank" rel="noreferrer">Conheça a cidade da largada <span>↗</span></a>
           <div className="stageFacts">
             {facts.map(([value, label]) => (
               <div key={label}>

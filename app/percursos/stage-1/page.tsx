@@ -32,6 +32,7 @@ export default function StageOne() {
           <div className="stageKicker"><span>Stage 01</span> Canela → São Francisco de Paula</div>
           <h1>O portal<br />da aventura.</h1>
           <p>Uma travessia de gravel entre vales, estradas rurais e campos de altitude, conectando Canela a São Francisco de Paula.</p>
+          <a className="stageCityLink" href="https://canela.com.br/" target="_blank" rel="noreferrer">Conheça a cidade da largada <span>↗</span></a>
           <div className="stageFacts">{facts.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
         </div>
       </section>

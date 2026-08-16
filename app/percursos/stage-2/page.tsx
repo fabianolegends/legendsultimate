@@ -48,6 +48,7 @@ export default function StageTwo() {
             entre araucárias, estradas rurais e a subida final em direção a
             Gramado.
           </p>
+          <a className="stageCityLink" href="https://www.saofranciscodepaula.rs.gov.br/portal/turismo" target="_blank" rel="noreferrer">Conheça a cidade da largada <span>↗</span></a>
           <div className="stageFacts">
             {facts.map(([value, label]) => (
               <div key={label}>
