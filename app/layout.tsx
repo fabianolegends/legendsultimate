@@ -11,6 +11,7 @@ import BikeOfficialSection from "./BikeOfficialSection";
 import LaunchHomePreview from "./LaunchHomePreview";
 import CookieConsent from "./CookieConsent";
 import LegendsGlobalFooter from "./LegendsGlobalFooter";
+import GlobalPageNavigation from "./GlobalPageNavigation";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -107,6 +108,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <LaunchHomePreview />
         <BikeOfficialSection />
         <LegendsGlobalFooter />
+        <GlobalPageNavigation />
         <CookieConsent />
       </body>
     </html>

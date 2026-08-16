@@ -24,8 +24,8 @@ export default function StageTwo() {
   return (
     <main className="stagePage">
       <header className="stageDetailNav shell">
-        <a href="/percursos" className="backLink">
-          ← Voltar aos percursos
+        <a href="/" className="backLink">
+          ← Voltar à home
         </a>
         <img
           src="/legends-logo-official.png"

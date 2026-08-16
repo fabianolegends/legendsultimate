@@ -13,7 +13,7 @@ const surfaces = [["Não pavimentado", "43,1 km"],["Pavimentado", "26,9 km"]];
 export default function StageFour() {
   return (
     <main className="stagePage">
-      <header className="stageDetailNav shell"><a href="/percursos" className="backLink">← Voltar aos percursos</a><img src="/legends-logo-official.png" alt="Legends Bike Race" className="detailLogo" /></header>
+      <header className="stageDetailNav shell"><a href="/" className="backLink">← Voltar à home</a><img src="/legends-logo-official.png" alt="Legends Bike Race" className="detailLogo" /></header>
       <section className="stageDetailHero stage4Hero"><div className="shell stageHeroInner"><div className="stageKicker"><span>Stage 04</span> Nova Petrópolis → Canela</div><h1>A chegada<br />da lenda.</h1><p>O capítulo final parte da tradição de Nova Petrópolis e cruza vales, colônias e caminhos de terra até a chegada em Canela.</p><a className="stageCityLink" href="https://turismo.novapetropolis.rs.gov.br/" target="_blank" rel="noreferrer">Conheça a cidade da largada <span>↗</span></a><div className="stageFacts">{facts.map(([value,label])=><div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div></div></section>
       <section className="stageProfile shell">
         <div className="profileIntro"><div><p className="detailEyebrow">Perfil da etapa</p><h2>O último desafio.<br /><em>A consagração.</em></h2></div><p>Uma etapa de terreno variado, com sucessivas ascensões na primeira metade, um setor mais veloz entre os quilômetros 40 e 65 e a sequência final que conduz o participante até a chegada em Canela.</p></div>

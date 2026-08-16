@@ -45,7 +45,7 @@ export default function FontesPage() {
             <p>ESTUDO TIPOGRÁFICO · LEGENDS BIKE RACE</p>
             <h1>Escolha a identidade das jornadas.</h1>
           </div>
-          <Link href="/inscricoes#jornadas">← Voltar às inscrições</Link>
+          <Link href="/">← Voltar à home</Link>
         </header>
 
         <section className="fontList" aria-label="Cinco opções de fontes">

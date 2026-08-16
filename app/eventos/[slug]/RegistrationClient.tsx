@@ -101,7 +101,7 @@ export default function RegistrationClient({
         <div>
           <h1>Evento indisponível</h1>
           <p>{error}</p>
-          <a href="/">Voltar ao site</a>
+          <a href="/">← Voltar à home</a>
         </div>
       </main>
     );
@@ -126,7 +126,7 @@ export default function RegistrationClient({
           <a href="/" aria-label="Voltar à página inicial">
             <img src="/legends-logo-official.png" alt="Legends Bike Race" />
           </a>
-          <a href="/inscricoes">← Todas as informações</a>
+          <a href="/">← Voltar à home</a>
         </nav>
         <div className="event-shell">
           <div className="event-copy">

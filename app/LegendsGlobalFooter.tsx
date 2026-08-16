@@ -101,7 +101,6 @@ export default function LegendsGlobalFooter() {
           <div>
             <span>Serra Gaúcha · Brasil</span>
             <PrivacyPreferencesButton />
-            <a className="legendsFooterTop" href="#topo">Topo</a>
           </div>
         </div>
       </section>

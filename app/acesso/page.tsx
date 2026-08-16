@@ -9,7 +9,7 @@ export default function AccessPage() {
         @media(max-width:760px){.access-page{padding:20px}.access-grid{grid-template-columns:1fr}.access-top img{width:150px}.access-card{min-height:auto;padding:27px}.access-card h2{font-size:35px}}
       `}</style>
       <div className="access-shell">
-        <header className="access-top"><a href="/"><img src="/legends-logo-official.png" alt="Legends Bike Race" /></a><a href="/">Voltar ao site</a></header>
+        <header className="access-top"><a href="/"><img src="/legends-logo-official.png" alt="Legends Bike Race" /></a><a href="/">← Voltar à home</a></header>
         <section className="access-hero">
           <p className="access-kicker">Legends Core</p>
           <h1>Escolha sua área de acesso.</h1>

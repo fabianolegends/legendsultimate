@@ -76,7 +76,7 @@ export default function RoutesIndex() {
       />
 
       <header className="stageDetailNav shell">
-        <a href="/" className="backLink">← Voltar ao início</a>
+        <a href="/" className="backLink">← Voltar à home</a>
         <img
           src="/legends-logo-official.png"
           alt="Legends Bike Race"

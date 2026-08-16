@@ -144,7 +144,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
       `}</style>
 
       <div className="shell regNav">
-        <a className="back" href="/">← Voltar ao site</a>
+        <a className="back" href="/">← Voltar à home</a>
         <img src="/legends-logo-official.png" alt="Legends Bike Race" />
       </div>
 

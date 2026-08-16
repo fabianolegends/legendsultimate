@@ -27,7 +27,7 @@ export default function AboutRace() {
   return (
     <main className="aboutRacePage">
       <header className="stageDetailNav shell">
-        <a href="/" className="backLink">← Voltar ao início</a>
+        <a href="/" className="backLink">← Voltar à home</a>
         <img src="/legends-logo-official.png" alt="Legends Bike Race" className="detailLogo" />
       </header>
 

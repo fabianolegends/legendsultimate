@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
     <main style={{ minHeight: "100vh", background: "#0b0f0d", color: "#eee8dd", padding: "64px 24px" }}>
       <article style={{ maxWidth: 820, margin: "0 auto", lineHeight: 1.7 }}>
         <Link href="/" style={{ color: "#ba7049", textTransform: "uppercase", letterSpacing: ".12em" }}>
-          ← Voltar ao site
+          ← Voltar à home
         </Link>
         <h1 style={{ fontSize: "clamp(2.2rem, 6vw, 4.5rem)", lineHeight: 1, margin: "48px 0 28px" }}>
           Política de Privacidade
