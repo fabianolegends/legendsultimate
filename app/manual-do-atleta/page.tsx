@@ -1,46 +1,27 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Manual do Atleta v1.0",
-  description: "Manual do Atleta da Legends Bike Race 2027: etapas, logística, SPOT, Race Engine, GPS, bag, equipamentos e segurança.",
+  title: "Manual do Atleta — Em breve",
+  description: "O Manual do Atleta da Legends Bike Race 2027 será publicado em breve.",
   alternates: { canonical: "/manual-do-atleta" },
 };
 
-const stages = [
-  ["Stage 01", "Canela", "111,9 km", "1.684 m+", "10 h", "Somente Ultimate"],
-  ["Stage 02", "São Francisco de Paula", "89,1 km", "1.520 m+", "9 h", "Somente Ultimate"],
-  ["Stage 03", "Gramado", "99,3 km", "1.522 m+", "10 h", "Ultimate + Short"],
-  ["Stage 04", "Nova Petrópolis → Canela", "70,0 km", "1.576 m+", "6 h", "Ultimate + Short"],
-];
-
-const topics = [
-  ["Credenciamento", "Documento de identificação, Atestado Médico, Declaração de Saúde, conferência cadastral, kit, bag, placa, SPOT e briefing. Local e horário: A DEFINIR."],
-  ["Bag oficial 50 L", "É o volume previsto para transporte entre as cidades-base. Deverá ser entregue identificada no ponto e horário definidos. Peso máximo e locais de entrega/retirada: A DEFINIR."],
-  ["SPOT", "O rastreador satelital será usado em todas as etapas. Deve permanecer com o participante, ligado e corretamente instalado. Valor de reposição em caso de perda ou dano: A DEFINIR."],
-  ["Race Engine", "O participante deverá manter cadastro no Legends Passport, vincular a conta Strava quando aplicável e conferir o status de elegibilidade. GPS, FIT/GPX, checkpoints, horários e rastreamento poderão ser usados na validação."],
-  ["Autonavegação", "O GPX oficial é a referência principal. O participante é responsável por carregar a rota, conhecer o GPS e manter bateria suficiente. Ao sair do percurso, deve retornar ao ponto do desvio."],
-  ["Checkpoints", "Poderão ser físicos ou digitais, com funções de controle, hidratação, segurança, horários e segmentos. Quantidade e localização final: A DEFINIR."],
-  ["Hidratação e nutrição", "A Organização disponibilizará hidratação nos checkpoints oficiais. O participante deve largar com água, alimentação e eletrólitos suficientes para sua estratégia pessoal."],
-  ["Mecânica e Bike Wash", "A Danda Bike disponibilizará mecânica básica. Peças, componentes e manutenção Premium não estão incluídos. Haverá Bike Wash ao final das etapas."],
-  ["Hospedagem", "Não está incluída. Hotéis oficiais e parceiros serão divulgados em atualização futura. O participante deve contratar diretamente sua hospedagem."],
-  ["Transporte", "A inscrição inclui o transporte da bag oficial entre cidades-base. Transfer de participantes, aeroporto e retorno: A DEFINIR. Até divulgação em contrário, planeje seus deslocamentos por conta própria."],
-  ["Emergência", "Em caso de emergência, preserve sua segurança, saia do fluxo da via quando possível, acione o canal oficial e utilize o SPOT conforme orientação. Telefone e Race Control: A DEFINIR."],
-  ["Clima", "A prova poderá ocorrer sob chuva, frio, calor, vento ou lama. Por segurança, a Organização poderá alterar percurso, horários, neutralizar trechos ou cancelar etapa."],
-];
-
-const mandatory = ["Capacete afivelado","GPS com rota oficial","Telefone celular funcional","Documento de identificação","Sistema de hidratação","Alimentação suficiente","Ferramentas básicas","Bomba ou CO₂","Reparo de pneus","Câmara ou solução equivalente","Luz traseira","SPOT fornecido pela Organização"];
-
-const before = ["Inscrição e pagamento confirmados","Modalidade e categoria corretas","Atestado Médico e Declaração de Saúde","Strava conectado quando aplicável","Legends Passport ativo","Hospedagem e deslocamentos organizados","Bicicleta revisada","GPS testado","Equipamentos obrigatórios conferidos","Nutrição testada em treino"];
-
 export default function ManualAtletaPage() {
-  return <main className="manualPage"><style>{`
-    .manualPage{--paper:#f4f0db;--ink:#10120f;--copper:#c67a3b;--line:rgba(198,122,59,.32);background:#0b0d0c;color:#f1ece3;min-height:100vh}.shell{width:min(1120px,calc(100% - 50px));margin:auto}.top{height:96px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.top img{height:68px}.top a{color:var(--copper);font:600 13px 'Barlow Condensed';text-transform:uppercase}.hero{padding:90px 0 70px}.eyebrow{color:var(--copper);font:600 13px 'Barlow Condensed';letter-spacing:.2em;text-transform:uppercase}.hero h1{font:700 clamp(62px,8vw,110px) 'Barlow Condensed';text-transform:uppercase;line-height:.87;margin:17px 0}.hero p{max-width:820px;color:#abb0a7;line-height:1.7;font-size:18px}.metrics{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);margin-top:30px}.metrics div{padding:18px;border-right:1px solid var(--line)}.metrics div:last-child{border:0}.metrics strong{display:block;font:700 30px 'Barlow Condensed'}.metrics span{font-size:11px;color:#aaa;text-transform:uppercase}.section{padding:75px 0;border-top:1px solid rgba(255,255,255,.08)}.section.light{background:var(--paper);color:var(--ink)}.section h2{font:700 clamp(42px,5vw,68px) 'Barlow Condensed';text-transform:uppercase;line-height:.92;margin:0 0 30px}.stageGrid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line)}.stage{padding:23px;border-right:1px solid var(--line)}.stage:last-child{border:0}.stage span{color:var(--copper);font:600 12px 'Barlow Condensed';text-transform:uppercase}.stage h3{font:700 27px 'Barlow Condensed';text-transform:uppercase}.stage strong{display:block;font:700 24px 'Barlow Condensed';margin-top:12px}.stage small{display:block;color:#aab0a7;margin-top:5px}.topics{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.13)}.topic{padding:26px 28px 26px 0;border-bottom:1px solid rgba(255,255,255,.13)}.topic:nth-child(even){padding-left:28px;border-left:1px solid rgba(255,255,255,.13)}.topic h3{font:700 28px 'Barlow Condensed';text-transform:uppercase;margin:0 0 8px}.topic p{color:#aeb3aa;line-height:1.65;margin:0}.lists{display:grid;grid-template-columns:1fr 1fr;gap:50px}.list{list-style:none;padding:0;margin:0}.list li{padding:11px 0;border-bottom:1px solid rgba(17,17,17,.14)}.list li:before{content:'✓';color:var(--copper);font-weight:700;margin-right:10px}.status{border:1px solid rgba(17,17,17,.18);padding:28px;background:#ece5d8}.status strong{font:700 30px 'Barlow Condensed';text-transform:uppercase}.status p{line-height:1.65;color:#555}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.links a{background:var(--copper);color:#fff;padding:14px 18px;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.08em}.links a.alt{background:#111411}@media(max-width:800px){.shell{width:calc(100% - 30px)}.metrics,.stageGrid{grid-template-columns:1fr 1fr}.stage{border-bottom:1px solid var(--line)}.topics,.lists{grid-template-columns:1fr}.topic:nth-child(even){padding-left:0;border-left:0}.top img{height:54px}}
-  `}</style>
-  <nav className="top shell"><a href="/">← Voltar à home</a><img src="/legends-logo-official.png" alt="Legends Bike Race" /></nav>
-  <header className="hero shell"><p className="eyebrow">Manual do Atleta · Versão 1.1</p><h1>Prepare a<br />sua jornada.</h1><p>Esta versão consolida as informações já definidas para os formatos Legends Ultimate e Legends Short. Dados operacionais ainda pendentes aparecem claramente como <strong>A DEFINIR</strong> e serão atualizados antes do evento.</p><div className="metrics"><div><strong>2</strong><span>formatos</span></div><div><strong>02 MAI</strong><span>final</span></div><div><strong>370,3 km</strong><span>máximo</span></div><div><strong>6.302 m+</strong><span>máximo</span></div><div><strong>150</strong><span>vagas totais</span></div></div></header>
-  <section className="section shell"><p className="eyebrow">Ultimate e Short</p><h2>Quatro ou dois dias.<br />Uma travessia.</h2><div className="stageGrid">{stages.map(([stage,city,distance,elevation,limit,formats])=><article className="stage" key={stage}><span>{stage} · {formats}</span><h3>{city}</h3><strong>{distance}</strong><small>{elevation} · limite {limit}</small></article>)}</div></section>
-  <section className="section"><div className="shell"><p className="eyebrow">Operação</p><h2>O que você precisa saber.</h2><div className="topics">{topics.map(([title,text])=><article className="topic" key={title}><h3>{title}</h3><p>{text}</p></article>)}</div></div></section>
-  <section className="section light"><div className="shell lists"><div><p className="eyebrow">Equipamentos obrigatórios</p><h2>Não largue sem.</h2><ul className="list">{mandatory.map(i=><li key={i}>{i}</li>)}</ul></div><div><p className="eyebrow">30 dias antes</p><h2>Checklist do atleta.</h2><ul className="list">{before.map(i=><li key={i}>{i}</li>)}</ul></div></div></section>
-  <section className="section light"><div className="shell status"><p className="eyebrow">Status · v1.1</p><strong>Informações ainda em definição</strong><p>Credenciamento; locais exatos de largada e chegada; horários de largada e cortes intermediários; peso máximo da bag; locais de entrega/retirada; valor de reposição do SPOT; telefone de emergência e Race Control; apólice de seguro; hotéis oficiais; política final de transfers; conteúdo do Kit Premium; tabela de tamanhos; quantidade/localização final de checkpoints; programação de briefings e premiações.</p><div className="links"><a href="/regulamento">Regulamento oficial</a><a className="alt" href="/documentos-medicos">Documentação médica</a></div></div></section>
-  </main>;
+  return (
+    <main className="manualSoonPage">
+      <style>{`
+        .manualSoonPage{min-height:100vh;background:#090c0b linear-gradient(rgba(9,12,11,.8),rgba(9,12,11,.9)),url('/contour-lines-legends.png') center/cover;color:#f1ece3}.manualSoonPage *{box-sizing:border-box}.manualSoonPage .shell{width:min(1120px,calc(100% - 50px));margin:auto}.manualSoonPage .top{height:96px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(186,112,73,.34)}.manualSoonPage .top img{height:68px}.manualSoonPage .top a{color:#ba7049;font:700 13px 'Barlow Condensed';letter-spacing:.12em;text-transform:uppercase}.manualSoonPage .soonHero{min-height:620px;display:grid;align-content:center;padding:90px 0 120px}.manualSoonPage .eyebrow{margin:0 0 20px;color:#ba7049;font:700 13px 'Barlow Condensed';letter-spacing:.22em;text-transform:uppercase}.manualSoonPage h1{max-width:900px;margin:0;font:700 clamp(70px,10vw,138px)/.82 'Barlow Condensed';letter-spacing:-.035em;text-transform:uppercase}.manualSoonPage h1 em{display:block;color:#ba7049;font-style:normal}.manualSoonPage .lead{max-width:720px;margin:32px 0 0;color:#c6c7c2;font-size:18px;line-height:1.7}.manualSoonPage .notice{display:inline-flex;align-items:center;gap:12px;justify-self:start;margin-top:30px;padding:13px 17px;border:1px solid rgba(186,112,73,.55);color:#f1ece3;font:700 12px 'Barlow Condensed';letter-spacing:.13em;text-transform:uppercase}.manualSoonPage .notice:before{content:'';width:7px;height:7px;border-radius:50%;background:#ba7049;box-shadow:0 0 0 5px rgba(186,112,73,.14)}@media(max-width:700px){.manualSoonPage .shell{width:calc(100% - 30px)}.manualSoonPage .top{height:82px}.manualSoonPage .top img{height:54px}.manualSoonPage .soonHero{min-height:560px;padding:70px 0 95px}.manualSoonPage h1{font-size:72px}.manualSoonPage .lead{font-size:16px}}
+      `}</style>
+      <nav className="top shell">
+        <a href="/">← Voltar à home</a>
+        <img src="/legends-logo-official.png" alt="Legends Bike Race" />
+      </nav>
+      <section className="soonHero shell">
+        <p className="eyebrow">Legends Bike Race 2027</p>
+        <h1>Manual do atleta.<em>Em breve.</em></h1>
+        <p className="lead">O documento completo, com logística, horários, equipamentos obrigatórios e orientações para as etapas, será publicado mais próximo do evento.</p>
+        <span className="notice">Publicação futura</span>
+      </section>
+    </main>
+  );
 }

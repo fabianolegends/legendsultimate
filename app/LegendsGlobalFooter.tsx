@@ -79,7 +79,7 @@ export default function LegendsGlobalFooter() {
           <nav className="legendsFooterColumn" aria-label="Documentos da Legends">
             <p className="legendsFooterEyebrow">Documentos</p>
             <a href="/regulamento">Regulamento</a>
-            <a href="/manual-do-atleta">Manual do atleta</a>
+            <a href="/manual-do-atleta">Manual do atleta · Em breve</a>
             <a href="/documentos-medicos">Documentação médica</a>
             <a href="/politica-de-privacidade">Política de privacidade</a>
           </nav>
