@@ -61,7 +61,7 @@ export default function FAQ() {
     .cta{background:var(--paper);color:var(--ink);padding:90px 0;text-align:center}.cta h2{color:var(--ink)}.ctaLinks{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.cta a{display:inline-block;background:var(--copper);color:#fff;padding:18px 28px;margin-top:20px;font:700 14px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.12em}.cta a.alt{background:#111411}
     @media(max-width:700px){.wrap{width:calc(100% - 32px)}.top{height:82px}.logo{height:58px}.questions{padding-top:32px}.questionsHead{padding-bottom:24px}.questionsHead h1{font-size:46px}.group{padding:30px 0}summary{font-size:21px}}
   `}</style>
-  <nav className="top wrap"><a href="/"><img className="logo" src="/legends-logo-official.png" alt="Legends" /></a><a className="back" href="/">← Voltar à Home</a></nav>
+  <nav className="top wrap"><a href="/"><img className="logo" src="/legends-logo-official.png" alt="Legends" /></a><a className="back" href="/">← Voltar à home</a></nav>
   <section id="perguntas" className="wrap questions"><header className="questionsHead"><p className="kicker">Legends Bike Race 2027</p><h1>Perguntas frequentes.</h1></header>{groups.map(([title,items])=><div className="group" key={title as string}><p className="kicker">{title as string}</p><h2>{title as string}</h2>{(items as string[][]).map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>)}</section>
   <section className="cta"><div className="wrap"><h2>Leia os documentos antes de se inscrever.</h2><div className="ctaLinks"><a href="/regulamento">Regulamento oficial →</a><a className="alt" href="/inscricoes">Ver inscrições →</a></div></div></section>
   </main>;

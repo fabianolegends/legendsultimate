@@ -78,7 +78,7 @@ export default function ListaPrioritaria() {
 
       <nav className="top wrap">
         <a href="/"><img className="logo" src="/legends-logo-official.png" alt="Legends" /></a>
-        <a className="back" href="/">← Voltar à Home</a>
+        <a className="back" href="/">← Voltar à home</a>
       </nav>
 
       <section className="content wrap">
