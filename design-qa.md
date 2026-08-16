@@ -41,6 +41,23 @@ final result: passed
 
 ---
 
+# Design QA — nomes das jornadas
+
+- Source visual truth: `/workspace/scratch/7ff5f007655b/upload/01-image.png`.
+- Implementation route: `/inscricoes#jornadas`.
+- Alteração: “Legends Ultimate” e “Legends Short” ampliados em 25%, de 34 px para 42,5 px.
+
+## Verificação visual
+
+- Hierarquia dos nomes reforçada sem alterar preço, datas, estatísticas ou ações dos cartões.
+- Fonte Rock Salt preservada em “Ultimate” e “Short”.
+- Alinhamento pela linha de base e espaçamento interno dos cartões preservados.
+- Produção não alterada.
+
+final result: passed
+
+---
+
 # Design QA — compactação do hero de inscrições
 
 - Source visual truth: `/workspace/scratch/7ff5f007655b/upload/01-image.png`.
