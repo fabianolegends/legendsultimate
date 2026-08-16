@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#0b0f0d", color: "#eee8dd", padding: "64px 24px" }}>
       <article style={{ maxWidth: 820, margin: "0 auto", lineHeight: 1.7 }}>
-        <Link href="/" style={{ color: "#c77b3c", textTransform: "uppercase", letterSpacing: ".12em" }}>
+        <Link href="/" style={{ color: "#ba7049", textTransform: "uppercase", letterSpacing: ".12em" }}>
           ← Voltar ao site
         </Link>
         <h1 style={{ fontSize: "clamp(2.2rem, 6vw, 4.5rem)", lineHeight: 1, margin: "48px 0 28px" }}>
@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
         <h2>Seus direitos</h2>
         <p>Você pode solicitar confirmação, acesso, correção, exclusão ou informações sobre o tratamento de seus dados, além de revogar o consentimento quando aplicável.</p>
         <h2>Contato</h2>
-        <p>Para exercer seus direitos ou esclarecer dúvidas, escreva para <a href="mailto:contato@legendsbikerace.com.br" style={{ color: "#c77b3c" }}>contato@legendsbikerace.com.br</a>.</p>
+        <p>Para exercer seus direitos ou esclarecer dúvidas, escreva para <a href="mailto:contato@legendsbikerace.com.br" style={{ color: "#ba7049" }}>contato@legendsbikerace.com.br</a>.</p>
       </article>
     </main>
   );

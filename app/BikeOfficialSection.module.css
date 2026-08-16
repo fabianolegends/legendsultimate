@@ -114,9 +114,9 @@
   justify-content: space-between;
   gap: 24px;
   padding: 20px 27px;
-  border: 1px solid #c77b54;
+  border: 1px solid #ba7049;
   color: #fff;
-  background: #c77b54;
+  background: #ba7049;
   font: 700 16px/1 'Barlow Condensed', sans-serif;
   letter-spacing: .13em;
   text-transform: uppercase;
@@ -130,7 +130,7 @@
 
 .button:hover {
   color: #fff;
-  background: #df8b62;
+  background: #c9825e;
   transform: translateY(-2px);
 }
 

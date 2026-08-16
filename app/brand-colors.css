@@ -1,0 +1,93 @@
+/*
+ * Legends Bike Race — official screen palette.
+ * Terracotta is the primary brand accent derived from the official CMYK logo.
+ */
+:root {
+  --legends-terracotta: #ba7049;
+  --legends-terracotta-hover: #c9825e;
+  --legends-terracotta-dark: #95583a;
+  --legends-cream: #f5f0dc;
+  --legends-black: #000;
+  --legends-line: rgba(186, 112, 73, .34);
+  --copper: var(--legends-terracotta);
+  --line: var(--legends-line);
+}
+
+/* Public page wrappers that previously declared their own orange accents. */
+.redesign,
+.destinationPage,
+.faqPage,
+.priorityPage,
+.rulesPage,
+.manualPage,
+.medicalPage,
+.healthFormPage,
+.stagePage,
+.aboutRacePage,
+.enginePage,
+.access-page,
+.public-event {
+  --copper: var(--legends-terracotta) !important;
+  --orange: var(--legends-terracotta) !important;
+  --line: var(--legends-line) !important;
+}
+
+/* Shared footer inherits the same accent instead of a separate salmon tone. */
+.legendsGlobalFooter {
+  --footer-paper: var(--legends-cream) !important;
+  --footer-ink: var(--legends-black) !important;
+  --footer-panel: #0d0f0e !important;
+  --footer-copper: var(--legends-terracotta) !important;
+  --footer-cream: var(--legends-cream) !important;
+}
+
+/* Legacy homepage declarations are normalized here until they are removed. */
+.redesign .manifestoRedesign .kicker,
+.redesign .manifestoRedesign .manifestoQuote em,
+.redesign .manifestoRedesign .manifestoKitVisual figcaption,
+.redesign .launchJourney .eyebrow,
+.redesign .launchIncluded .eyebrow,
+.redesign .journeySteps b,
+.redesign .beforeBox strong,
+.redesign .remainingSpotsCard span,
+.redesign .launchPrice span {
+  color: var(--legends-terracotta) !important;
+}
+
+.redesign .manifestoRedesign .manifestoButton,
+.redesign .manifestoRedesign .manifestoHighlights,
+.redesign .launchDocs a:first-child {
+  background: var(--legends-terracotta) !important;
+}
+
+.redesign .launchDocs a {
+  border-color: var(--legends-terracotta) !important;
+}
+
+.redesign .journeySteps,
+.redesign .journeySteps article {
+  border-color: var(--legends-line) !important;
+}
+
+/* Public registration surface. */
+.public-event .test-banner,
+.public-event .windfit-button {
+  background: var(--legends-terracotta) !important;
+}
+
+.public-event .event-loading a,
+.public-event .event-kicker,
+.public-event .registration-card .price span {
+  color: var(--legends-terracotta) !important;
+}
+
+.public-event .registration-card,
+.public-event .admin-button {
+  border-color: var(--legends-line) !important;
+}
+
+.public-event .closed {
+  border-left-color: var(--legends-terracotta) !important;
+  background: rgba(186, 112, 73, .12) !important;
+  color: #e4b99f !important;
+}

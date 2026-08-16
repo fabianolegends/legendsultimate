@@ -6,6 +6,7 @@ import "./overrides.css";
 import "./tr3-footer.css";
 import "./font-aliases.css";
 import "./legends-footer.css";
+import "./brand-colors.css";
 import BikeOfficialSection from "./BikeOfficialSection";
 import LaunchHomePreview from "./LaunchHomePreview";
 import CookieConsent from "./CookieConsent";
