@@ -141,6 +141,8 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         .premiumOption.featured .premiumBadge{top:16px;transform:none}
         .lodgingCriteria{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:24px;border:1px solid rgba(17,17,17,.14)}.lodgingCriterion{padding:16px 18px;border-right:1px solid rgba(17,17,17,.14)}.lodgingCriterion:last-child{border-right:0}.lodgingCriterion strong{display:block;margin-bottom:7px;color:var(--copper);font:700 15px 'Barlow Condensed';letter-spacing:.08em;text-transform:uppercase}.lodgingCriterion span{display:block;color:#5f635c;font-size:12px;line-height:1.5}
         @media(max-width:850px){.lodgingCriteria{grid-template-columns:1fr}.lodgingCriterion{border-right:0;border-bottom:1px solid rgba(17,17,17,.14)}.lodgingCriterion:last-child{border-bottom:0}}
+        .regHero .eyebrow{font-size:26px;line-height:1.1}.journeyCard .journeyDate{font:700 26px/1 'Barlow Condensed';color:#f1ece3;text-transform:uppercase}.scheduleItem{grid-template-columns:130px 120px minmax(0,1fr)}.scheduleItem time{font-size:38px;line-height:1}.lodgingDate{min-width:230px}.lodgingDate strong{font-size:72px;line-height:1}
+        @media(max-width:520px){.regHero .eyebrow{font-size:22px}.scheduleItem{grid-template-columns:104px 1fr}.scheduleItem time{font-size:32px}.lodgingDate strong{font-size:56px}}
       `}</style>
 
       <div className="shell regNav">
@@ -162,7 +164,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         <div className="shell">
           <div className="journeyHead"><h2>Escolha sua jornada.</h2><p>Os dois formatos compartilham a mesma estrutura nas etapas finais, mas possuem inscrições, limites de vagas, classificação e premiação independentes.</p></div>
           <div className="journeyGrid">
-            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}&detalhes=valores#valores-e-lotes`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p>{option.dateLabel}<br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Me inscrever →</span></span></a>)}
+            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}&detalhes=valores#valores-e-lotes`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p><span className="journeyDate">{option.dateLabel}</span><br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Me inscrever →</span></span></a>)}
           </div>
         </div>
       </section>
