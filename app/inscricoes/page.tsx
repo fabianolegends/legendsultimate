@@ -258,3 +258,52 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
             <details name="registration-details" className="regAccordion">
               <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="stages" /></span>
+                <span className="accordionTitle"><strong>Etapas</strong><small>{journey.name} · {journey.days} dias · {journey.distance} · {journey.ascent}</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="stageCompactGrid">{journeyStages.map(stage=><a className="stageCompact" href={stage.href} key={stage.number}><span>{stage.number}</span><h3>{stage.route}</h3><p>{stage.stats}</p><b>Ver percurso →</b></a>)}</div>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="schedule" /></span>
+                <span className="accordionTitle"><strong>Programação</strong><small>{journey.name} · {journey.dateLabel}</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="scheduleList">{journeySchedule.map(day=><section className="scheduleDay" key={day.date}><div className="scheduleItem"><time>{day.date}</time><strong>{day.stage}</strong><span>{day.route}</span></div><div className="scheduleEvents">{day.events.map(([time,label])=><div className="scheduleEvent" key={`${day.date}-${time}`}><strong>{time}</strong><span>{label}</span></div>)}</div></section>)}</div>
+                <p className="scheduleNote">A programação poderá receber ajustes operacionais. Qualquer alteração será publicada no Manual do Atleta e nos canais oficiais da organização.</p>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="documents" /></span>
+                <span className="accordionTitle"><strong>Regulamento e documentos</strong><small>Regulamento · documentação médica · manual do atleta</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="docs"><article className="docCard"><span className="eyebrow">01</span><h3>Regulamento</h3><p>Regras dos formatos, elegibilidade, categorias, segurança, penalidades, cancelamento e transferência.</p><a href="/regulamento">Consultar regulamento →</a></article><article className="docCard"><span className="eyebrow">02</span><h3>Documento médico</h3><p>Atestado médico e Declaração de Saúde são obrigatórios para liberação do participante.</p><a href="/documentos-medicos">Ver orientações →</a></article><article className="docCard"><span className="eyebrow">03</span><h3>Manual do atleta</h3><p>Logística, SPOT, bag, GPS, equipamentos, Race Engine e rotina das etapas do formato escolhido.</p><a href="/manual-do-atleta">Consultar manual →</a></article></div>
+              </div>
+            </details>
+
+            <details name="registration-details" className="regAccordion">
+              <summary>
+                <span className="accordionIcon"><AccordionLeadIcon kind="lodging" /></span>
+                <span className="accordionTitle"><strong>Hospedagens conveniadas</strong><small>Opções nas quatro cidades-base · atualização em 15/09</small></span>
+                <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
+              </summary>
+              <div className="accordionBody">
+                <div className="lodgingNotice"><div><p className="eyebrow">Em cadastramento</p><h3>Rede de hospedagens conveniadas</h3><p>Os hotéis de Canela, São Francisco de Paula, Gramado e Nova Petrópolis estão sendo selecionados com premissas específicas para facilitar a rotina dos participantes durante a travessia.</p><div className="lodgingCriteria"><div className="lodgingCriterion"><strong>Café da manhã</strong><span>Horário antecipado e compatível com a programação de cada etapa.</span></div><div className="lodgingCriterion"><strong>Entrega das bags</strong><span>Estrutura para entrega das bags à organização dentro da janela operacional.</span></div><div className="lodgingCriterion"><strong>Check-in ajustado</strong><span>Flexibilidade de horário conforme a chegada dos participantes às cidades-base.</span></div></div><p style={{marginTop:"20px"}}>A relação completa, com contatos, condições comerciais e orientações para reservas, será publicada nesta página.</p></div><div className="lodgingDate"><span>Atualização prevista</span><strong>15/09/2026</strong></div></div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{launchConfig.eventDateLabel} · {launchConfig.location}. As inscrições serão direcionadas à plataforma oficial Windfit quando a abertura for autorizada.</p><a className="mainCta" href={registrationHref} aria-disabled={!launchConfig.registrationOpen}><span>{registrationLabel}</span><span>→</span></a></div></section>
+    </main>
+  );
+}
