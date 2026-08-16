@@ -93,6 +93,7 @@ export default function Home() {
         @media(max-width:1120px){.desktopNavCluster{display:none}.mobileNavActions{display:flex}}
         .heroMain{display:flex;align-items:center;padding:70px 0}.heroCopy{max-width:790px}
         .heroCopy h1{font:700 clamp(64px,7.2vw,116px) 'Barlow Condensed';text-transform:uppercase;line-height:.84;margin:18px 0 28px}
+        .heroCopy h1 .heroAccent{color:var(--legends-terracotta,var(--copper))}
         .heroIntro{font-size:20px;line-height:1.55;color:#ddd5c9;max-width:680px}.heroCtas{display:flex;gap:20px;align-items:center;margin-top:34px;flex-wrap:wrap}
         .secondaryCta{padding:17px 24px;border:1px solid rgba(241,236,227,.35);text-transform:uppercase;letter-spacing:.1em;font:600 14px 'Barlow Condensed'}
         .launchSummary{background:#0c0f0d;color:#f1ece3;border-bottom:1px solid rgba(198,122,59,.25);padding:34px 0}.launchSummaryGrid{display:grid;grid-template-columns:1.3fr repeat(7,auto);gap:22px;align-items:center}.launchSummaryTitle span{color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.18em;text-transform:uppercase}.launchSummaryTitle strong{display:block;font:700 27px 'Barlow Condensed';text-transform:uppercase;margin-top:4px}.launchFact{padding-left:20px;border-left:1px solid rgba(241,236,227,.16)}.launchFact strong{display:block;font:700 24px 'Barlow Condensed'}.launchFact span{display:block;color:#9fa39d;font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
@@ -143,7 +144,7 @@ export default function Home() {
           </div>
           <div className="mobileNavActions"><MobileMenu /></div>
         </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a diversão começa.</h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
+        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a <span className="heroAccent">diversão começa.</span></h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
       </section>
 
       <section className="launchSummary" aria-label="Legends em 30 segundos"><div className="wide launchSummaryGrid">
