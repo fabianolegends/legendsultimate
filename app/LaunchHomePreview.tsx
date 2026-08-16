@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { getRegistrationHref } from "./lib/launch";
 
 const includedProducts = [
   ["Camiseta casual", "/images/kit/camiseta-casual.webp"],
@@ -37,10 +38,17 @@ export default function LaunchHomePreview() {
       });
       if (!desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
         const registration = document.createElement("a");
-        registration.href = "/inscricoes";
+        registration.href = getRegistrationHref();
         registration.textContent = "Inscrições";
         registration.dataset.launchLink = "inscricoes";
         desktopNav.insertBefore(registration, desktopNav.firstChild);
+      }
+      if (!desktopNav.querySelector('[data-launch-link="area-atleta"]')) {
+        const athlete = document.createElement("a");
+        athlete.href = "/acesso";
+        athlete.textContent = "Área do atleta";
+        athlete.dataset.launchLink = "area-atleta";
+        desktopNav.appendChild(athlete);
       }
       if (!desktopNav.querySelector('[data-launch-link="incluido"]')) {
         const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href")?.startsWith("/faq"));
@@ -53,7 +61,7 @@ export default function LaunchHomePreview() {
     }
 
     const navCta = home.querySelector<HTMLAnchorElement>(".desktopNavCluster .navCta");
-    if (navCta) { navCta.textContent = "Área do atleta"; navCta.href = "/acesso"; }
+    if (navCta) { navCta.textContent = "Me inscrever"; navCta.href = getRegistrationHref(); }
 
     const kicker = home.querySelector<HTMLElement>(".heroCopy .kicker");
     if (kicker) kicker.textContent = "29 ABR — 02 MAI 2027 · SERRA GAÚCHA";
@@ -61,7 +69,7 @@ export default function LaunchHomePreview() {
     const ctas = home.querySelector<HTMLElement>(".heroCtas");
     if (ctas) {
       const links = Array.from(ctas.querySelectorAll<HTMLAnchorElement>("a"));
-      if (links[0]) { links[0].href = "/inscricoes"; links[0].innerHTML = "Ver inscrições <span>→</span>"; }
+      if (links[0]) { links[0].href = getRegistrationHref(); links[0].innerHTML = "Me inscrever <span>→</span>"; }
       if (links[1]) links[1].style.display = "none";
 
       let spots = ctas.querySelector<HTMLElement>(".remainingSpotsCard");
@@ -131,7 +139,7 @@ export default function LaunchHomePreview() {
       if (pk) pk.textContent = "ULTIMATE R$ 999 · SHORT R$ 699";
       if (h2) h2.innerHTML = "Quero escolher<br><em>minha jornada.</em>";
       if (p) p.textContent = "Confira modalidade, documentos e condições. Nesta prévia, a compra continua bloqueada até a abertura oficial.";
-      if (a) { a.href = "/inscricoes#jornadas"; a.innerHTML = "Comparar Ultimate e Short <span>→</span>"; }
+      if (a) { a.href = getRegistrationHref(); a.innerHTML = "Me inscrever <span>→</span>"; }
     }
 
     const oldIncluded = home.querySelector<HTMLElement>(".includedSection");

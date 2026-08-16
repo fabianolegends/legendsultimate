@@ -58,13 +58,11 @@ export function getJourneyFormat(value?: string): JourneyFormat {
 }
 
 export function getRegistrationLabel() {
-  if (launchConfig.registrationOpen) return "Inscreva-se";
-  if (launchConfig.priorityAccess) return "Acesso prioritário";
-  return "Inscrições em breve";
+  return "Me inscrever";
 }
 
-export function getRegistrationHref() {
+export function getRegistrationHref(format?: JourneyFormat) {
   return launchConfig.registrationOpen && launchConfig.registrationUrl
     ? launchConfig.registrationUrl
-    : "/inscricoes";
+    : `/inscricoes${format ? `?formato=${format}` : ""}#jornadas`;
 }

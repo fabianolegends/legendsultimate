@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import PrivacyPreferencesButton from "./PrivacyPreferencesButton";
+import { getRegistrationHref } from "./lib/launch";
 
 const hiddenRoutes = [
   "/passport",
@@ -45,7 +46,7 @@ export default function LegendsGlobalFooter() {
             </p>
           </div>
           <div className="legendsFooterActions">
-            <a className="legendsFooterPrimary" href="/inscricoes">Ver inscrições</a>
+            <a className="legendsFooterPrimary" href={getRegistrationHref()}>Me inscrever</a>
             <a className="legendsFooterSecondary" href="/lista-prioritaria">Entrar na comunidade</a>
           </div>
         </div>

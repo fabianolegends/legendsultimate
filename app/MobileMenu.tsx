@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { getRegistrationHref } from "./lib/launch";
 
 const links = [
   ["Inscrições", "/inscricoes"],
@@ -46,7 +47,7 @@ export default function MobileMenu() {
             ))}
           </nav>
           <div className="mobileMenuActions">
-            <a href="/inscricoes" onClick={() => setOpen(false)}>Ver inscrições <span>→</span></a>
+            <a href={getRegistrationHref()} onClick={() => setOpen(false)}>Me inscrever <span>→</span></a>
             <a href="/acesso" onClick={() => setOpen(false)}>Área do atleta</a>
           </div>
         </div>,

@@ -109,7 +109,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
       ]
     : schedule;
   const awardPlaces = Array.from({ length: journey.awardPlaces }, (_, index) => `${index + 1}º`);
-  const registrationHref = getRegistrationHref();
+  const registrationHref = getRegistrationHref(format);
   const registrationLabel = getRegistrationLabel();
 
   return (
@@ -122,7 +122,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         .regHero{min-height:520px;padding:62px 0 54px;display:flex;align-items:center;background:linear-gradient(90deg,rgba(5,7,6,.97) 0%,rgba(5,7,6,.89) 35%,rgba(5,7,6,.58) 62%,rgba(5,7,6,.24) 100%),linear-gradient(180deg,rgba(8,10,9,.08),rgba(8,10,9,.84)),url('/inscricoes-gravel-campo.webp') center 10%/cover no-repeat}
         .eyebrow{margin:0 0 18px;color:var(--copper);font:600 13px 'Barlow Condensed';letter-spacing:.2em;text-transform:uppercase}
         .regHero h1{margin:0;max-width:850px;font:700 clamp(58px,8vw,112px) 'Barlow Condensed';line-height:.86;text-transform:uppercase}.regHero h1 em{font-style:normal;color:var(--copper)}
-        .heroGrid{display:block}.heroGrid>div{max-width:900px}.heroLead{font-size:18px;line-height:1.7;color:#d0cec8;margin:25px 0 0;max-width:780px}.mainCta{display:flex;justify-content:space-between;align-items:center;margin-top:22px;background:var(--copper);color:white;padding:17px 20px;font:700 15px 'Barlow Condensed';letter-spacing:.09em;text-transform:uppercase}.mainCta[aria-disabled="true"]{opacity:.72;pointer-events:none}
+        .heroGrid{display:block}.heroGrid>div{max-width:900px}.heroLead{font-size:18px;line-height:1.7;color:#d0cec8;margin:25px 0 0;max-width:780px}.mainCta{display:flex;justify-content:space-between;align-items:center;width:min(100%,360px);margin-top:22px;background:var(--copper);color:white;padding:17px 20px;font:700 15px 'Barlow Condensed';letter-spacing:.09em;text-transform:uppercase;transition:.2s}.mainCta:hover{background:#d1845e;transform:translateY(-2px)}.mainCta:focus-visible{outline:3px solid #fff;outline-offset:4px}
         .section{padding:90px 0;border-top:1px solid rgba(255,255,255,.08)}.section.light{background:var(--paper);color:var(--ink)}
         .section h2{font:700 clamp(44px,5vw,72px) 'Barlow Condensed';line-height:.9;text-transform:uppercase;margin:0 0 34px}.section h2 em{font-style:normal;color:var(--copper)}
         .journeySection{padding:44px 0 64px;background:#111411;border-top:1px solid rgba(255,255,255,.08)}.journeyHead{display:flex;justify-content:space-between;gap:36px;align-items:end;margin-bottom:20px}.journeyHead h2{margin:0;font:700 clamp(40px,5vw,64px)/.92 'Barlow Condensed';text-transform:uppercase}.journeyHead p{max-width:520px;margin:0;color:#a8ada5;line-height:1.65}.journeyGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.journeyCard{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;padding:30px;border:1px solid rgba(185,111,72,.34);background:#0b0e0c;color:#f1ece3}.journeyCard.active{border-color:var(--copper);box-shadow:inset 0 0 0 1px var(--copper);background:linear-gradient(135deg,rgba(185,111,72,.18),#0b0e0c 68%)}.journeyCard .tag{color:var(--copper);font:700 11px 'Barlow Condensed';letter-spacing:.16em;text-transform:uppercase}.journeyCard h3{display:flex;align-items:baseline;gap:.2em;margin:8px 0 12px;font:700 42.5px/1 'Barlow Condensed';text-transform:uppercase}.journeyCard h3 .journeyScript{font-size:.7em;color:var(--copper)}.journeyCard p{margin:0;color:#a8ada5;font-size:13px;line-height:1.6}.journeyStats{display:grid;gap:6px;align-content:center;text-align:right}.journeyStats strong{font:700 30px 'Barlow Condensed';color:var(--copper)}.journeyStats span{font:600 11px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase;color:#c6c7c2}.journeyAction{grid-column:1/-1;display:flex;justify-content:space-between;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);font:700 12px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase;color:#fff}
@@ -154,6 +154,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
             <p className="eyebrow">Inscrições · {journey.dateShort}</p>
             <h1>Seu lugar na <em>travessia.</em></h1>
             <p className="heroLead">Escolha a jornada completa de quatro etapas ou viva as duas etapas finais. Depois, defina se deseja competir na Gravel Race ou completar o desafio na Legends Experience.</p>
+            <a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a>
           </div>
         </div>
       </section>
@@ -162,7 +163,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         <div className="shell">
           <div className="journeyHead"><h2>Escolha sua jornada.</h2><p>Os dois formatos compartilham a mesma estrutura nas etapas finais, mas possuem inscrições, limites de vagas, classificação e premiação independentes.</p></div>
           <div className="journeyGrid">
-            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}&detalhes=valores#valores-e-lotes`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p>{option.dateLabel}<br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>{option.id === format ? "Ver valores ↓" : "Escolher →"}</span></span></a>)}
+            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}&detalhes=valores#valores-e-lotes`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p>{option.dateLabel}<br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Me inscrever →</span></span></a>)}
           </div>
         </div>
       </section>
@@ -303,7 +304,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         </div>
       </section>
 
-      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{launchConfig.eventDateLabel} · {launchConfig.location}. As inscrições serão direcionadas à plataforma oficial Windfit quando a abertura for autorizada.</p><a className="mainCta" href={registrationHref} aria-disabled={!launchConfig.registrationOpen}><span>{registrationLabel}</span><span>→</span></a></div></section>
+      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{launchConfig.eventDateLabel} · {launchConfig.location}. Os botões já estão preparados para receber o link oficial da plataforma de inscrições.</p><a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a></div></section>
     </main>
   );
 }
