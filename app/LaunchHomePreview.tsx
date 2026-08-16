@@ -68,17 +68,33 @@ export default function LaunchHomePreview() {
       if (!spots) {
         spots = document.createElement("div");
         spots.className = "remainingSpotsCard";
-        spots.innerHTML = '<span>ULTIMATE — 4 DIAS</span><strong>R$ 999</strong><small>100 VAGAS</small>';
+        spots.innerHTML = '<span>ULTIMATE — 4 DIAS</span><strong>R$ 999</strong><small>100 / 100 VAGAS</small>';
         if (links[1]) links[1].insertAdjacentElement("afterend", spots);
         else ctas.appendChild(spots);
       }
 
-      if (!ctas.querySelector(".launchPrice")) {
-        const price = document.createElement("div");
+      let price = ctas.querySelector<HTMLElement>(".launchPrice");
+      if (!price) {
+        price = document.createElement("div");
         price.className = "launchPrice";
-        price.innerHTML = '<span>SHORT — 2 DIAS</span><strong>R$ 699</strong><small>50 VAGAS</small>';
+        price.innerHTML = '<span>SHORT — 2 DIAS</span><strong>R$ 699</strong><small>50 / 50 VAGAS</small>';
         ctas.appendChild(price);
       }
+
+      const ultimateCounter = spots.querySelector<HTMLElement>("small");
+      const shortCounter = price.querySelector<HTMLElement>("small");
+      void fetch("/api/public/remaining-spots", { cache: "no-store" })
+        .then((response) => response.ok ? response.json() : null)
+        .then((payload) => {
+          if (!payload) return;
+          const ultimateRemaining = Number(payload.ultimate?.remaining ?? 100);
+          const ultimateTotal = Number(payload.ultimate?.total ?? 100);
+          const shortRemaining = Number(payload.short?.remaining ?? 50);
+          const shortTotal = Number(payload.short?.total ?? 50);
+          if (ultimateCounter && Number.isFinite(ultimateRemaining)) ultimateCounter.textContent = `${ultimateRemaining} / ${ultimateTotal} VAGAS`;
+          if (shortCounter && Number.isFinite(shortRemaining)) shortCounter.textContent = `${shortRemaining} / ${shortTotal} VAGAS`;
+        })
+        .catch(() => undefined);
     }
 
     const technicalLink = home.querySelector<HTMLAnchorElement>('a[href="/race-engine"]');
@@ -133,7 +149,7 @@ export default function LaunchHomePreview() {
 
   return <>
     <style>{`
-      .remainingSpotsCard{height:68px;min-width:224px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-content:center;column-gap:12px;padding:10px 18px;border:1px solid rgba(241,236,227,.45);background:rgba(8,10,9,.52);text-transform:uppercase}.remainingSpotsCard span{grid-column:1;grid-row:1;color:#c67a3b;font:600 10px 'Barlow Condensed';letter-spacing:.16em;align-self:end}.remainingSpotsCard strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:.9;color:#f1ece3}.remainingSpotsCard small{grid-column:2;grid-row:1/3;align-self:center;color:#d4cec4;font:600 12px 'Barlow Condensed';letter-spacing:.08em;white-space:nowrap}.launchPrice{display:grid;grid-template-columns:auto auto;align-items:end;gap:0 14px;padding-left:6px}.launchPrice span{grid-column:1/-1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{color:#b8b0a4;font-size:11px}.launchProfileHidden,.launchTechnicalReduced{display:none!important}.launchOldIncluded{display:none!important}.launchFaqEssential details:nth-of-type(n+6){display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}
+      .redesign .heroCopy .kicker{font-size:clamp(15px,1.15vw,18px);letter-spacing:.25em}.remainingSpotsCard{height:68px;min-width:248px;display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-content:center;justify-content:center;column-gap:18px;padding:10px 18px;border:1px solid rgba(241,236,227,.45);background:rgba(8,10,9,.52);text-transform:uppercase}.remainingSpotsCard span{grid-column:1/-1;grid-row:1;color:#c67a3b;font:600 10px 'Barlow Condensed';letter-spacing:.16em;align-self:end}.remainingSpotsCard strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:.9;color:#f1ece3}.remainingSpotsCard small{grid-column:2;grid-row:2;align-self:center;text-align:center;color:#d4cec4;font:600 11px 'Barlow Condensed';letter-spacing:.07em;white-space:nowrap}.launchPrice{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-content:center;justify-content:center;column-gap:18px;padding-left:6px}.launchPrice span{grid-column:1/-1;grid-row:1;color:#c67a3b;font:600 11px 'Barlow Condensed';letter-spacing:.16em}.launchPrice strong{grid-column:1;grid-row:2;font:700 28px 'Barlow Condensed';line-height:1}.launchPrice small{grid-column:2;grid-row:2;align-self:center;text-align:center;color:#b8b0a4;font:600 11px 'Barlow Condensed';letter-spacing:.05em;white-space:nowrap}.launchProfileHidden,.launchTechnicalReduced{display:none!important}.launchOldIncluded{display:none!important}.launchFaqEssential details:nth-of-type(n+6){display:none!important}.launchFaqLink{display:inline-flex;margin-top:25px}
       .launchJourney .wrap,.launchIncluded .wrap{width:min(1440px,calc(100% - 96px));margin:auto}
       .launchJourney{background:#111411;color:#f1ece3;padding:96px 0;border-top:1px solid rgba(255,255,255,.07)}.launchJourneyHead{display:grid;grid-template-columns:1fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchJourney .eyebrow,.launchIncluded .eyebrow{color:#c67a3b;text-transform:uppercase;letter-spacing:.2em;font:600 13px 'Barlow Condensed'}.launchJourney h2,.launchIncluded h2{font:700 clamp(48px,5.6vw,84px) 'Barlow Condensed';text-transform:uppercase;line-height:.9;margin:15px 0}.launchJourneyHead>p{color:#a8aca5;line-height:1.7}.journeySteps{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(198,122,59,.3)}.journeySteps article{padding:26px;border-right:1px solid rgba(198,122,59,.25)}.journeySteps article:last-child{border:0}.journeySteps b{color:#c67a3b;font:700 12px 'Barlow Condensed';letter-spacing:.14em}.journeySteps h3{font:700 26px 'Barlow Condensed';text-transform:uppercase;margin:12px 0}.journeySteps p{color:#a7aba4;font-size:13px;line-height:1.55;margin:0}.beforeBox{margin-top:28px;padding:22px;border:1px solid rgba(255,255,255,.12);display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}.beforeBox strong{font:700 22px 'Barlow Condensed';text-transform:uppercase;color:#c67a3b}.beforeBox p{margin:0;color:#c7c9c4;line-height:1.65}
       .launchIncluded{background:#f4f0db;color:#0b0d0c;padding:100px 0}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchIncludedHead>p{color:#646761;line-height:1.7}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:22px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 23px 'Barlow Condensed';text-transform:uppercase;margin:12px 0 0}.launchServices{display:grid;grid-template-columns:repeat(4,1fr);margin-top:18px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:15px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 12px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.launchDocs a{padding:13px 16px;border:1px solid #c67a3b;font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:#c67a3b;color:#fff}

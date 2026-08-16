@@ -74,7 +74,7 @@ export default function PublicSpotsPage() {
 
       {!activeEventId ? <div className="message">Selecione um evento no topo do painel.</div> : <div className="spotPanels"><section className="panel">
         <div className="counterPreview">
-          <div><span>Legends Ultimate</span><strong>{loading ? "—" : ultimateCurrent}</strong><small> vagas restantes / de 100</small></div>
+          <div><span>Legends Ultimate</span><strong>{loading ? "—" : `${ultimateCurrent} / 100`}</strong><small> vagas</small></div>
           <div className="badge">4 etapas</div>
         </div>
         <form className="form" onSubmit={(event)=>submit(event,"ultimate")}>
@@ -84,7 +84,7 @@ export default function PublicSpotsPage() {
           <button type="submit" disabled={loading || saving || !data}>{saving ? "Salvando..." : "Atualizar contador"}</button>
         </form>
         <p className="note">Limite da Ultimate: <strong>100 vagas</strong>.</p>
-      </section><section className="panel"><div className="counterPreview"><div><span>Legends Short</span><strong>{loading ? "—" : shortCurrent}</strong><small> vagas restantes / de 50</small></div><div className="badge">2 etapas</div></div><form className="form" onSubmit={(event)=>submit(event,"short")}><label>Vagas restantes no site<input type="number" min={0} max={50} value={shortRemaining} onChange={(e) => setShortRemaining(e.target.value)} disabled={loading || saving || !data}/></label><button type="submit" disabled={loading || saving || !data}>{saving ? "Salvando..." : "Atualizar contador"}</button></form><p className="note">Limite da Short: <strong>50 vagas</strong>.</p></section></div>}
+      </section><section className="panel"><div className="counterPreview"><div><span>Legends Short</span><strong>{loading ? "—" : `${shortCurrent} / 50`}</strong><small> vagas</small></div><div className="badge">2 etapas</div></div><form className="form" onSubmit={(event)=>submit(event,"short")}><label>Vagas restantes no site<input type="number" min={0} max={50} value={shortRemaining} onChange={(e) => setShortRemaining(e.target.value)} disabled={loading || saving || !data}/></label><button type="submit" disabled={loading || saving || !data}>{saving ? "Salvando..." : "Atualizar contador"}</button></form><p className="note">Limite da Short: <strong>50 vagas</strong>.</p></section></div>}
       <div className="warning"><strong>Importante:</strong> os dois contadores são manuais e independentes. Importe ou confira as inscrições da Windfit antes de atualizá-los.</div>
       {message && <div className="message">{message}</div>}
     </div>
