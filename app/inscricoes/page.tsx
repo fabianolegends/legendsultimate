@@ -154,7 +154,6 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
             <p className="eyebrow">Inscrições · {journey.dateShort}</p>
             <h1>Seu lugar na <em>travessia.</em></h1>
             <p className="heroLead">Escolha a jornada completa de quatro etapas ou viva as duas etapas finais. Depois, defina se deseja competir na Gravel Race ou completar o desafio na Legends Experience.</p>
-            <a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a>
           </div>
         </div>
       </section>
