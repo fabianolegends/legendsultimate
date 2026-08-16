@@ -36,7 +36,7 @@
 .legendsFooterStatement h2 {
   max-width: 1280px;
   margin: 18px 0 0;
-  font: 700 clamp(58px, 6.7vw, 108px)/.8 var(--font-barlow-condensed), "Barlow Condensed", sans-serif;
+  font: 700 clamp(46px, 5.4vw, 86px)/.8 var(--font-barlow-condensed), "Barlow Condensed", sans-serif;
   letter-spacing: -.035em;
   text-transform: uppercase;
 }
@@ -320,7 +320,7 @@
 
   .legendsFooterStatement h2 {
     margin-top: 18px;
-    font-size: clamp(50px, 14.5vw, 68px);
+    font-size: clamp(40px, 11.6vw, 54px);
     line-height: .83;
   }
 
