@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PrintButton from "../PrintButton";
 
-export const metadata: Metadata = { title: "Atestado Médico | Legends Bike Race 2027", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Atestado Médico 2027", robots: { index: false, follow: false } };
 
 export default function AtestadoPage() {
   return <main className="formPage"><style>{`
