@@ -7,7 +7,25 @@ export const metadata: Metadata = {
   title: { absolute: "Legends Bike Race 2027 | Stage Race de Gravel na Serra Gaúcha" },
   description: "Participe da Legends Bike Race 2027, uma stage race premium de gravel por Canela, Gramado, São Francisco de Paula e Nova Petrópolis.",
   alternates: { canonical: "/" },
-  openGraph: { url: "/", title: "Legends Bike Race 2027 | Gravel na Serra Gaúcha", description: "Escolha entre Legends Ultimate e Legends Short e viva uma stage race premium de gravel pela Serra Gaúcha." },
+  openGraph: {
+    type: "website",
+    url: "/",
+    title: "Legends Bike Race 2027 | Gravel na Serra Gaúcha",
+    description: "Escolha entre Legends Ultimate e Legends Short e viva uma stage race premium de gravel pela Serra Gaúcha.",
+    images: [{
+      url: "https://www.legendsbikerace.com.br/hero-production.jpg",
+      width: 1536,
+      height: 960,
+      alt: "Ciclistas da Legends Bike Race na Serra Gaúcha",
+      type: "image/jpeg",
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Legends Bike Race 2027 | Gravel na Serra Gaúcha",
+    description: "Uma stage race premium de gravel por quatro destinos da Serra Gaúcha.",
+    images: ["https://www.legendsbikerace.com.br/hero-production.jpg"],
+  },
 };
 
 const stages = [
