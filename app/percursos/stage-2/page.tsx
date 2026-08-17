@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Stage 02: São Francisco de Paula a Gramado",
-  description: "Conheça a segunda etapa da Legends Ultimate: 89,1 km e 1.520 m+ entre São Francisco de Paula e Gramado.",
+  title: "Stage 2 de Gravel: São Francisco de Paula a Gramado",
+  description: "Conheça a Stage 2 da Legends Bike Race 2027: 89,1 km de gravel e 1.520 m de ascensão entre São Francisco de Paula e Gramado.",
   alternates: { canonical: "/percursos/stage-2" },
   openGraph: { url: "/percursos/stage-2", title: "Stage 02: São Francisco de Paula a Gramado", description: "89,1 km e 1.520 m+ na segunda etapa da Legends Ultimate." },
 };
@@ -39,9 +39,9 @@ export default function StageTwo() {
             <span>Stage 02</span> São Francisco de Paula → Gramado
           </div>
           <h1>
-            Campos
+            Stage 2 da Legends Bike Race:
             <br />
-            de altitude.
+            São Francisco de Paula a Gramado.
           </h1>
           <p>
             Uma travessia pelos horizontes abertos dos Campos de Cima da Serra,

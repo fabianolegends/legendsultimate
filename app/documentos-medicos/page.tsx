@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Documentação Médica 2027",
-  description: "Atestado Médico e Declaração de Saúde obrigatórios para a Legends Bike Race 2027.",
+  title: "Documentação médica para a Legends 2027",
+  description: "Consulte e prepare o atestado médico e a declaração de saúde obrigatórios para participar da Legends Bike Race 2027 na Serra Gaúcha.",
   alternates: { canonical: "/documentos-medicos" },
 };
 
@@ -26,7 +26,7 @@ export default function DocumentosMedicosPage() {
       <header className="hero">
         <div className="heroInner">
           <p className="eyebrow">Documentação obrigatória · 2027</p>
-          <h1>Saúde antes<br />da largada.</h1>
+          <h1>Documentação médica da Legends Bike Race 2027.<br />Saúde antes da largada.</h1>
           <p>Para a liberação do participante são obrigatórios o <strong>Atestado Médico</strong> e a <strong>Declaração de Saúde online</strong>.</p>
         </div>
       </header>

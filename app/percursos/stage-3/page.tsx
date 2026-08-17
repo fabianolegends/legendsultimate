@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Stage 03: Gramado a Nova Petrópolis",
-  description: "Conheça a terceira etapa da Legends Ultimate e a abertura da Legends Short: 99,3 km e 1.522 m+ entre Gramado e Nova Petrópolis.",
+  title: "Stage 3 de Gravel: Gramado a Nova Petrópolis",
+  description: "Conheça a Stage 3 da Legends Bike Race 2027: 99,3 km de gravel e 1.522 m de ascensão entre Gramado e Nova Petrópolis.",
   alternates: { canonical: "/percursos/stage-3" },
   openGraph: { url: "/percursos/stage-3", title: "Stage 03: Gramado a Nova Petrópolis", description: "99,3 km e 1.522 m+ na Legends Ultimate e na Legends Short." },
 };
@@ -38,8 +38,8 @@ export default function StageThree() {
             <span>Stage 03</span> Gramado → Nova Petrópolis
           </div>
           <h1>
-            Precisão e<br />
-            resistência.
+            Stage 3 da Legends Bike Race:<br />
+            Gramado a Nova Petrópolis.
           </h1>
           <p>
             Uma etapa de contrastes: da altitude de Gramado ao ponto mais baixo

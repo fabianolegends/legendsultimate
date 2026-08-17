@@ -3,8 +3,8 @@ import { getJourneyFormat, getRegistrationHref, getRegistrationLabel, launchConf
 import { AccordionLeadIcon, AccordionToggleIcons } from "./AccordionIcons";
 
 export const metadata: Metadata = {
-  title: "Inscrições 2027",
-  description: "Escolha sua jornada na Legends Bike Race 2027: Legends Ultimate com 4 etapas ou Legends Short com as 2 etapas finais.",
+  title: "Inscrições Legends Bike Race 2027",
+  description: "Inscreva-se na Legends Bike Race 2027, stage race de gravel na Serra Gaúcha. Escolha a Ultimate, com 4 etapas, ou a Short, com 2 etapas.",
   alternates: { canonical: "/inscricoes" },
 };
 
@@ -154,7 +154,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         <div className="shell heroGrid">
           <div>
             <p className="eyebrow">Inscrições · {journey.dateShort}</p>
-            <h1>Seu lugar na <em>travessia.</em></h1>
+            <h1>Inscrições Legends Bike Race 2027.<br /><em>Seu lugar na travessia.</em></h1>
             <p className="heroLead">Escolha a jornada completa de quatro etapas ou viva as duas etapas finais. Depois, defina se deseja competir na Gravel Race ou completar o desafio na Legends Experience.</p>
           </div>
         </div>

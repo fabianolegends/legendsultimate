@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Stage 01: Canela a São Francisco de Paula",
-  description: "Conheça a primeira etapa da Legends Ultimate: 111,9 km e 1.684 m+ entre Canela e São Francisco de Paula.",
+  title: "Stage 1 de Gravel: Canela a São Francisco de Paula",
+  description: "Conheça a Stage 1 da Legends Bike Race 2027: 111,9 km de gravel e 1.684 m de ascensão entre Canela e São Francisco de Paula.",
   alternates: { canonical: "/percursos/stage-1" },
   openGraph: { url: "/percursos/stage-1", title: "Stage 01: Canela a São Francisco de Paula", description: "111,9 km e 1.684 m+ na primeira etapa da Legends Ultimate." },
 };
@@ -30,7 +30,7 @@ export default function StageOne() {
       <section className="stageDetailHero">
         <div className="shell stageHeroInner">
           <div className="stageKicker"><span>Stage 01</span> Canela → São Francisco de Paula</div>
-          <h1>O portal<br />da aventura.</h1>
+          <h1>Stage 1 da Legends Bike Race:<br />Canela a São Francisco de Paula.</h1>
           <p>Uma travessia de gravel entre vales, estradas rurais e campos de altitude, conectando Canela a São Francisco de Paula.</p>
           <a className="stageCityLink" href="https://canela.com.br/" target="_blank" rel="noreferrer">Conheça a cidade da largada <span>↗</span></a>
           <div className="stageFacts">{facts.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>

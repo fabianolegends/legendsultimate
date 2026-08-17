@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Manual do Atleta — Em breve",
-  description: "O Manual do Atleta da Legends Bike Race 2027 será publicado em breve.",
+  title: "Manual do Atleta Legends Bike Race 2027",
+  description: "Acesse em breve o Manual do Atleta da Legends Bike Race 2027, com orientações de percurso, equipamentos, logística e segurança da prova.",
   alternates: { canonical: "/manual-do-atleta" },
 };
 
@@ -18,7 +18,7 @@ export default function ManualAtletaPage() {
       </nav>
       <section className="soonHero shell">
         <p className="eyebrow">Legends Bike Race 2027</p>
-        <h1>Manual do atleta.<em>Em breve.</em></h1>
+        <h1>Manual do Atleta Legends Bike Race 2027.<em>Em breve.</em></h1>
         <p className="lead">O documento completo, com logística, horários, equipamentos obrigatórios e orientações para as etapas, será publicado mais próximo do evento.</p>
         <span className="notice">Publicação futura</span>
       </section>

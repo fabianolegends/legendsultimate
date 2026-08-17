@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import RaceInfoMenu from "./RaceInfoMenu";
 
 export const metadata: Metadata = {
-  title: "A Prova",
-  description: "Como funcionam Legends Ultimate e Legends Short: formatos, etapas, autonavegação, categorias, pontos e Race Engine.",
+  title: "Prova de Gravel em Etapas: como funciona",
+  description: "Entenda a Legends Bike Race 2027: formatos Ultimate e Short, etapas, autonavegação, categorias, pontuação e Race Engine na Serra Gaúcha.",
   alternates: { canonical: "/a-prova" },
   openGraph: { url: "/a-prova", title: "A Prova | Legends Bike Race 2027", description: "Conheça a jornada, as modalidades e as regras esportivas da Legends Bike Race 2027." },
 };
@@ -34,7 +34,7 @@ export default function AboutRace() {
       <section className="aboutHero">
         <div className="shell">
           <p className="aboutKicker">A prova · 29 ABR — 02 MAI 2027</p>
-          <h1>Duas jornadas.<br /><em>Uma mesma essência.</em></h1>
+          <h1>Como funciona a Legends Bike Race 2027.<br /><em>Duas jornadas, uma mesma essência.</em></h1>
           <p className="aboutLead">Legends Ultimate percorre as quatro etapas da travessia. Legends Short reúne as duas etapas finais, com classificação e premiação independentes.</p>
           <div className="aboutNumbers">{numbers.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
         </div>

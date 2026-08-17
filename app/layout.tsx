@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     default: "Legends Bike Race 2027",
     template: "%s | Legends Bike Race",
   },
-  description: "Legends Ultimate em quatro etapas e Legends Short com as duas etapas finais, pela Serra Gaúcha.",
+  description: "Legends Bike Race 2027: stage race premium de gravel por Canela, Gramado, São Francisco de Paula e Nova Petrópolis, na Serra Gaúcha.",
   applicationName: "Legends Bike Race",
   keywords: ["Legends Bike Race","Legends Ultimate Gravel Race","prova de gravel","stage race de gravel","gravel Serra Gaúcha","ciclismo Serra Gaúcha"],
   authors: [{ name: "Legends Bike Race" }],
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     siteName: "Legends Bike Race",
     title: "Legends Bike Race 2027",
-    description: "Legends Ultimate em quatro etapas e Legends Short com as duas etapas finais, pela Serra Gaúcha.",
+    description: "Stage race premium de gravel por quatro destinos da Serra Gaúcha. Escolha Legends Ultimate ou Legends Short.",
     images: [{ url: "/hero-production.jpg", alt: "Legends Bike Race na Serra Gaúcha" }],
   },
   twitter: {

@@ -4,10 +4,10 @@ import MobileMenu from "./MobileMenu";
 import RouteExplorer from "./RouteExplorer";
 
 export const metadata: Metadata = {
-  title: { absolute: "Legends Bike Race 2027 · Ultimate e Short" },
-  description: "Uma stage race de gravel com duas jornadas: Legends Ultimate, em quatro etapas, e Legends Short, com as duas etapas finais.",
+  title: { absolute: "Legends Bike Race 2027 | Stage Race de Gravel na Serra Gaúcha" },
+  description: "Participe da Legends Bike Race 2027, uma stage race premium de gravel por Canela, Gramado, São Francisco de Paula e Nova Petrópolis.",
   alternates: { canonical: "/" },
-  openGraph: { url: "/", title: "Legends Bike Race", description: "Escolha entre Legends Ultimate e Legends Short para viver a travessia de gravel pela Serra Gaúcha." },
+  openGraph: { url: "/", title: "Legends Bike Race 2027 | Gravel na Serra Gaúcha", description: "Escolha entre Legends Ultimate e Legends Short e viva uma stage race premium de gravel pela Serra Gaúcha." },
 };
 
 const stages = [
@@ -86,7 +86,7 @@ export default function Home() {
         .mobileNavActions{display:none;align-items:center}
         @media(max-width:1120px){.desktopNavCluster{display:none}.mobileNavActions{display:flex}}
         .heroMain{display:flex;align-items:center;padding:70px 0}.heroCopy{max-width:790px}
-        .heroCopy h1{font:700 clamp(64px,7.2vw,116px) 'Barlow Condensed';text-transform:uppercase;line-height:.84;margin:18px 0 28px}
+        .heroCopy h1{font:700 clamp(52px,5.4vw,88px) 'Barlow Condensed';text-transform:uppercase;line-height:.88;margin:18px 0 28px}
         .heroCopy h1 .heroAccent{color:var(--legends-terracotta,var(--copper))}
         .heroIntro{font-size:20px;line-height:1.55;color:#ddd5c9;max-width:680px}.heroCtas{display:flex;gap:20px;align-items:center;margin-top:34px;flex-wrap:wrap}
         .secondaryCta{padding:17px 24px;border:1px solid rgba(241,236,227,.35);text-transform:uppercase;letter-spacing:.1em;font:600 14px 'Barlow Condensed'}
@@ -141,7 +141,7 @@ export default function Home() {
           </div>
           <div className="mobileNavActions"><MobileMenu /></div>
         </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Onde o asfalto termina, a <span className="heroAccent">diversão começa.</span></h1><p className="heroIntro"><strong>Uma Stage Race Premium de Gravel pela Serra Gaúcha.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
+        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Legends Bike Race 2027: <span className="heroAccent">Stage Race de Gravel na Serra Gaúcha.</span></h1><p className="heroIntro"><strong>Onde o asfalto termina, a diversão começa.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
       </section>
 
       <section className="launchSummary" aria-label="Legends em 30 segundos"><div className="wide launchSummaryGrid">

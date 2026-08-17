@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Race Engine: do GPS ao resultado",
-  description: "Conheça a tecnologia própria da Legends para validar percursos, checkpoints, tempos e resultados da Gravel Race e a jornada do modo Experience.",
+  title: "Race Engine para provas de gravel",
+  description: "Conheça o Legends Race Engine, tecnologia que valida GPS, percurso, checkpoints, tempos e resultados da Gravel Race e registra a jornada Experience.",
   alternates: { canonical: "/race-engine" },
   openGraph: { url: "/race-engine", title: "Legends Race Engine: do GPS ao resultado", description: "Tecnologia própria para validar percursos, checkpoints, tempos e resultados." },
 };
@@ -44,7 +44,7 @@ export default function RaceEnginePage() {
 
       <header className="engineNav engineShell"><a href="/">← Voltar à home</a><img src="/legends-logo-official.png" alt="Legends Bike Race" /><a href="/passport/acesso">Área do atleta</a></header>
 
-      <section className="engineHero"><div className="engineShell"><p className="eyebrow">Tecnologia própria · Legends Core</p><div className="engineHeroGrid"><h1>Do GPS ao<em>resultado.</em></h1><p className="engineLead">O Legends Race Engine conecta atividades, percurso oficial, checkpoints digitais, apuração esportiva e publicação. A aventura continua livre; o resultado ganha precisão e transparência.</p></div><div className="enginePromise"><div><strong>Você pedala. O Race Engine transforma sua atividade em resultado.</strong><br/><span>Na Gravel Race, ele sustenta a competição. No Experience, registra e valida a jornada.</span></div><b>Cada passagem conta</b></div></div></section>
+      <section className="engineHero"><div className="engineShell"><p className="eyebrow">Tecnologia própria · Legends Core</p><div className="engineHeroGrid"><h1>Legends Race Engine:<em>do GPS ao resultado.</em></h1><p className="engineLead">O Legends Race Engine conecta atividades, percurso oficial, checkpoints digitais, apuração esportiva e publicação. A aventura continua livre; o resultado ganha precisão e transparência.</p></div><div className="enginePromise"><div><strong>Você pedala. O Race Engine transforma sua atividade em resultado.</strong><br/><span>Na Gravel Race, ele sustenta a competição. No Experience, registra e valida a jornada.</span></div><b>Cada passagem conta</b></div></div></section>
 
       <section className="journey"><div className="engineShell"><div className="sectionHead"><div><p className="eyebrow">Como funciona</p><h2>Uma experiência contínua.<br/><em>Cinco passos.</em></h2></div><p>O processo começa no dispositivo do participante e termina em uma informação clara para atleta, organização e público.</p></div><div className="stepGrid">{steps.map(([n,title,text])=><article className="step" key={n}><span>{n}</span><h3>{title}</h3><p>{text}</p></article>)}</div></div></section>
 

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Percursos",
+  title: "Percursos de Gravel na Serra Gaúcha",
   description:
-    "Conheça os percursos da Legends Ultimate e da Legends Short pelas quatro cidades-base da Serra Gaúcha.",
+    "Explore os percursos de gravel da Legends Bike Race 2027 por Canela, São Francisco de Paula, Gramado e Nova Petrópolis, com distâncias e altimetrias.",
   alternates: { canonical: "/percursos" },
   openGraph: {
     url: "/percursos",
@@ -87,7 +87,7 @@ export default function RoutesIndex() {
       <section className="aboutHero">
         <div className="shell">
           <p className="aboutKicker">Dois formatos · Serra Gaúcha</p>
-          <h1>Uma história contínua.<br /><em>Quatro destinos.</em></h1>
+          <h1>Percursos de gravel na Serra Gaúcha.<br /><em>Quatro etapas, quatro destinos.</em></h1>
           <p className="aboutLead">
             A Ultimate percorre as quatro etapas; a Short entra na jornada nas Stages 03 e 04. Os percursos compartilhados são os mesmos para ambos os formatos.
           </p>

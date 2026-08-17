@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Perguntas Frequentes",
-  description: "Dúvidas sobre participação, inscrições, bicicletas, GPS, SPOT, logística e regras da Legends Bike Race 2027.",
+  title: "Dúvidas sobre a Legends Bike Race 2027",
+  description: "Encontre respostas sobre inscrições, participação, bicicletas, GPS, SPOT, percursos, logística e regras da Legends Bike Race 2027.",
   alternates: { canonical: "/faq" },
   openGraph: { url: "/faq", title: "Perguntas Frequentes | Legends Bike Race 2027", description: "Respostas atualizadas para a Legends Bike Race 2027." },
 };
@@ -62,7 +62,7 @@ export default function FAQ() {
     @media(max-width:700px){.wrap{width:calc(100% - 32px)}.top{height:82px}.logo{height:58px}.questions{padding-top:32px}.questionsHead{padding-bottom:24px}.questionsHead h1{font-size:46px}.group{padding:30px 0}summary{font-size:21px}}
   `}</style>
   <nav className="top wrap"><a href="/"><img className="logo" src="/legends-logo-official.png" alt="Legends" /></a><a className="back" href="/">← Voltar à home</a></nav>
-  <section id="perguntas" className="wrap questions"><header className="questionsHead"><p className="kicker">Legends Bike Race 2027</p><h1>Perguntas frequentes.</h1></header>{groups.map(([title,items])=><div className="group" key={title as string}><p className="kicker">{title as string}</p><h2>{title as string}</h2>{(items as string[][]).map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>)}</section>
+  <section id="perguntas" className="wrap questions"><header className="questionsHead"><p className="kicker">Legends Bike Race 2027</p><h1>Perguntas frequentes sobre a prova de gravel.</h1></header>{groups.map(([title,items])=><div className="group" key={title as string}><p className="kicker">{title as string}</p><h2>{title as string}</h2>{(items as string[][]).map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>)}</section>
   <section className="cta"><div className="wrap"><h2>Leia os documentos antes de se inscrever.</h2><div className="ctaLinks"><a href="/regulamento">Regulamento oficial →</a><a className="alt" href="/inscricoes">Ver inscrições →</a></div></div></section>
   </main>;
 }
