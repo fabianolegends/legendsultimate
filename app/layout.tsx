@@ -12,6 +12,7 @@ import LaunchHomePreview from "./LaunchHomePreview";
 import CookieConsent from "./CookieConsent";
 import LegendsGlobalFooter from "./LegendsGlobalFooter";
 import GlobalPageNavigation from "./GlobalPageNavigation";
+import MarketingTracking from "./MarketingTracking";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -110,6 +111,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <LegendsGlobalFooter />
         <GlobalPageNavigation />
         <CookieConsent />
+        <MarketingTracking />
       </body>
     </html>
   );

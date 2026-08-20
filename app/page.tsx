@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import KitCarousel from "./KitCarousel";
 import MobileMenu from "./MobileMenu";
 import RouteExplorer from "./RouteExplorer";
+import { getRegistrationHref } from "./lib/launch";
 
 export const metadata: Metadata = {
   title: { absolute: "Legends Bike Race 2027 | Stage Race de Gravel na Serra Gaúcha" },
@@ -159,7 +160,7 @@ export default function Home() {
           </div>
           <div className="mobileNavActions"><MobileMenu /></div>
         </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Legends Bike Race 2027: <span className="heroAccent">Stage Race de Gravel na Serra Gaúcha.</span></h1><p className="heroIntro"><strong>Onde o asfalto termina, a diversão começa.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href="/lista-prioritaria">Entre para a lista prioritária</a></div></div></div>
+        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Legends Bike Race 2027: <span className="heroAccent">Stage Race de Gravel na Serra Gaúcha.</span></h1><p className="heroIntro"><strong>Onde o asfalto termina, a diversão começa.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>Inscreva-se agora</a></div></div></div>
       </section>
 
       <section className="launchSummary" aria-label="Legends em 30 segundos"><div className="wide launchSummaryGrid">
@@ -173,7 +174,7 @@ export default function Home() {
         <div className="launchFact"><strong>150</strong><span>vagas totais</span></div>
       </div></section>
 
-      <section className="formatChoice"><div className="wide"><div className="formatChoiceHead"><div><p className="kicker">Escolha sua jornada</p><h2>Quatro dias ou<br /><em>duas etapas finais.</em></h2></div><p>Ultimate e Short têm inscrições, limites de vagas, classificações e premiações independentes. Depois de escolher a jornada, você define Gravel Race ou Legends Experience.</p></div><div className="formatCards"><article className="formatCard"><span className="tag">Jornada completa</span><h3><span>Legends</span><em className="journeyScript">Ultimate</em></h3><p>De Canela a Canela, passando pelas quatro cidades-base e por todos os capítulos da travessia.</p><div className="formatFacts"><span>4 dias</span><span>4 etapas</span><span>370,3 km</span><span>6.302 m+</span><span>100 vagas</span><span>A partir de R$ 999</span></div><a href="/inscricoes?formato=ultimate#jornadas"><span>Me inscrever na Ultimate</span><span>→</span></a></article><article className="formatCard"><span className="tag">Etapas finais</span><h3><span>Legends</span><em className="journeyScript">Short</em></h3><p>As etapas Gramado–Nova Petrópolis e Nova Petrópolis–Canela em uma experiência concentrada de dois dias.</p><div className="formatFacts"><span>2 dias</span><span>Stages 03 e 04</span><span>169,3 km</span><span>3.098 m+</span><span>50 vagas</span><span>A partir de R$ 699</span></div><a href="/inscricoes?formato=short#jornadas"><span>Me inscrever na Short</span><span>→</span></a></article></div></div></section>
+      <section className="formatChoice"><div className="wide"><div className="formatChoiceHead"><div><p className="kicker">Escolha sua jornada</p><h2>Quatro dias ou<br /><em>duas etapas finais.</em></h2></div><p>Ultimate e Short têm inscrições, limites de vagas, classificações e premiações independentes. Depois de escolher a jornada, você define Gravel Race ou Legends Experience.</p></div><div className="formatCards"><article className="formatCard"><span className="tag">Jornada completa</span><h3><span>Legends</span><em className="journeyScript">Ultimate</em></h3><p>De Canela a Canela, passando pelas quatro cidades-base e por todos os capítulos da travessia.</p><div className="formatFacts"><span>4 dias</span><span>4 etapas</span><span>370,3 km</span><span>6.302 m+</span><span>100 vagas</span><span>A partir de R$ 999</span></div><a href={getRegistrationHref("ultimate")}><span>Me inscrever na Ultimate</span><span>→</span></a></article><article className="formatCard"><span className="tag">Etapas finais</span><h3><span>Legends</span><em className="journeyScript">Short</em></h3><p>As etapas Gramado–Nova Petrópolis e Nova Petrópolis–Canela em uma experiência concentrada de dois dias.</p><div className="formatFacts"><span>2 dias</span><span>Stages 03 e 04</span><span>169,3 km</span><span>3.098 m+</span><span>50 vagas</span><span>A partir de R$ 699</span></div><a href={getRegistrationHref("short")}><span>Me inscrever na Short</span><span>→</span></a></article></div></div></section>
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
         <div className="manifestoContent">

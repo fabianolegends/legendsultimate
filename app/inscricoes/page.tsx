@@ -164,7 +164,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         <div className="shell">
           <div className="journeyHead"><h2>Escolha sua jornada.</h2><p>Os dois formatos compartilham a mesma estrutura nas etapas finais, mas possuem inscrições, limites de vagas, classificação e premiação independentes.</p></div>
           <div className="journeyGrid">
-            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}&detalhes=valores#valores-e-lotes`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p><span className="journeyDate">{option.dateLabel}</span><br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Me inscrever →</span></span></a>)}
+            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={getRegistrationHref(option.id)} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p><span className="journeyDate">{option.dateLabel}</span><br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Me inscrever →</span></span></a>)}
           </div>
         </div>
       </section>
@@ -305,7 +305,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         </div>
       </section>
 
-      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{launchConfig.eventDateLabel} · {launchConfig.location}. Os botões já estão preparados para receber o link oficial da plataforma de inscrições.</p><a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a></div></section>
+      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{launchConfig.eventDateLabel} · {launchConfig.location}. Inscrições abertas na plataforma oficial da WindFit.</p><a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a></div></section>
     </main>
   );
 }

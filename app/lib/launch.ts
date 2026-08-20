@@ -1,11 +1,13 @@
+export const WINDFIT_REGISTRATION_URL = "https://event.windfit.app/legends-ultimate-stage-race";
+
 export const launchConfig = {
   eventName: "Legends Bike Race 2027",
   eventDateLabel: "29 de abril a 2 de maio de 2027",
   eventDateShort: "29 ABR — 02 MAI 2027",
   location: "Serra Gaúcha · Brasil",
   spots: 150,
-  registrationUrl: process.env.NEXT_PUBLIC_WINDFIT_REGISTRATION_URL || "",
-  registrationOpen: process.env.NEXT_PUBLIC_REGISTRATION_OPEN === "true",
+  registrationUrl: WINDFIT_REGISTRATION_URL,
+  registrationOpen: true,
   priorityAccess: process.env.NEXT_PUBLIC_PRIORITY_ACCESS === "true",
   activeLotIndex: 0,
   journeys: {
@@ -62,7 +64,6 @@ export function getRegistrationLabel() {
 }
 
 export function getRegistrationHref(format?: JourneyFormat) {
-  return launchConfig.registrationOpen && launchConfig.registrationUrl
-    ? launchConfig.registrationUrl
-    : `/inscricoes${format ? `?formato=${format}` : ""}#jornadas`;
+  void format;
+  return WINDFIT_REGISTRATION_URL;
 }
