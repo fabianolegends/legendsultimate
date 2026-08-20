@@ -86,20 +86,6 @@ export default function LaunchHomePreview() {
         ctas.appendChild(price);
       }
 
-      const ultimateCounter = spots.querySelector<HTMLElement>("small");
-      const shortCounter = price.querySelector<HTMLElement>("small");
-      void fetch("/api/public/remaining-spots", { cache: "no-store" })
-        .then((response) => response.ok ? response.json() : null)
-        .then((payload) => {
-          if (!payload) return;
-          const ultimateRemaining = Number(payload.ultimate?.remaining ?? 100);
-          const ultimateTotal = Number(payload.ultimate?.total ?? 100);
-          const shortRemaining = Number(payload.short?.remaining ?? 50);
-          const shortTotal = Number(payload.short?.total ?? 50);
-          if (ultimateCounter && Number.isFinite(ultimateRemaining)) ultimateCounter.textContent = `${ultimateRemaining} / ${ultimateTotal} VAGAS`;
-          if (shortCounter && Number.isFinite(shortRemaining)) shortCounter.textContent = `${shortRemaining} / ${shortTotal} VAGAS`;
-        })
-        .catch(() => undefined);
     }
 
     const technicalLink = home.querySelector<HTMLAnchorElement>('a[href="/race-engine"]');
