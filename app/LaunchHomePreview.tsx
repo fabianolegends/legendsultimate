@@ -71,7 +71,7 @@ export default function LaunchHomePreview() {
         spots.className = "remainingSpotsCard";
         spots.href = "/inscricoes?formato=ultimate#jornadas";
         spots.setAttribute("aria-label", "Ver inscrições da Legends Ultimate");
-        spots.innerHTML = '<span><i class="journeyScript">Ultimate</i><b> — 4 DIAS</b></span><strong>R$ 999</strong><small>100 / 100 VAGAS</small>';
+        spots.innerHTML = '<span><i class="journeyScript">Ultimate</i><b> — 4 DIAS</b></span><strong>R$ 999</strong><small>42 INSCRITOS · 58 VAGAS RESTANTES</small>';
         if (links[1]) links[1].insertAdjacentElement("afterend", spots);
         else ctas.appendChild(spots);
       }
@@ -82,7 +82,7 @@ export default function LaunchHomePreview() {
         price.className = "launchPrice";
         price.href = "/inscricoes?formato=short#jornadas";
         price.setAttribute("aria-label", "Ver inscrições da Legends Short");
-        price.innerHTML = '<span><i class="journeyScript">Short</i><b> — 2 DIAS</b></span><strong>R$ 699</strong><small>50 / 50 VAGAS</small>';
+        price.innerHTML = '<span><i class="journeyScript">Short</i><b> — 2 DIAS</b></span><strong>R$ 699</strong><small>12 INSCRITOS · 38 VAGAS RESTANTES</small>';
         ctas.appendChild(price);
       }
 
