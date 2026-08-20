@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, Manrope } from "next/font/google";
+import { Suspense } from "react";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import "./overrides.css";
@@ -111,7 +112,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <LegendsGlobalFooter />
         <GlobalPageNavigation />
         <CookieConsent />
-        <MarketingTracking />
+        <Suspense fallback={null}>
+          <MarketingTracking />
+        </Suspense>
       </body>
     </html>
   );
