@@ -2,12 +2,18 @@ import type { Metadata } from "next";
 import KitCarousel from "./KitCarousel";
 import MobileMenu from "./MobileMenu";
 import RouteExplorer from "./RouteExplorer";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { getRegistrationHref } from "./lib/launch";
+import { getHomeCopy } from "./i18n/home";
+import type { Locale } from "./i18n/config";
 
 export const metadata: Metadata = {
   title: { absolute: "Legends Bike Race 2027 | Stage Race de Gravel na Serra Gaúcha" },
   description: "Participe da Legends Bike Race 2027, uma stage race premium de gravel por Canela, Gramado, São Francisco de Paula e Nova Petrópolis.",
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    languages: { "pt-BR": "/", es: "/es", en: "/en", "x-default": "/" },
+  },
   openGraph: {
     type: "website",
     url: "/",
@@ -36,22 +42,6 @@ const stages = [
   { n: "STAGE 04", city: "Nova Petrópolis", arrival: "Canela", stats: "70,0 km · 1.576 m+", distance: "70,0 km", elevation: "1.576 m+", eligibility: "Ultimate + Short", route: "/stage-route-4.png", href: "/percursos/stage-4" },
 ];
 
-const differences = [
-  ["01", "Autonavegação", "Você recebe os arquivos GPX e percorre cada etapa usando GPS, com autonomia, leitura de percurso e estratégia."],
-  ["02", "Bagagem transportada", "A organização leva sua bag de 50 litros entre as cidades-base. Você pedala apenas com o necessário para o dia."],
-  ["03", "Hospedagens adaptadas", "Hotéis oficiais e opções indicadas para facilitar check-in, guarda da bike, recuperação e deslocamentos."],
-  ["04", "Estrutura pós-etapa", "Bike wash, suporte mecânico, briefing e serviços opcionais de recuperação ao final de cada dia."],
-];
-
-const raceEngineFeatures = [
-  ["⌁", "Percurso validado", "A atividade é comparada com a rota oficial de cada etapa."],
-  ["◎", "Checkpoints digitais", "As passagens mostram a evolução do participante no percurso."],
-  ["◷", "Tempo por passagem", "Tempos intermediários e tempo oficial ficam registrados."],
-  ["✓", "Apuração transparente", "Revisões e penalidades apresentam decisão e motivo."],
-  ["≡", "Classificação automática", "A Gravel Race recebe pontos por etapa, categoria e geral."],
-  ["↗", "Resultado ao vivo", "O público acompanha resultados oficiais em uma página própria."],
-];
-
 const supportGroups = [
   ["Logística", "Transporte da bagagem", "Hidratação nos checkpoints", "Medalha de conclusão"],
   ["Segurança", "Seguro básico", "Equipe oficial de apoio"],
@@ -59,29 +49,26 @@ const supportGroups = [
   ["Pós-etapa", "Bike wash", "Mecânica básica"],
 ];
 
-const safety = [
-  ["SPOT", "Rastreamento satelital durante as etapas."],
-  ["STARLINK", "Comunicação entre os veículos oficiais de apoio."],
-  ["RESGATE", "Ambulância, equipes de resgate e veículos de segurança."],
-  ["SEM APOIO EXTERNO", "A assistência é centralizada pela organização para preservar igualdade e segurança."],
-];
-
-const faqs = [
-  ["É uma prova para iniciantes?", "Não. Não é necessário ser profissional, mas o participante deve estar treinado para a jornada escolhida, com longa distância, altimetria elevada e aproximadamente 1.500 metros de ascensão por etapa."],
-  ["Posso participar com MTB ou E-bike?", "Sim, no modo Experience. MTB e E-bike realizam a jornada sem classificação, registro competitivo ou premiação."],
-  ["Como funciona a navegação?", "O GPX será disponibilizado no site uma semana antes do evento. É obrigatório usar GPS com navegação e autonomia mínima de 15 horas."],
-  ["O que acontece se eu errar o percurso?", "O atleta deve retornar ao ponto em que deixou o trajeto oficial e seguir novamente pelo percurso correto, evitando desclassificação."],
-  ["A organização transporta minha bagagem?", "Sim. Cada participante recebe uma bag de 50 litros, transportada entre as cidades-base pela organização."],
-  ["Hospedagem e alimentação estão incluídas?", "Não. A organização oferecerá hotéis oficiais, opções adaptadas e jantares opcionais contratados separadamente."],
-];
-
 function Logo({ className = "" }: { className?: string }) {
   return <img className={`officialLogo ${className}`} src="/legends-logo-official.png" alt="Legends Bike Race" />;
 }
 
-export default function Home() {
+export function HomePage({ locale = "pt" }: { locale?: Locale }) {
+  const t = getHomeCopy(locale);
+  const localizedStages = stages.map((stage, index) => ({
+    ...stage,
+    stats: locale === "en" ? stage.stats.replaceAll(",", ".") : stage.stats,
+    distance: locale === "en" ? stage.distance.replaceAll(",", ".") : stage.distance,
+    elevation: locale === "en" ? stage.elevation.replaceAll(".", ",") : stage.elevation,
+    eligibility: index < 2 ? t.routes.ultimateOnly : t.routes.shared,
+  }));
+  const localizedDifferences = t.differences.items;
+  const localizedSafety = t.safety.items;
+  const localizedFaqs = t.faq.items;
+  const localizedEngineFeatures = t.raceEngine.items;
+
   return (
-    <main className="redesign">
+    <main className="redesign" lang={t.htmlLang}>
       <style>{`
         .redesign{--paper:#f4f0db;--ink:#0b0d0c;--copper:#c67a3b;--line:rgba(198,122,59,.34)}
         .redesign .wide{width:min(1440px,calc(100% - 96px));margin-inline:auto}
@@ -94,6 +81,7 @@ export default function Home() {
         .heroRedesign .nav{border-bottom:1px solid rgba(241,236,227,.12)}
         .heroRedesign .navCta{display:inline-flex;align-items:center;justify-content:center;background:var(--copper);border:0;color:#fff;padding:11px 17px;font-size:13px;letter-spacing:.09em;white-space:nowrap}
         .heroRedesign .navCta:hover{background:#df8b45;color:#fff}
+        .languageSwitcher{display:flex;align-items:center;gap:7px;padding:0 2px}.languageSwitcher a{display:grid;place-items:center;min-width:26px;height:26px;border:1px solid transparent;color:#d4cec4;font:700 11px 'Barlow Condensed';letter-spacing:.08em;transition:.2s}.languageSwitcher a:hover{border-color:rgba(198,122,59,.55);color:#fff}.languageSwitcher a.isActive{border-color:var(--copper);color:var(--copper)}.languageSwitcherMobile{justify-content:flex-start;margin-bottom:4px;padding:0}.languageSwitcherMobile a{width:44px;height:38px;border-color:rgba(198,122,59,.28);font-size:13px}.languageSwitcherMobile a.isActive{background:var(--copper);color:#0b0d0c}
         .desktopNavCluster{display:flex;align-items:center;justify-content:flex-end;gap:22px;margin-left:auto}
         .desktopNavCluster .navLinks{gap:28px;align-items:center;white-space:nowrap}
         .navDivider{width:1px;height:30px;flex:0 0 1px;background:var(--copper);opacity:.72}
@@ -149,54 +137,59 @@ export default function Home() {
       `}</style>
 
       <section className="heroRedesign" id="inicio">
-        <nav className="nav wide" aria-label="Navegação principal">
+        <nav className="nav wide" aria-label={t.navigation.aria}>
           <a className="brand" href="#inicio"><Logo /></a>
           <div className="desktopNavCluster">
-            <div className="navLinks"><a href="/a-prova">A prova</a><a href="/percursos">Percursos</a><a href="#modalidades">Modalidades</a><a href="/race-engine">Race Engine</a><a href="/faq#perguntas">FAQ</a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">Contato</a></div>
+            <div className="navLinks"><a href="/a-prova">{t.navigation.race}</a><a href="/percursos">{t.navigation.routes}</a><a href="#modalidades">{t.modes.navigation}</a><a href="/race-engine">Race Engine</a><a href="/faq#perguntas">{t.navigation.faq}</a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">{t.footer.contact}</a></div>
             <span className="navDivider" aria-hidden="true" />
             <div className="headerSocials" aria-label="Redes sociais da Legends"><a href="https://www.instagram.com/legends.race/" target="_blank" rel="noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" className="fillIcon"/></svg></a><a href="https://www.facebook.com/1272724699251164" target="_blank" rel="noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.7.3-1 1-1Z" className="fillIcon"/></svg></a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.8A8 8 0 0 1 8.1 18.8L4 20l1.2-4A8 8 0 1 1 20 11.8Z"/><path d="M9 8.5c.3 2.5 2 4.2 4.5 5l1.2-1.2c.3-.3.6-.3.9-.1l2 1c.3.2.4.5.3.8-.5 1.5-1.7 2.2-3.2 2-4.2-.7-7-3.5-7.7-7.7-.2-1.5.5-2.7 2-3.2.3-.1.6 0 .8.3l1 2c.2.3.2.6-.1.9L9 8.5Z" className="fillIcon"/></svg></a><a href="https://www.youtube.com/@legendsbikerace" target="_blank" rel="noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" className="fillIcon"/></svg></a></div>
             <span className="navDivider" aria-hidden="true" />
-            <a className="navCta" href="/passport/acesso">Área do atleta</a>
+            <LanguageSwitcher locale={locale} />
+            <a className="navCta" href="/passport/acesso">{t.navigation.athleteArea}</a>
           </div>
-          <div className="mobileNavActions"><MobileMenu /></div>
+          <div className="mobileNavActions"><MobileMenu locale={locale} /></div>
         </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">Serra Gaúcha · Brasil</p><h1>Legends Bike Race 2027: <span className="heroAccent">Stage Race de Gravel na Serra Gaúcha.</span></h1><p className="heroIntro"><strong>Onde o asfalto termina, a diversão começa.</strong><br />Escolha a jornada completa de quatro etapas ou viva as duas etapas finais da travessia.</p><div className="heroCtas"><a className="button" href="/a-prova">Conheça a Legends <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>Inscreva-se agora</a></div></div></div>
+        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1>{t.hero.titleLead} <span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong><br />{t.hero.intro}</p><div className="heroCtas"><a className="button" href="/a-prova">{t.hero.discover} <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>{t.hero.registerNow}</a></div></div></div>
       </section>
 
-      <section className="launchSummary" aria-label="Legends em 30 segundos"><div className="wide launchSummaryGrid">
-        <div className="launchSummaryTitle"><span>Em 30 segundos</span><strong>O essencial para decidir.</strong></div>
-        <div className="launchFact launchDateFact"><strong>29 ABR</strong><span>02 MAI 2027</span></div>
-        <div className="launchFact"><strong>4 ou 2</strong><span>dias</span></div>
-        <div className="launchFact"><strong>4 ou 2</strong><span>etapas</span></div>
-        <div className="launchFact"><strong>370,3</strong><span>km</span></div>
+      <section className="launchSummary" aria-label={t.summary.aria}><div className="wide launchSummaryGrid">
+        <div className="launchSummaryTitle"><span>{t.summary.eyebrow}</span><strong>{t.summary.title}</strong></div>
+        <div className="launchFact launchDateFact"><strong>{t.summary.dateTop}</strong><span>{t.summary.dateBottom}</span></div>
+        <div className="launchFact"><strong>{t.summary.daysValue}</strong><span>{t.summary.daysLabel}</span></div>
+        <div className="launchFact"><strong>{t.summary.stagesValue}</strong><span>{t.summary.stagesLabel}</span></div>
+        <div className="launchFact"><strong>{t.summary.distance}</strong><span>km</span></div>
         <div className="launchFact"><strong>6.302</strong><span>m+</span></div>
-        <div className="launchFact"><strong>2</strong><span>formatos</span></div>
-        <div className="launchFact"><strong>150</strong><span>vagas totais</span></div>
+        <div className="launchFact"><strong>2</strong><span>{t.summary.formats}</span></div>
+        <div className="launchFact"><strong>150</strong><span>{t.summary.spots}</span></div>
       </div></section>
 
-      <section className="formatChoice"><div className="wide"><div className="formatChoiceHead"><div><p className="kicker">Escolha sua jornada</p><h2>Quatro dias ou<br /><em>duas etapas finais.</em></h2></div><p>Ultimate e Short têm inscrições, limites de vagas, classificações e premiações independentes. Depois de escolher a jornada, você define Gravel Race ou Legends Experience.</p></div><div className="formatCards"><article className="formatCard"><span className="tag">Jornada completa</span><h3><span>Legends</span><em className="journeyScript">Ultimate</em></h3><p>De Canela a Canela, passando pelas quatro cidades-base e por todos os capítulos da travessia.</p><div className="formatFacts"><span>4 dias</span><span>4 etapas</span><span>370,3 km</span><span>6.302 m+</span><span>100 vagas</span><span>A partir de R$ 999</span></div><a href={getRegistrationHref("ultimate")}><span>Me inscrever na Ultimate</span><span>→</span></a></article><article className="formatCard"><span className="tag">Etapas finais</span><h3><span>Legends</span><em className="journeyScript">Short</em></h3><p>As etapas Gramado–Nova Petrópolis e Nova Petrópolis–Canela em uma experiência concentrada de dois dias.</p><div className="formatFacts"><span>2 dias</span><span>Stages 03 e 04</span><span>169,3 km</span><span>3.098 m+</span><span>50 vagas</span><span>A partir de R$ 699</span></div><a href={getRegistrationHref("short")}><span>Me inscrever na Short</span><span>→</span></a></article></div></div></section>
+      <section className="formatChoice"><div className="wide"><div className="formatChoiceHead"><div><p className="kicker">{t.formats.eyebrow}</p><h2>{t.formats.titleLead}<br /><em>{t.formats.titleAccent}</em></h2></div><p>{t.formats.description}</p></div><div className="formatCards"><article className="formatCard"><span className="tag">{t.formats.ultimateTag}</span><h3><span>Legends</span><em className="journeyScript">Ultimate</em></h3><p>{t.formats.ultimateDescription}</p><div className="formatFacts">{t.formats.ultimateFacts.map((fact) => <span key={fact}>{fact}</span>)}</div><a href={getRegistrationHref("ultimate")}><span>{t.formats.ultimateCta}</span><span>→</span></a></article><article className="formatCard"><span className="tag">{t.formats.shortTag}</span><h3><span>Legends</span><em className="journeyScript">Short</em></h3><p>{t.formats.shortDescription}</p><div className="formatFacts">{t.formats.shortFacts.map((fact) => <span key={fact}>{fact}</span>)}</div><a href={getRegistrationHref("short")}><span>{t.formats.shortCta}</span><span>→</span></a></article></div></div></section>
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
         <div className="manifestoContent">
-          <p className="kicker">Por que ela existe</p>
-          <h2 className="manifestoQuote">A Legends não foi criada para quem procura apenas uma medalha. Foi criada para quem acredita que a bicicleta é o melhor passaporte para <em>descobrir lugares, pessoas e histórias.</em></h2>
-          <a className="manifestoButton" href="/a-prova"><span>Entenda como funciona a Legends</span><span>→</span></a>
+          <p className="kicker">{t.manifesto.eyebrow}</p>
+          <h2 className="manifestoQuote">{t.manifesto.lead} <em>{t.manifesto.accent}</em></h2>
+          <a className="manifestoButton" href="/a-prova"><span>{t.manifesto.cta}</span><span>→</span></a>
         </div>
         <figure className="manifestoKitVisual">
-          <img src="/kit-legends-ultimate.webp" alt="Kit oficial da prova Legends Ultimate com vestuário e acessórios" />
-          <figcaption>Imagem meramente ilustrativa</figcaption>
+          <img src="/kit-legends-ultimate.webp" alt={t.manifesto.imageAlt} />
+          <figcaption>{t.manifesto.caption}</figcaption>
         </figure>
       </div></section>
 
-      <section className="routePreview" id="percurso"><div className="wide"><div className="sectionHead"><div><p className="kicker">Ultimate: 4 etapas · Short: 2 finais</p><h2>Uma história contínua.<br /><em>Quatro destinos.</em></h2></div><div className="routeSummary"><span>370,3 km<small>Máximo na Ultimate</small></span><span>6.302 m+<small>Máximo na Ultimate</small></span><span>≈ 75%<small>Não pavimentado</small></span></div></div><RouteExplorer stages={stages} /></div></section>
+      <section className="routePreview" id="percurso"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.routes.eyebrow}</p><h2>{t.routes.titleLead}<br /><em>{t.routes.titleAccent}</em></h2></div><div className="routeSummary"><span>{locale === "en" ? "370.3" : "370,3"} km<small>{t.routes.maxUltimate}</small></span><span>{locale === "en" ? "6,302" : "6.302"} m+<small>{t.routes.maxUltimate}</small></span><span>≈ 75%<small>{t.routes.nonPaved}</small></span></div></div><RouteExplorer stages={localizedStages} ariaLabel={t.routes.stagesAria} routeAltPrefix={t.routes.routeAlt} /></div></section>
 
-      <section className="modes" id="modalidades"><div className="wide"><div className="sectionHead"><div><p className="kicker">Depois, escolha como participar</p><h2>Competir ou experimentar.<br /><em>Você decide.</em></h2></div><p>Ultimate e Short aceitam as duas formas de participação: Gravel Race competitiva ou Legends Experience sem ranking.</p></div><div className="modeGrid"><div className="modeCard dark"><span className="tag">Modalidade competitiva</span><h3>Legends Gravel Race</h3><p>Para ciclistas de gravel ou cyclocross que desejam disputar as etapas do formato escolhido com tempo registrado, classificação por pontos, categorias e premiação final.</p><ul><li>Classificação oficial independente por formato</li><li>Pontuação por etapa</li><li>Mesmas categorias na Ultimate e na Short</li><li>Troféus ao final da jornada</li></ul></div><div className="modeCard"><span className="tag">Modalidade turismo</span><h3>Legends Experience</h3><p>Para participantes de Gravel, MTB e E-bike que desejam viver o formato escolhido com a mesma estrutura, sem pressão por tempo, ranking ou resultado competitivo.</p><ul><li>Sem classificação</li><li>MTB e E-bike permitidas</li><li>Mesma logística e segurança</li><li>Foco em turismo e desafio pessoal</li></ul></div></div></div></section>
-      <section className="factsBand"><div className="wide"><div className="sectionHead"><div><p className="kicker">O que torna a Legends diferente</p><h2>Aventura com estrutura.<br /><em>Autonomia com cuidado.</em></h2></div><p>Uma experiência pensada para eliminar a complexidade logística sem retirar do atleta o protagonismo da jornada.</p></div><div className="factsGrid">{differences.map(([n,title,text]) => <div className="fact" key={n}><span>{n}</span><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
-      <section className="engineHome" id="race-engine"><div className="wide"><div className="engineHomeHead"><div><p className="kicker">Tecnologia própria · Legends Race Engine</p><h2>Pedale.<br /><em>O sistema comprova.</em></h2></div><div className="engineIntroSide"><p>O Race Engine conecta o percurso oficial à atividade registrada no GPS, validando passagens e resultados com transparência.</p><a className="engineLink" href="/race-engine">Conheça o Race Engine <span>→</span></a></div></div><div className="engineCards engineCardsCompact">{raceEngineFeatures.slice(0,3).map(([icon,title,text])=><article className="engineCard" key={title}><span className="engineIcon" aria-hidden="true">{icon}</span><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></div></section>
-      <section className="includedSection"><div className="wide"><div className="kitCompactHead"><div><p className="kicker">Kit e estrutura incluídos</p><h2>Tudo para viver<br /><em>sua jornada.</em></h2></div><p>Produtos oficiais e suporte de prova reunidos em uma estrutura pensada para você concentrar energia no percurso.</p></div><KitCarousel /><div className="supportStrip">{supportGroups.map(([title,...items]) => <div className="supportGroup" key={title}><h3>{title}</h3><ul>{items.map(item => <li key={item}>{item}</li>)}</ul></div>)}</div></div></section>
-      <section className="safetySection"><div className="wide"><div className="sectionHead"><div><p className="kicker">Segurança e suporte</p><h2>Aventura exige liberdade.<br /><em>Confiança exige estrutura.</em></h2></div><p>A operação utiliza comunicação, rastreamento e resgate dimensionados para uma travessia de múltiplos dias.</p></div><div className="safetyGrid">{safety.map(([title,text]) => <div className="safetyCard" key={title}><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
-      <section className="profileSection"><div className="wide profileBox"><blockquote>Não é para iniciantes.<br />Não é para todos.<br /><em>É para quem está pronto.</em></blockquote><ul><li>Entusiastas do ciclismo de diferentes idades, unidos pelo desejo de viajar, superar desafios e descobrir novos destinos.</li><li>Não é necessário ser atleta profissional, mas é indispensável estar treinado para dois ou quatro dias consecutivos, conforme a jornada escolhida.</li><li>O participante deve ter autonomia, disciplina e capacidade de administrar esforço, alimentação, equipamento e navegação.</li><li><strong>Not for everyone. Only for Legends.</strong></li></ul></div></section>
-      <section className="faqSection" id="faq"><div className="wide"><div className="sectionHead"><div><p className="kicker">Perguntas frequentes</p><h2>Antes de aceitar o desafio,<br /><em>entenda a jornada.</em></h2></div><p>Consulte as dúvidas principais sobre formatos, equipamentos, logística e participação. Valores e regras completas estão na página de inscrições.</p></div><div className="faqList">{faqs.map(([q,a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div></div></section>
+      <section className="modes" id="modalidades"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.modes.eyebrow}</p><h2>{t.modes.titleLead}<br /><em>{t.modes.titleAccent}</em></h2></div><p>{t.modes.description}</p></div><div className="modeGrid"><div className="modeCard dark"><span className="tag">{t.modes.raceTag}</span><h3>Legends Gravel Race</h3><p>{t.modes.raceDescription}</p><ul>{t.modes.raceItems.map((item) => <li key={item}>{item}</li>)}</ul></div><div className="modeCard"><span className="tag">{t.modes.experienceTag}</span><h3>Legends Experience</h3><p>{t.modes.experienceDescription}</p><ul>{t.modes.experienceItems.map((item) => <li key={item}>{item}</li>)}</ul></div></div></div></section>
+      <section className="factsBand"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.differences.eyebrow}</p><h2>{t.differences.titleLead}<br /><em>{t.differences.titleAccent}</em></h2></div><p>{t.differences.description}</p></div><div className="factsGrid">{localizedDifferences.map(([n,title,text]) => <div className="fact" key={n}><span>{n}</span><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
+      <section className="engineHome" id="race-engine"><div className="wide"><div className="engineHomeHead"><div><p className="kicker">{t.raceEngine.eyebrow}</p><h2>{t.raceEngine.titleLead}<br /><em>{t.raceEngine.titleAccent}</em></h2></div><div className="engineIntroSide"><p>{t.raceEngine.description}</p><a className="engineLink" href="/race-engine">{t.raceEngine.cta} <span>→</span></a></div></div><div className="engineCards engineCardsCompact">{localizedEngineFeatures.map(([icon,title,text])=><article className="engineCard" key={title}><span className="engineIcon" aria-hidden="true">{icon}</span><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></div></section>
+      <section className="includedSection"><div className="wide"><div className="kitCompactHead"><div><p className="kicker">{t.launch.includedEyebrow}</p><h2>{t.launch.includedTitleLead}<br /><em>{t.launch.includedTitleAccent}</em></h2></div><p>{t.launch.includedDescription}</p></div>{locale === "pt" ? <><KitCarousel /><div className="supportStrip">{supportGroups.map(([title,...items]) => <div className="supportGroup" key={title}><h3>{title}</h3><ul>{items.map(item => <li key={item}>{item}</li>)}</ul></div>)}</div></> : null}</div></section>
+      <section className="safetySection"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.safety.eyebrow}</p><h2>{t.safety.titleLead}<br /><em>{t.safety.titleAccent}</em></h2></div><p>{t.safety.description}</p></div><div className="safetyGrid">{localizedSafety.map(([title,text]) => <div className="safetyCard" key={title}><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
+      {locale === "pt" ? <section className="profileSection"><div className="wide profileBox"><blockquote>Não é para iniciantes.<br />Não é para todos.<br /><em>É para quem está pronto.</em></blockquote><ul><li>Entusiastas do ciclismo de diferentes idades, unidos pelo desejo de viajar, superar desafios e descobrir novos destinos.</li><li>Não é necessário ser atleta profissional, mas é indispensável estar treinado para dois ou quatro dias consecutivos, conforme a jornada escolhida.</li><li>O participante deve ter autonomia, disciplina e capacidade de administrar esforço, alimentação, equipamento e navegação.</li><li><strong>Not for everyone. Only for Legends.</strong></li></ul></div></section> : null}
+      <section className="faqSection" id="faq"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.faq.eyebrow}</p><h2>{t.faq.titleLead}<br /><em>{t.faq.titleAccent}</em></h2></div><p>{t.faq.description}</p></div><div className="faqList">{localizedFaqs.map(([q,a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div></div></section>
     </main>
   );
+}
+
+export default function Home() {
+  return <HomePage locale="pt" />;
 }

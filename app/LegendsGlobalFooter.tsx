@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import PrivacyPreferencesButton from "./PrivacyPreferencesButton";
 import { getRegistrationHref } from "./lib/launch";
+import { localeDetails, localeFromPathname, stripLocalePrefix } from "./i18n/config";
+import { getHomeCopy } from "./i18n/home";
 
 const hiddenRoutes = [
   "/passport",
@@ -15,23 +17,27 @@ const hiddenRoutes = [
 ];
 
 function isHiddenRoute(pathname: string) {
-  return hiddenRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  const publicPathname = stripLocalePrefix(pathname);
+  return hiddenRoutes.some((route) => publicPathname === route || publicPathname.startsWith(`${route}/`));
 }
 
 export default function LegendsGlobalFooter() {
   const pathname = usePathname();
+  const locale = localeFromPathname(pathname);
+  const copy = getHomeCopy(locale).footer;
+  const homeHref = localeDetails[locale].href;
 
   if (!pathname || isHiddenRoute(pathname)) return null;
 
   return (
-    <footer id="rodape" className="legendsGlobalFooter" aria-label="Rodapé da Legends Bike Race">
+    <footer id="rodape" className="legendsGlobalFooter" aria-label={`${copy.explore} · Legends Bike Race`}>
       <section className="legendsFooterStatement">
         <div className="legendsFooterShell">
-          <p className="legendsFooterEyebrow">Da Serra Gaúcha para o mundo.</p>
+          <p className="legendsFooterEyebrow">{copy.statement}</p>
           <h2>
-            Quando a jornada termina,
+            {copy.titleLead}
             <br />
-            <em>a lenda permanece.</em>
+            <em>{copy.titleAccent}</em>
           </h2>
         </div>
       </section>
@@ -39,15 +45,15 @@ export default function LegendsGlobalFooter() {
       <section className="legendsFooterCommunity" aria-labelledby="legends-community-title">
         <div className="legendsFooterShell legendsFooterCommunityGrid">
           <div>
-            <p className="legendsFooterEyebrow">Comunidade Legends</p>
-            <h3 id="legends-community-title">Receba as próximas largadas.</h3>
+            <p className="legendsFooterEyebrow">{copy.community}</p>
+            <h3 id="legends-community-title">{copy.communityTitle}</h3>
             <p className="legendsFooterDescription">
-              Datas, abertura de inscrições, hotéis conveniados e histórias dos territórios onde pedalamos.
+              {copy.communityDescription}
             </p>
           </div>
           <div className="legendsFooterActions">
-            <a className="legendsFooterPrimary" href={getRegistrationHref()}>Me inscrever</a>
-            <a className="legendsFooterSecondary" href="/lista-prioritaria">Entrar na comunidade</a>
+            <a className="legendsFooterPrimary" href={getRegistrationHref()}>{copy.register}</a>
+            <a className="legendsFooterSecondary" href="/lista-prioritaria">{copy.join}</a>
           </div>
         </div>
       </section>
@@ -56,36 +62,36 @@ export default function LegendsGlobalFooter() {
         <div className="legendsFooterShell legendsFooterGrid">
           <div className="legendsFooterBrand">
             <div className="legendsFooterBrandMarks">
-              <a href="/" aria-label="Ir para a página inicial da Legends Bike Race">
+              <a href={homeHref} aria-label={`${copy.home} · Legends Bike Race`}>
                 <img className="legendsFooterLegendsLogo" src="/legends-logo-official.png" alt="Legends Bike Race" />
               </a>
               <div className="legendsFooterProducer">
                 <img src="/tr3-logo-footer-exact.svg" alt="Threerace Sports" />
-                <p><span>Um produto</span><strong>Threerace Sports</strong></p>
+                <p><span>{copy.product}</span><strong>Threerace Sports</strong></p>
               </div>
             </div>
-            <p>Gravel, territórios e histórias que continuam depois da linha de chegada.</p>
+            <p>{copy.brandDescription}</p>
           </div>
 
-          <nav className="legendsFooterColumn" aria-label="Explorar a Legends">
-            <p className="legendsFooterEyebrow">Explore</p>
-            <a href="/">Início</a>
-            <a href="/a-prova">A prova</a>
-            <a href="/percursos">Percursos</a>
-            <a href="/inscricoes">Inscrições</a>
-            <a href="/faq#perguntas">Perguntas frequentes</a>
+          <nav className="legendsFooterColumn" aria-label={`${copy.explore} Legends`}>
+            <p className="legendsFooterEyebrow">{copy.explore}</p>
+            <a href={homeHref}>{copy.home}</a>
+            <a href="/a-prova">{copy.race}</a>
+            <a href="/percursos">{copy.routes}</a>
+            <a href="/inscricoes">{copy.registrations}</a>
+            <a href="/faq#perguntas">{copy.frequentlyAsked}</a>
           </nav>
 
-          <nav className="legendsFooterColumn" aria-label="Documentos da Legends">
-            <p className="legendsFooterEyebrow">Documentos</p>
-            <a href="/regulamento">Regulamento</a>
-            <a href="/manual-do-atleta">Manual do atleta · Em breve</a>
-            <a href="/documentos-medicos">Documentação médica</a>
-            <a href="/politica-de-privacidade">Política de privacidade</a>
+          <nav className="legendsFooterColumn" aria-label={`${copy.documents} Legends`}>
+            <p className="legendsFooterEyebrow">{copy.documents}</p>
+            <a href="/regulamento">{copy.regulation}</a>
+            <a href="/manual-do-atleta">{copy.manual}</a>
+            <a href="/documentos-medicos">{copy.medical}</a>
+            <a href="/politica-de-privacidade">{copy.privacy}</a>
           </nav>
 
           <div className="legendsFooterColumn legendsFooterContact">
-            <p className="legendsFooterEyebrow">Fale com a Legends</p>
+            <p className="legendsFooterEyebrow">{copy.contact}</p>
             <a href="mailto:contato@legendsbikerace.com.br">contato@legendsbikerace.com.br</a>
             <a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">WhatsApp +55 54 99632-9164</a>
             <div className="legendsFooterSocials" aria-label="Redes sociais">
@@ -97,10 +103,10 @@ export default function LegendsGlobalFooter() {
         </div>
 
         <div className="legendsFooterShell legendsFooterBottom">
-          <p>Legends Bike Race © {new Date().getFullYear()} · Uma experiência Threerace Sports</p>
+          <p>Legends Bike Race © {new Date().getFullYear()} · {copy.experience}</p>
           <div>
-            <span>Serra Gaúcha · Brasil</span>
-            <PrivacyPreferencesButton />
+            <span>{copy.location}</span>
+            <PrivacyPreferencesButton label={copy.privacy} />
           </div>
         </div>
       </section>

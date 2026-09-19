@@ -3,18 +3,21 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { getRegistrationHref } from "./lib/launch";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { getHomeCopy } from "./i18n/home";
+import type { Locale } from "./i18n/config";
 
-const links = [
-  ["Inscrições", "/inscricoes"],
-  ["A prova", "/a-prova"],
-  ["Percursos", "/percursos"],
-  ["O que está incluído", "/#incluido"],
-  ["FAQ", "/faq#perguntas"],
-];
-
-export default function MobileMenu() {
+export default function MobileMenu({ locale = "pt" }: { locale?: Locale }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const copy = getHomeCopy(locale);
+  const links = [
+    [copy.navigation.registration, getRegistrationHref()],
+    [copy.navigation.race, "/a-prova"],
+    [copy.navigation.routes, "/percursos"],
+    [copy.navigation.included, "#incluido"],
+    [copy.navigation.faq, "/faq#perguntas"],
+  ];
 
   useEffect(() => setMounted(true), []);
 
@@ -27,7 +30,7 @@ export default function MobileMenu() {
 
   return (
     <>
-      <button className={`mobileMenuTrigger${open ? " isOpen" : ""}`} type="button" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} aria-controls="mobile-site-menu" onClick={() => setOpen((value) => !value)}>
+      <button className={`mobileMenuTrigger${open ? " isOpen" : ""}`} type="button" aria-label={open ? copy.navigation.closeMenu : copy.navigation.openMenu} aria-expanded={open} aria-controls="mobile-site-menu" onClick={() => setOpen((value) => !value)}>
         <i /><i /><i />
       </button>
 
@@ -35,9 +38,9 @@ export default function MobileMenu() {
         <div className="mobileMenuOverlay" id="mobile-site-menu">
           <div className="mobileMenuTop">
             <img src="/legends-logo-official.png" alt="Legends Bike Race" />
-            <button type="button" onClick={() => setOpen(false)} aria-label="Fechar menu">×</button>
+            <button type="button" onClick={() => setOpen(false)} aria-label={copy.navigation.closeMenu}>×</button>
           </div>
-          <nav className="mobileMenuLinks" aria-label="Menu mobile">
+          <nav className="mobileMenuLinks" aria-label={copy.navigation.mobileMenu}>
             {links.map(([label, href], index) => (
               <a href={href} key={href} onClick={() => setOpen(false)}>
                 <small>{String(index + 1).padStart(2, "0")}</small>
@@ -47,8 +50,9 @@ export default function MobileMenu() {
             ))}
           </nav>
           <div className="mobileMenuActions">
-            <a href="/passport/acesso" onClick={() => setOpen(false)}>Área do atleta <span>→</span></a>
-            <a href={getRegistrationHref()} onClick={() => setOpen(false)}>Me inscrever</a>
+            <LanguageSwitcher locale={locale} mobile />
+            <a href="/passport/acesso" onClick={() => setOpen(false)}>{copy.navigation.athleteArea} <span>→</span></a>
+            <a href={getRegistrationHref()} onClick={() => setOpen(false)}>{copy.navigation.register}</a>
           </div>
         </div>,
         document.body

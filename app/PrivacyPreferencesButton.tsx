@@ -1,6 +1,6 @@
 "use client";
 
-export default function PrivacyPreferencesButton() {
+export default function PrivacyPreferencesButton({ label = "Privacidade" }: { label?: string }) {
   return (
     <button
       type="button"
@@ -15,7 +15,7 @@ export default function PrivacyPreferencesButton() {
         opacity: 0.72,
       }}
     >
-      Privacidade
+      {label}
     </button>
   );
 }

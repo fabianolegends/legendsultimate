@@ -3,13 +3,18 @@
 import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import styles from "./CookieConsent.module.css";
+import { localeFromPathname } from "./i18n/config";
+import { getHomeCopy } from "./i18n/home";
 
 type Consent = "accepted" | "rejected" | null;
 
 const STORAGE_KEY = "legends_cookie_consent";
 
 export default function CookieConsent() {
+  const pathname = usePathname();
+  const copy = getHomeCopy(localeFromPathname(pathname)).cookies;
   const [consent, setConsent] = useState<Consent>(null);
   const [ready, setReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -72,21 +77,19 @@ export default function CookieConsent() {
       )}
 
       {isOpen ? (
-        <section className={styles.banner} aria-label="Preferências de privacidade">
+        <section className={styles.banner} aria-label={copy.aria}>
           <div className={styles.copy}>
-            <strong>Sua privacidade importa.</strong>
+            <strong>{copy.title}</strong>
             <p>
-              Usamos cookies de análise e marketing para entender a navegação e melhorar a
-              experiência. Você pode aceitar ou continuar apenas com os cookies essenciais. Leia
-              nossa <Link href="/politica-de-privacidade">Política de Privacidade</Link>.
+              {copy.text} <Link href="/politica-de-privacidade">{copy.privacy}</Link>.
             </p>
           </div>
           <div className={styles.actions}>
             <button className={styles.secondary} type="button" onClick={() => saveConsent("rejected")}>
-              Apenas essenciais
+              {copy.essentials}
             </button>
             <button className={styles.primary} type="button" onClick={() => saveConsent("accepted")}>
-              Aceitar cookies
+              {copy.accept}
             </button>
           </div>
         </section>

@@ -1,3 +1,48 @@
+# Design QA — página inicial multilíngue
+
+- Fonte visual principal: site publicado `https://www.legendsbikerace.com.br/`, capturado em desktop 1440 × 900 e mobile 390 × 844.
+- Capturas de referência: `work/source-capture/desktop/top-clean.png`, `work/source-capture/desktop/full-page-clean.png`, `work/source-capture/mobile/top-clean.png`, `work/source-capture/mobile/menu-open.png` e `work/source-capture/mobile/faq-open.png`.
+- Implementação local: `/`, `/es` e `/en` em `http://127.0.0.1:4173`.
+- Viewports verificados: 390 × 844, 768 × 1024, 1024 × 768 e 1440 × 900 CSS px.
+
+## Comparação visual completa
+
+A página em português preserva a composição do site publicado: hero fotográfico escuro, marca vertical, tipografia Barlow Condensed, paleta cobre/marfim/preto, cartões de preço, ritmo entre seções, mapas de percurso, FAQ e rodapé. Espanhol e inglês reutilizam exatamente a mesma estrutura visual, alterando apenas o conteúdo e os metadados.
+
+## Regiões e interações verificadas
+
+- Hero, navegação, seletor PT/ES/EN e cartões Ultimate/Short.
+- Resumo do evento, escolha de jornada, manifesto, percursos, modalidades e diferenciais.
+- Race Engine, itens incluídos, fluxo da jornada, segurança, bike oficial, FAQ e rodapé.
+- Menu móvel abre e fecha, bloqueia a rolagem enquanto aberto e troca o idioma corretamente.
+- FAQ abre a resposta e mantém a composição sem deslocamento horizontal.
+- Banner de privacidade e controle do rodapé apresentam textos localizados.
+- Links de inscrição do cabeçalho, hero, cartões de preço e menu móvel apontam para a WindFit.
+- Área do organizador continua em português, sem seletor de idioma e sem rodapé público.
+
+## SEO e acessibilidade
+
+- Título, descrição, canonical e `hreflang` conferidos nas três páginas.
+- O atributo de idioma do documento muda para `pt-BR`, `es` e `en` durante a navegação.
+- Labels do menu, seletor de idioma, imagens, botões e preferências de privacidade foram localizados.
+- Sitemap inclui as três páginas iniciais com alternativas de idioma.
+
+## Resultados técnicos
+
+- Build de produção: aprovado, com 85 rotas geradas.
+- Testes de inscrições: 9 aprovados.
+- Testes de classificação: 16 aprovados.
+- Testes do Race Engine: 4 aprovados.
+- Console do navegador: sem erros ou avisos.
+- `git diff --check`: aprovado.
+- Sem rolagem horizontal nos quatro tamanhos testados.
+- Nenhum problema P0, P1 ou P2 encontrado.
+- Produção e Vercel não foram alterados.
+
+final result: passed
+
+---
+
 # Design QA — Programação e hospedagens conveniadas
 
 - Source visual truth: `/workspace/scratch/7ff5f007655b/upload/eeb0fbce-5d66-4012-9a10-afd35762125d.png`

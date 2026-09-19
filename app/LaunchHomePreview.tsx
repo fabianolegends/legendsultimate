@@ -2,27 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import { getRegistrationHref } from "./lib/launch";
+import { localeFromPathname } from "./i18n/config";
+import { getHomeCopy } from "./i18n/home";
 
-const includedProducts = [
-  ["Camiseta casual", "/images/kit/camiseta-casual.webp"],
-  ["Bag oficial 50 L", "/images/kit/bag-50-litros.webp"],
-  ["Cap de ciclismo", "/images/kit/cap-ciclismo.webp"],
-  ["Placa oficial", "/images/kit/placa-gravel.webp"],
-];
-
-const includedServices = [
-  "SPOT em todas as etapas",
-  "Transporte da bag entre cidades-base",
-  "Hidratação nos checkpoints",
-  "Seguro básico conforme apólice",
-  "Equipe de apoio, segurança e resgate",
-  "Bike Wash",
-  "Mecânica básica Danda Bike",
-  "GPX oficial e Race Engine",
+const includedProductImages = [
+  "/images/kit/camiseta-casual.webp",
+  "/images/kit/bag-50-litros.webp",
+  "/images/kit/cap-ciclismo.webp",
+  "/images/kit/placa-gravel.webp",
 ];
 
 export default function LaunchHomePreview() {
+  const pathname = usePathname();
+  const locale = localeFromPathname(pathname);
+  const copy = getHomeCopy(locale);
   const [journeyTarget, setJourneyTarget] = useState<HTMLElement | null>(null);
   const [kitTarget, setKitTarget] = useState<HTMLElement | null>(null);
 
@@ -39,7 +34,7 @@ export default function LaunchHomePreview() {
       if (!desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
         const registration = document.createElement("a");
         registration.href = getRegistrationHref();
-        registration.textContent = "Inscrições";
+        registration.textContent = copy.navigation.registration;
         registration.dataset.launchLink = "inscricoes";
         desktopNav.insertBefore(registration, desktopNav.firstChild);
       }
@@ -47,44 +42,44 @@ export default function LaunchHomePreview() {
         const faqLink = Array.from(desktopNav.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.getAttribute("href")?.startsWith("/faq"));
         const included = document.createElement("a");
         included.href = "#incluido";
-        included.textContent = "O que está incluído";
+        included.textContent = copy.navigation.included;
         included.dataset.launchLink = "incluido";
         desktopNav.insertBefore(included, faqLink || null);
       }
     }
 
     const navCta = home.querySelector<HTMLAnchorElement>(".desktopNavCluster .navCta");
-    if (navCta) { navCta.textContent = "Área do atleta"; navCta.href = "/passport/acesso"; }
+    if (navCta) { navCta.textContent = copy.navigation.athleteArea; navCta.href = "/passport/acesso"; }
 
     const kicker = home.querySelector<HTMLElement>(".heroCopy .kicker");
-    if (kicker) kicker.textContent = "29 ABR — 02 MAI 2027 · SERRA GAÚCHA";
+    if (kicker) kicker.textContent = copy.hero.date;
 
     const ctas = home.querySelector<HTMLElement>(".heroCtas");
     if (ctas) {
       const links = Array.from(ctas.querySelectorAll<HTMLAnchorElement>("a"));
-      if (links[0]) { links[0].href = getRegistrationHref(); links[0].innerHTML = "Me inscrever <span>→</span>"; }
+      if (links[0]) { links[0].href = getRegistrationHref(); links[0].innerHTML = `${copy.navigation.register} <span>→</span>`; }
       if (links[1]) links[1].style.display = "none";
 
       let spots = ctas.querySelector<HTMLAnchorElement>(".remainingSpotsCard");
       if (!spots) {
         spots = document.createElement("a");
         spots.className = "remainingSpotsCard";
-        spots.href = "/inscricoes?formato=ultimate#jornadas";
-        spots.setAttribute("aria-label", "Ver inscrições da Legends Ultimate");
-        spots.innerHTML = '<span><i class="journeyScript">Ultimate</i><b> — 4 DIAS</b></span><strong>R$ 999</strong><small>42 INSCRITOS · 58 VAGAS RESTANTES</small>';
+        spots.href = getRegistrationHref("ultimate");
         if (links[1]) links[1].insertAdjacentElement("afterend", spots);
         else ctas.appendChild(spots);
       }
+      spots.setAttribute("aria-label", copy.hero.ultimateAria);
+      spots.innerHTML = `<span><i class="journeyScript">Ultimate</i><b> — ${copy.hero.ultimateDays}</b></span><strong>R$ 999</strong><small>${copy.hero.ultimateStatus}</small>`;
 
       let price = ctas.querySelector<HTMLAnchorElement>(".launchPrice");
       if (!price) {
         price = document.createElement("a");
         price.className = "launchPrice";
-        price.href = "/inscricoes?formato=short#jornadas";
-        price.setAttribute("aria-label", "Ver inscrições da Legends Short");
-        price.innerHTML = '<span><i class="journeyScript">Short</i><b> — 2 DIAS</b></span><strong>R$ 699</strong><small>12 INSCRITOS · 38 VAGAS RESTANTES</small>';
+        price.href = getRegistrationHref("short");
         ctas.appendChild(price);
       }
+      price.setAttribute("aria-label", copy.hero.shortAria);
+      price.innerHTML = `<span><i class="journeyScript">Short</i><b> — ${copy.hero.shortDays}</b></span><strong>R$ 699</strong><small>${copy.hero.shortStatus}</small>`;
 
     }
 
@@ -101,16 +96,19 @@ export default function LaunchHomePreview() {
     }
 
     const faqCopy = home.querySelector<HTMLElement>(".faqSection .sectionHead > p:last-child");
-    if (faqCopy) faqCopy.textContent = "As cinco respostas essenciais antes de decidir. As regras completas ficam no FAQ e no Regulamento.";
+    if (faqCopy) faqCopy.textContent = copy.faq.description;
     const faqList = home.querySelector<HTMLElement>(".faqSection .faqList");
     if (faqList) faqList.classList.add("launchFaqEssential");
     const faqSection = home.querySelector<HTMLElement>(".faqSection .wide");
-    if (faqSection && !faqSection.querySelector(".launchFaqLink")) {
-      const a = document.createElement("a");
-      a.className = "launchFaqLink button";
-      a.href = "/faq#perguntas";
-      a.innerHTML = "Ver todas as perguntas <span>→</span>";
-      faqSection.appendChild(a);
+    if (faqSection) {
+      let a = faqSection.querySelector<HTMLAnchorElement>(".launchFaqLink");
+      if (!a) {
+        a = document.createElement("a");
+        a.className = "launchFaqLink button";
+        a.href = "/faq#perguntas";
+        faqSection.appendChild(a);
+      }
+      a.innerHTML = `${copy.faq.all} <span>→</span>`;
     }
 
     const oldIncluded = home.querySelector<HTMLElement>(".includedSection");
@@ -124,7 +122,7 @@ export default function LaunchHomePreview() {
       }
       setKitTarget(root);
     }
-  }, []);
+  }, [copy, locale]);
 
   return <>
     <style>{`
@@ -142,24 +140,20 @@ export default function LaunchHomePreview() {
 
     {journeyTarget && createPortal(
       <section className="launchJourney"><div className="wrap">
-        <div className="launchJourneyHead"><div><p className="eyebrow">Como funciona a jornada</p><h2>Você pedala.<br />A jornada segue.</h2></div><p>Sem complicar a decisão com tecnologia e regulamento. O essencial é entender como a jornada escolhida funciona na prática.</p></div>
+        <div className="launchJourneyHead"><div><p className="eyebrow">{copy.launch.journeyEyebrow}</p><h2>{copy.launch.journeyTitleLead}<br />{copy.launch.journeyTitleAccent}</h2></div><p>{copy.launch.journeyDescription}</p></div>
         <div className="journeySteps">
-          <article><b>01</b><h3>Largue</h3><p>Com o GPX oficial, sua estratégia de hidratação, alimentação e equipamento.</p></article>
-          <article><b>02</b><h3>Pedale</h3><p>Siga a rota por GPS e complete os checkpoints previstos para a etapa.</p></article>
-          <article><b>03</b><h3>Chegue</h3><p>Ao final da etapa, sua atividade é validada e você entra na nova cidade-base.</p></article>
-          <article><b>04</b><h3>Recupere</h3><p>Sua bag oficial é transportada pela organização. Bike Wash e mecânica básica ajudam na preparação.</p></article>
-          <article><b>05</b><h3>Repita</h3><p>No dia seguinte, uma nova etapa, uma nova cidade e mais um capítulo da travessia.</p></article>
+          {copy.launch.steps.map(([number, title, description]) => <article key={number}><b>{number}</b><h3>{title}</h3><p>{description}</p></article>)}
         </div>
-        <div className="beforeBox"><strong>Antes de se inscrever</strong><p>Hospedagem e refeições não estão incluídas. O transporte da bag oficial entre as cidades-base está incluído. O deslocamento pessoal do atleta permanece por conta do participante enquanto não houver serviço oficial de transfer divulgado.</p></div>
+        <div className="beforeBox"><strong>{copy.launch.beforeTitle}</strong><p>{copy.launch.beforeText}</p></div>
       </div></section>, journeyTarget
     )}
 
     {kitTarget && createPortal(
       <section className="launchIncluded" id="incluido"><div className="wrap">
-        <div className="launchIncludedHead"><div><p className="eyebrow">Inscrição padrão</p><h2>O que sua<br />inscrição entrega.</h2></div><p>Mostramos aqui apenas o que mais pesa na decisão. A relação completa está na página de inscrições e no Regulamento Oficial.</p></div>
-        <div className="launchProducts">{includedProducts.map(([name,img])=><article className="launchProduct" key={name}><img src={img} alt={name} /><h3>{name}</h3></article>)}</div>
-        <div className="launchServices">{includedServices.map(item=><span key={item}>{item}</span>)}</div>
-        <div className="launchDocs"><a href="/inscricoes">Ver tudo que está incluído →</a><a href="/regulamento">Regulamento</a><a href="/documentos-medicos">Documentação médica</a></div>
+        <div className="launchIncludedHead"><div><p className="eyebrow">{copy.launch.includedEyebrow}</p><h2>{copy.launch.includedTitleLead}<br />{copy.launch.includedTitleAccent}</h2></div><p>{copy.launch.includedDescription}</p></div>
+        <div className="launchProducts">{copy.launch.products.map((name, index)=><article className="launchProduct" key={name}><img src={includedProductImages[index]} alt={name} /><h3>{name}</h3></article>)}</div>
+        <div className="launchServices">{copy.launch.services.map(item=><span key={item}>{item}</span>)}</div>
+        <div className="launchDocs"><a href="/inscricoes">{copy.launch.includedCta} →</a><a href="/regulamento">{copy.launch.regulation}</a><a href="/documentos-medicos">{copy.launch.medical}</a></div>
       </div></section>, kitTarget
     )}
   </>;

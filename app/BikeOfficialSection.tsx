@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import styles from "./BikeOfficialSection.module.css";
+import { localeFromPathname } from "./i18n/config";
+import { getHomeCopy } from "./i18n/home";
 
 const DANDA_PATH = "M 752 905 L 752 992 L 818 992 L 819 981 L 765 980 L 766 953 L 814 953 L 814 942 L 766 942 L 765 918 L 816 917 L 817 906 Z M 565 905 L 564 991 L 577 991 L 577 962 L 591 950 L 623 992 L 639 992 L 601 942 L 638 905 L 621 905 L 578 946 L 577 906 Z M 429 905 L 428 991 L 441 992 L 441 905 Z M 240 905 L 239 991 L 278 992 L 291 990 L 299 986 L 307 973 L 306 957 L 299 949 L 293 946 L 303 933 L 303 923 L 300 916 L 294 910 L 284 906 Z M 252 953 L 276 952 L 286 954 L 293 960 L 293 973 L 284 980 L 253 981 Z M 252 918 L 284 918 L 290 924 L 290 934 L 281 941 L 253 941 Z M 442 668 L 407 829 L 458 829 L 483 714 L 557 714 L 562 718 L 562 728 L 539 829 L 587 829 L 612 712 L 611 694 L 605 681 L 593 672 L 575 668 Z M 249 678 L 236 694 L 229 711 L 205 836 L 255 833 L 266 780 L 345 780 L 346 784 L 336 830 L 384 829 L 408 719 L 408 696 L 401 681 L 391 673 L 371 666 L 319 663 L 279 664 L 263 669 Z M 274 737 L 279 714 L 286 705 L 291 703 L 352 704 L 360 713 L 360 720 L 354 739 Z M 805 676 L 793 666 L 780 662 L 646 667 L 611 829 L 746 833 L 759 830 L 774 822 L 788 808 L 796 795 L 810 755 L 815 709 L 812 690 Z M 764 709 L 769 726 L 767 748 L 758 774 L 747 787 L 739 790 L 666 788 L 684 706 L 754 704 Z M 1010 655 L 1002 648 L 989 643 L 975 642 L 901 650 L 883 656 L 861 671 L 848 688 L 839 711 L 816 836 L 866 838 L 873 794 L 877 782 L 956 784 L 946 844 L 994 848 L 1019 701 L 1019 678 L 1015 663 Z M 970 700 L 970 712 L 965 734 L 885 735 L 890 707 L 900 696 L 961 691 Z M 35 642 L 1 851 L 132 841 L 157 831 L 173 816 L 183 801 L 192 781 L 199 757 L 204 727 L 204 701 L 195 675 L 186 665 L 168 656 Z M 73 695 L 139 698 L 149 701 L 155 707 L 158 718 L 158 738 L 153 762 L 143 783 L 133 792 L 82 795 L 56 794 Z M 507 294 L 445 327 L 445 405 L 502 437 L 509 439 L 572 402 L 572 328 Z M 494 1 L 494 148 L 320 245 L 319 480 L 508 591 L 700 476 L 700 118 Z M 574 104 L 657 152 L 657 452 L 506 539 L 359 453 L 359 279 L 505 195 L 572 232 L 572 123 Z";
 
@@ -28,6 +31,8 @@ function SpecializedLogo() {
 }
 
 export default function BikeOfficialSection() {
+  const pathname = usePathname();
+  const copy = getHomeCopy(localeFromPathname(pathname)).bike;
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -57,14 +62,12 @@ export default function BikeOfficialSection() {
     <section id="bike-oficial" className={styles.section} aria-labelledby="bike-oficial-title">
       <div className={styles.inner}>
         <div className={styles.copy}>
-          <p className={styles.kicker}>Bike oficial</p>
+          <p className={styles.kicker}>{copy.eyebrow}</p>
           <h2 id="bike-oficial-title" className={styles.title}>
             Danda Bike +<br />
             <em>Specialized</em>
           </h2>
-          <p className={styles.description}>
-            Parceiros oficiais da bike oficial da Legends Bike Race. A Specialized Diverge será a bike oficial do evento, em parceria com a Danda Bike.
-          </p>
+          <p className={styles.description}>{copy.description}</p>
 
           <div className={styles.logos} aria-label="Danda Bike e Specialized">
             <span className={styles.danda}><DandaLogo /></span>
@@ -78,7 +81,7 @@ export default function BikeOfficialSection() {
             target="_blank"
             rel="noreferrer"
           >
-            Conheça a bike oficial <span aria-hidden="true">→</span>
+            {copy.cta} <span aria-hidden="true">→</span>
           </a>
         </div>
 

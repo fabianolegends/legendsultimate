@@ -5,6 +5,8 @@ const baseUrl = "https://www.legendsbikerace.com.br";
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages = [
     { path: "", lastModified: "2026-08-16", priority: 1, changeFrequency: "weekly" as const },
+    { path: "/es", lastModified: "2026-09-19", priority: 1, changeFrequency: "weekly" as const },
+    { path: "/en", lastModified: "2026-09-19", priority: 1, changeFrequency: "weekly" as const },
     { path: "/inscricoes", lastModified: "2026-08-16", priority: 1, changeFrequency: "weekly" as const },
     { path: "/a-prova", lastModified: "2026-08-16", priority: 0.9, changeFrequency: "monthly" as const },
     { path: "/percursos", lastModified: "2026-08-16", priority: 0.9, changeFrequency: "monthly" as const },
@@ -19,10 +21,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/faq", lastModified: "2026-08-16", priority: 0.8, changeFrequency: "monthly" as const },
   ];
 
-  return pages.map(({ path, lastModified, priority, changeFrequency }) => ({
-    url: `${baseUrl}${path}`,
-    lastModified: new Date(`${lastModified}T00:00:00-03:00`),
-    changeFrequency,
-    priority,
-  }));
+  return pages.map(({ path, lastModified, priority, changeFrequency }) => {
+    const isLocalizedHome = path === "" || path === "/es" || path === "/en";
+    return {
+      url: `${baseUrl}${path}`,
+      lastModified: new Date(`${lastModified}T00:00:00-03:00`),
+      changeFrequency,
+      priority,
+      ...(isLocalizedHome ? {
+        alternates: {
+          languages: {
+            "pt-BR": `${baseUrl}/`,
+            es: `${baseUrl}/es`,
+            en: `${baseUrl}/en`,
+            "x-default": `${baseUrl}/`,
+          },
+        },
+      } : {}),
+    };
+  });
 }

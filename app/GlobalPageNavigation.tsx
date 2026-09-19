@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { localeFromPathname } from "./i18n/config";
 
 export default function GlobalPageNavigation() {
+  const locale = localeFromPathname(usePathname());
+  const labels = {
+    pt: { aria: "Voltar ao topo da página", visible: "Topo" },
+    es: { aria: "Volver al inicio de la página", visible: "Inicio" },
+    en: { aria: "Back to the top of the page", visible: "Top" },
+  }[locale];
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -15,9 +23,9 @@ export default function GlobalPageNavigation() {
   if (!visible) return null;
 
   return (
-    <a className="globalBackToTop" href="#topo" aria-label="Voltar ao topo da página">
+    <a className="globalBackToTop" href="#topo" aria-label={labels.aria}>
       <span aria-hidden="true">↑</span>
-      <strong>Topo</strong>
+      <strong>{labels.visible}</strong>
     </a>
   );
 }

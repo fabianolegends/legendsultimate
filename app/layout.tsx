@@ -14,6 +14,7 @@ import CookieConsent from "./CookieConsent";
 import LegendsGlobalFooter from "./LegendsGlobalFooter";
 import GlobalPageNavigation from "./GlobalPageNavigation";
 import MarketingTracking from "./MarketingTracking";
+import DocumentLanguage from "./DocumentLanguage";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -106,6 +107,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="pt-BR" className={barlowCondensed.variable}>
       <head><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /></head>
       <body id="topo" className={`${manrope.className} ${manrope.variable} antialiased`}>
+        <DocumentLanguage />
         {children}
         <LaunchHomePreview />
         <BikeOfficialSection />
