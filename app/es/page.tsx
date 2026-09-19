@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: copy.seo.title,
     description: copy.seo.description,
     images: [{
-      url: "https://www.legendsbikerace.com.br/hero-rio-ciclista.jpg",
+      url: "https://www.legendsbikerace.com.br/hero-rio-ciclista-espelhado-web.jpg",
       width: 1920,
       height: 1080,
       alt: "Ciclista pedaleando frente a un río y los campos de la Serra Gaúcha",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: copy.seo.title,
     description: copy.seo.description,
-    images: ["https://www.legendsbikerace.com.br/hero-rio-ciclista.jpg"],
+    images: ["https://www.legendsbikerace.com.br/hero-rio-ciclista-espelhado-web.jpg"],
   },
 };
 
