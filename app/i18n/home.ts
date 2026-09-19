@@ -39,8 +39,6 @@ const homeCopy = {
       shortDays: "2 DIAS",
       ultimateAria: "Ver inscrições da Legends Ultimate",
       shortAria: "Ver inscrições da Legends Short",
-      ultimateStatus: "42 INSCRITOS · 58 VAGAS RESTANTES",
-      shortStatus: "12 INSCRITOS · 38 VAGAS RESTANTES",
     },
     summary: {
       aria: "Legends em 30 segundos",
@@ -249,8 +247,6 @@ const homeCopy = {
       shortDays: "2 DÍAS",
       ultimateAria: "Ver inscripciones de Legends Ultimate",
       shortAria: "Ver inscripciones de Legends Short",
-      ultimateStatus: "42 INSCRITOS · 58 PLAZAS DISPONIBLES",
-      shortStatus: "12 INSCRITOS · 38 PLAZAS DISPONIBLES",
     },
     summary: {
       aria: "Legends en 30 segundos",
@@ -459,8 +455,6 @@ const homeCopy = {
       shortDays: "2 DAYS",
       ultimateAria: "View Legends Ultimate registration",
       shortAria: "View Legends Short registration",
-      ultimateStatus: "42 REGISTERED · 58 SPOTS LEFT",
-      shortStatus: "12 REGISTERED · 38 SPOTS LEFT",
     },
     summary: {
       aria: "Legends in 30 seconds",

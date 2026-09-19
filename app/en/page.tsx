@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     title: copy.seo.title,
     description: copy.seo.description,
     images: [{
-      url: "https://www.legendsbikerace.com.br/hero-production.jpg",
-      width: 1536,
-      height: 960,
-      alt: "Legends Bike Race riders in Serra Gaúcha",
+      url: "https://www.legendsbikerace.com.br/hero-rio-bike.jpg",
+      width: 1920,
+      height: 1080,
+      alt: "Cyclist crossing a bridge over a river in Serra Gaúcha",
       type: "image/jpeg",
     }],
   },
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: copy.seo.title,
     description: copy.seo.description,
-    images: ["https://www.legendsbikerace.com.br/hero-production.jpg"],
+    images: ["https://www.legendsbikerace.com.br/hero-rio-bike.jpg"],
   },
 };
 
