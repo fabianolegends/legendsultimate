@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     title: copy.seo.title,
     description: copy.seo.description,
     images: [{
-      url: "https://www.legendsbikerace.com.br/hero-rio-ciclista-espelhado-web.jpg",
+      url: "https://www.legendsbikerace.com.br/hero-bike-detail.jpg",
       width: 1920,
       height: 1080,
-      alt: "Cyclist riding beside a river and the fields of Serra Gaúcha",
+      alt: "Close-up of a cycling shoe and bicycle on a gravel road",
       type: "image/jpeg",
     }],
   },
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: copy.seo.title,
     description: copy.seo.description,
-    images: ["https://www.legendsbikerace.com.br/hero-rio-ciclista-espelhado-web.jpg"],
+    images: ["https://www.legendsbikerace.com.br/hero-bike-detail.jpg"],
   },
 };
 
