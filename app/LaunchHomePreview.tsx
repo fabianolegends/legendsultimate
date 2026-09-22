@@ -33,7 +33,7 @@ export default function LaunchHomePreview() {
       });
       if (!desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
         const registration = document.createElement("a");
-        registration.href = getRegistrationHref();
+        registration.href = "/inscricoes";
         registration.textContent = copy.navigation.registration;
         registration.dataset.launchLink = "inscricoes";
         desktopNav.insertBefore(registration, desktopNav.firstChild);
