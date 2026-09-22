@@ -29,11 +29,9 @@ export default function LegendsGlobalFooter() {
 
   if (!pathname || isHiddenRoute(pathname)) return null;
 
-  const compact = locale === "pt" && (pathname === "/" || pathname === "/inscricoes");
-
   return (
     <footer id="rodape" className="legendsGlobalFooter" aria-label={`${copy.explore} · Legends Bike Race`}>
-      {!compact && <section className="legendsFooterStatement">
+      <section className="legendsFooterStatement">
         <div className="legendsFooterShell">
           <p className="legendsFooterEyebrow">{copy.statement}</p>
           <h2>
@@ -42,9 +40,9 @@ export default function LegendsGlobalFooter() {
             <em>{copy.titleAccent}</em>
           </h2>
         </div>
-      </section>}
+      </section>
 
-      {!compact && <section className="legendsFooterCommunity" aria-labelledby="legends-community-title">
+      <section className="legendsFooterCommunity" aria-labelledby="legends-community-title">
         <div className="legendsFooterShell legendsFooterCommunityGrid">
           <div>
             <p className="legendsFooterEyebrow">{copy.community}</p>
@@ -54,11 +52,11 @@ export default function LegendsGlobalFooter() {
             </p>
           </div>
           <div className="legendsFooterActions">
-            <a className="legendsFooterPrimary" href={locale === "pt" ? "/inscricoes" : getRegistrationHref()}>{copy.register}</a>
+            <a className="legendsFooterPrimary" href={getRegistrationHref()}>{copy.register}</a>
             <a className="legendsFooterSecondary" href="/lista-prioritaria">{copy.join}</a>
           </div>
         </div>
-      </section>}
+      </section>
 
       <section className="legendsFooterBase">
         <div className="legendsFooterShell legendsFooterGrid">

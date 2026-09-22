@@ -1,7 +1,5 @@
-import ExperienceHeader from "../ExperienceHeader";
-import RegistrationChooser from "./RegistrationChooser";
 import type { Metadata } from "next";
-import { getJourneyFormat, launchConfig } from "../lib/launch";
+import { getJourneyFormat, getRegistrationHref, getRegistrationLabel, launchConfig } from "../lib/launch";
 import { AccordionLeadIcon, AccordionToggleIcons } from "./AccordionIcons";
 
 export const metadata: Metadata = {
@@ -98,10 +96,9 @@ const schedule = [
   },
 ] as const;
 
-export default async function InscricoesPage({ searchParams }: { searchParams: Promise<{ formato?: string; detalhes?: string; modalidade?: string }> }) {
+export default async function InscricoesPage({ searchParams }: { searchParams: Promise<{ formato?: string; detalhes?: string }> }) {
   const params = await searchParams;
   const format = getJourneyFormat(params.formato);
-  const initialMode = params.modalidade === "experience" ? "experience" : "race";
   const journey = launchConfig.journeys[format];
   const journeyStages = stages.filter((stage) => (journey.stageNumbers as readonly number[]).includes(stage.id));
   const journeySchedule = format === "short"
@@ -111,8 +108,8 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
       ]
     : schedule;
   const awardPlaces = Array.from({ length: journey.awardPlaces }, (_, index) => `${index + 1}º`);
-  const registrationHref = "#jornadas";
-  const registrationLabel = "Conferir minha escolha";
+  const registrationHref = getRegistrationHref(format);
+  const registrationLabel = getRegistrationLabel();
 
   return (
     <main className="registrationPage">
@@ -147,25 +144,47 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         @media(max-width:520px){.regHero .eyebrow{font-size:22px}.scheduleItem{grid-template-columns:104px 1fr}.scheduleItem time{font-size:32px}.lodgingDate strong{font-size:56px}}
       `}</style>
 
-      <ExperienceHeader />
-      <div id="conteudo"><RegistrationChooser key={`${format}-${initialMode}`} format={format} initialMode={initialMode} /></div>
+      <div className="shell regNav">
+        <a className="back" href="/">← Voltar à home</a>
+        <img src="/legends-logo-official.png" alt="Legends Bike Race" />
+      </div>
+
+      <section className="regHero">
+        <div className="shell heroGrid">
+          <div>
+            <p className="eyebrow">Inscrições · {journey.dateShort}</p>
+            <h1>Inscrições Legends Bike Race 2027.<br /><em>Seu lugar na travessia.</em></h1>
+            <p className="heroLead">Escolha a jornada completa de quatro etapas ou viva as duas etapas finais. Depois, defina se deseja competir na Gravel Race ou completar o desafio na Legends Experience.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="journeySection" id="jornadas">
+        <div className="shell">
+          <div className="journeyHead"><h2>Escolha sua jornada.</h2><p>Os dois formatos compartilham a mesma estrutura nas etapas finais, mas possuem inscrições, limites de vagas, classificação e premiação independentes.</p></div>
+          <div className="journeyGrid">
+            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}#jornadas`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p><span className="journeyDate">{option.dateLabel}</span><br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[launchConfig.activeLotIndex].price}</strong><span>{option.lots[launchConfig.activeLotIndex].name} · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Ver detalhes →</span></span></a>)}
+          </div>
+          <a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a>
+        </div>
+      </section>
 
       <section className="detailsSection" id="informacoes">
         <div className="shell">
           <div className="detailsHead">
-            <div><p className="eyebrow">Informações completas</p><h2>Planeje sua<br /><em>participação.</em></h2></div>
-            <p>Abra apenas o que precisa consultar. Seu formato está selecionado acima. Aqui estão as informações completas para planejar a participação.</p>
+            <div><p className="eyebrow">Informações completas</p><h2>Todas as informações<br /><em>para decidir.</em></h2></div>
+            <p>Abra apenas o que precisa consultar. Data, vagas, lote atual, preço e acesso à inscrição permanecem sempre visíveis acima.</p>
           </div>
 
           <div className="regAccordions">
-            <details name="registration-details" className="regAccordion" id="valores-e-lotes">
+            <details name="registration-details" className="regAccordion" id="valores-e-lotes" open>
               <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="values" /></span>
-                <span className="accordionTitle"><strong>Histórico e próximos lotes</strong><small>{journey.name} · {journey.lots[launchConfig.activeLotIndex].name} · {journey.lots[launchConfig.activeLotIndex].price} · {journey.spots} vagas</small></span>
+                <span className="accordionTitle"><strong>Valores e lotes</strong><small>{journey.name} · {journey.lots[launchConfig.activeLotIndex].name} · {journey.lots[launchConfig.activeLotIndex].price} · {journey.spots} vagas</small></span>
                 <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
               </summary>
               <div className="accordionBody">
-                <div className="lotGrid">{journey.lots.map((lot,index)=><article className={`lot${index === launchConfig.activeLotIndex ? " activeLot" : ""}`} key={lot.name}>{index === launchConfig.activeLotIndex && <span className="activeLotBadge">Lote ativo</span>}<span>{lot.name}{index < launchConfig.activeLotIndex ? " · Encerrado" : index > launchConfig.activeLotIndex ? " · Próximo" : " · Atual"}</span><strong>{lot.price}</strong><p>{lot.period}</p></article>)}</div>
+                <div className="lotGrid">{journey.lots.map((lot,index)=><article className={`lot${index === launchConfig.activeLotIndex ? " activeLot" : ""}`} key={lot.name}>{index === launchConfig.activeLotIndex && <span className="activeLotBadge">Lote ativo</span>}<span>{lot.name}</span><strong>{lot.price}</strong><p>{lot.period}</p></article>)}</div>
               </div>
             </details>
 
@@ -275,18 +294,18 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
             <details name="registration-details" className="regAccordion">
               <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="lodging" /></span>
-                <span className="accordionTitle"><strong>Hospedagens conveniadas</strong><small>Opções nas quatro cidades-base · em cadastramento</small></span>
+                <span className="accordionTitle"><strong>Hospedagens conveniadas</strong><small>Opções nas quatro cidades-base · atualização em 15/09</small></span>
                 <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
               </summary>
               <div className="accordionBody">
-                <div className="lodgingNotice"><div><p className="eyebrow">Em cadastramento</p><h3>Rede de hospedagens conveniadas</h3><p>Os hotéis de Canela, São Francisco de Paula, Gramado e Nova Petrópolis estão sendo selecionados com premissas específicas para facilitar a rotina dos participantes durante a travessia.</p><div className="lodgingCriteria"><div className="lodgingCriterion"><strong>Café da manhã</strong><span>Horário antecipado e compatível com a programação de cada etapa.</span></div><div className="lodgingCriterion"><strong>Entrega das bags</strong><span>Estrutura para entrega das bags à organização dentro da janela operacional.</span></div><div className="lodgingCriterion"><strong>Check-in ajustado</strong><span>Flexibilidade de horário conforme a chegada dos participantes às cidades-base.</span></div></div><p style={{marginTop:"20px"}}>A relação completa, com contatos, condições comerciais e orientações para reservas, será publicada nesta página.</p></div><div className="lodgingDate"><span>Relação de hotéis</span><strong style={{fontSize:"32px"}}>Em breve</strong></div></div>
+                <div className="lodgingNotice"><div><p className="eyebrow">Em cadastramento</p><h3>Rede de hospedagens conveniadas</h3><p>Os hotéis de Canela, São Francisco de Paula, Gramado e Nova Petrópolis estão sendo selecionados com premissas específicas para facilitar a rotina dos participantes durante a travessia.</p><div className="lodgingCriteria"><div className="lodgingCriterion"><strong>Café da manhã</strong><span>Horário antecipado e compatível com a programação de cada etapa.</span></div><div className="lodgingCriterion"><strong>Entrega das bags</strong><span>Estrutura para entrega das bags à organização dentro da janela operacional.</span></div><div className="lodgingCriterion"><strong>Check-in ajustado</strong><span>Flexibilidade de horário conforme a chegada dos participantes às cidades-base.</span></div></div><p style={{marginTop:"20px"}}>A relação completa, com contatos, condições comerciais e orientações para reservas, será publicada nesta página.</p></div><div className="lodgingDate"><span>Atualização prevista</span><strong>15/09/2026</strong></div></div>
               </div>
             </details>
           </div>
         </div>
       </section>
 
-      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{journey.dateLabel} · {launchConfig.location}. Confira sua escolha e continue na plataforma oficial da WindFit.</p><a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a></div></section>
+      <section className="section finalCta"><div className="shell"><p className="eyebrow">Legends Bike Race 2027</p><h2>Não é circuito.<br /><em>É travessia.</em></h2><p>{launchConfig.eventDateLabel} · {launchConfig.location}. Inscrições abertas na plataforma oficial da WindFit.</p><a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a></div></section>
     </main>
   );
 }
