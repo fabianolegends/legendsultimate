@@ -1,3 +1,4 @@
+import ExperienceHome from "./ExperienceHome";
 import type { Metadata } from "next";
 import KitCarousel from "./KitCarousel";
 import MobileMenu from "./MobileMenu";
@@ -54,6 +55,10 @@ function Logo({ className = "" }: { className?: string }) {
 }
 
 export function HomePage({ locale = "pt" }: { locale?: Locale }) {
+  return locale === "pt" ? <ExperienceHome /> : <LocalizedHomePage locale={locale} />;
+}
+
+function LocalizedHomePage({ locale }: { locale: Locale }) {
   const t = getHomeCopy(locale);
   const localizedStages = stages.map((stage, index) => ({
     ...stage,
