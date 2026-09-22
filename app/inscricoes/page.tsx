@@ -98,9 +98,10 @@ const schedule = [
   },
 ] as const;
 
-export default async function InscricoesPage({ searchParams }: { searchParams: Promise<{ formato?: string; detalhes?: string }> }) {
+export default async function InscricoesPage({ searchParams }: { searchParams: Promise<{ formato?: string; detalhes?: string; modalidade?: string }> }) {
   const params = await searchParams;
   const format = getJourneyFormat(params.formato);
+  const initialMode = params.modalidade === "experience" ? "experience" : "race";
   const journey = launchConfig.journeys[format];
   const journeyStages = stages.filter((stage) => (journey.stageNumbers as readonly number[]).includes(stage.id));
   const journeySchedule = format === "short"
@@ -147,7 +148,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
       `}</style>
 
       <ExperienceHeader />
-      <div id="conteudo"><RegistrationChooser key={format} format={format} /></div>
+      <div id="conteudo"><RegistrationChooser key={`${format}-${initialMode}`} format={format} initialMode={initialMode} /></div>
 
       <section className="detailsSection" id="informacoes">
         <div className="shell">
