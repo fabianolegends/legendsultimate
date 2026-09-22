@@ -26,8 +26,8 @@ export default function ExperienceHome() {
         <div className={styles.heroShade} />
         <div className={`${styles.container} ${styles.heroContent}`}>
           <p className={styles.eyebrow}>Serra Gaúcha · 29 abril — 02 maio 2027</p>
-          <h1 id="experience-title">Gravel Race.<br /><em>Dispute cada etapa.</em></h1>
-          <p className={styles.heroLead}>Uma competição de gravel por etapas na Serra Gaúcha.<br />Tempo registrado, classificação por categoria e disputa pelo pódio.</p>
+          <h1 id="experience-title"><span className={styles.heroName}>Legends Gravel Race</span><br /><em>Competição ou experiência</em><br />a escolha é sua</h1>
+          <p className={styles.heroLead}>Escolha o formato ideal para você ou conheça a prova antes de decidir.</p>
           <a href="#formatos" className={styles.primary}>Escolher minha prova <span aria-hidden="true">↗</span></a>
           <a href="/a-prova" className={styles.heroSecondary}>Conheça a prova <span aria-hidden="true">→</span></a>
         </div>
