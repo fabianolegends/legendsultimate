@@ -1,4 +1,8 @@
+import { launchConfig } from "../lib/launch";
 import type { Locale } from "./config";
+
+const ultimatePrice = launchConfig.journeys.ultimate.lots[launchConfig.activeLotIndex].price;
+const shortPrice = launchConfig.journeys.short.lots[launchConfig.activeLotIndex].price;
 
 const shared = {
   brand: "Legends Bike Race",
@@ -61,11 +65,11 @@ const homeCopy = {
       description: "Ultimate e Short têm inscrições, limites de vagas, classificações e premiações independentes. Depois de escolher a jornada, você define Gravel Race ou Legends Experience.",
       ultimateTag: "Jornada completa",
       ultimateDescription: "De Canela a Canela, passando pelas quatro cidades-base e por todos os capítulos da travessia.",
-      ultimateFacts: ["4 dias", "4 etapas", "370,3 km", "6.302 m+", "100 vagas", "A partir de R$ 999"],
+      ultimateFacts: ["4 dias", "4 etapas", "370,3 km", "6.302 m+", "100 vagas", `A partir de ${ultimatePrice}`],
       ultimateCta: "Me inscrever na Ultimate",
       shortTag: "Etapas finais",
       shortDescription: "As etapas Gramado–Nova Petrópolis e Nova Petrópolis–Canela em uma experiência concentrada de dois dias.",
-      shortFacts: ["2 dias", "Stages 03 e 04", "169,3 km", "3.098 m+", "50 vagas", "A partir de R$ 699"],
+      shortFacts: ["2 dias", "Stages 03 e 04", "169,3 km", "3.098 m+", "50 vagas", `A partir de ${shortPrice}`],
       shortCta: "Me inscrever na Short",
     },
     manifesto: {
@@ -269,11 +273,11 @@ const homeCopy = {
       description: "Ultimate y Short tienen inscripciones, límites de plazas, clasificaciones y premios independientes. Después de elegir la travesía, defines Gravel Race o Legends Experience.",
       ultimateTag: "Travesía completa",
       ultimateDescription: "De Canela a Canela, pasando por las cuatro ciudades base y por todos los capítulos del recorrido.",
-      ultimateFacts: ["4 días", "4 etapas", "370,3 km", "6.302 m+", "100 plazas", "Desde R$ 999"],
+      ultimateFacts: ["4 días", "4 etapas", "370,3 km", "6.302 m+", "100 plazas", `Desde ${ultimatePrice}`],
       ultimateCta: "Inscribirme en Ultimate",
       shortTag: "Etapas finales",
       shortDescription: "Las etapas Gramado–Nova Petrópolis y Nova Petrópolis–Canela en una experiencia concentrada de dos días.",
-      shortFacts: ["2 días", "Stages 03 y 04", "169,3 km", "3.098 m+", "50 plazas", "Desde R$ 699"],
+      shortFacts: ["2 días", "Stages 03 y 04", "169,3 km", "3.098 m+", "50 plazas", `Desde ${shortPrice}`],
       shortCta: "Inscribirme en Short",
     },
     manifesto: {
@@ -477,11 +481,11 @@ const homeCopy = {
       description: "Ultimate and Short have independent registrations, spot limits, standings and awards. After choosing the journey, select Gravel Race or Legends Experience.",
       ultimateTag: "Full journey",
       ultimateDescription: "From Canela back to Canela, riding through all four host cities and every chapter of the crossing.",
-      ultimateFacts: ["4 days", "4 stages", "370.3 km", "6,302 m+", "100 spots", "From BRL 999"],
+      ultimateFacts: ["4 days", "4 stages", "370.3 km", "6,302 m+", "100 spots", `From ${ultimatePrice.replace("R$", "BRL")}`],
       ultimateCta: "Register for Ultimate",
       shortTag: "Final stages",
       shortDescription: "The Gramado–Nova Petrópolis and Nova Petrópolis–Canela stages in a concentrated two-day experience.",
-      shortFacts: ["2 days", "Stages 03 and 04", "169.3 km", "3,098 m+", "50 spots", "From BRL 699"],
+      shortFacts: ["2 days", "Stages 03 and 04", "169.3 km", "3,098 m+", "50 spots", `From ${shortPrice.replace("R$", "BRL")}`],
       shortCta: "Register for Short",
     },
     manifesto: {
