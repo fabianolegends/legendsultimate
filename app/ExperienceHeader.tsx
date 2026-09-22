@@ -17,7 +17,7 @@ export default function ExperienceHeader() {
       <nav id="experience-navigation" className={`${styles.navigation} ${open ? styles.navigationOpen : ""}`} aria-label="Navegação principal" onKeyDown={(event) => { if (event.key === "Escape") setOpen(false); }}>
         {links.map(([label, href]) => <a key={href} href={href} aria-current={pathname === href.split("#")[0] ? "page" : undefined} onClick={() => setOpen(false)}>{label}</a>)}
         <span className={styles.languages} aria-label="Idiomas"><a href="/" lang="pt" aria-label="Português" aria-current={pathname === "/" ? "page" : undefined}>PT</a><a href="/es" lang="es" aria-label="Español">ES</a><a href="/en" lang="en" aria-label="English">EN</a></span>
-        <a className={styles.navCta} href="/inscricoes" aria-current={pathname === "/inscricoes" ? "page" : undefined} onClick={() => setOpen(false)}>Inscrições <span aria-hidden="true">↗</span></a>
+        <a className={styles.navCta} href="/inscricoes?formato=ultimate#jornadas" aria-current={pathname === "/inscricoes" ? "page" : undefined} onClick={() => setOpen(false)}>Inscrições <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
   </header>;
