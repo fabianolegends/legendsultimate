@@ -48,7 +48,7 @@ export default function ListaPrioritaria() {
       }
 
       setStatus("success");
-      setMessage("Cadastro confirmado. Você agora faz parte da lista prioritária da Legends.");
+      setMessage("Cadastro confirmado. Você receberá as novidades oficiais da Legends.");
       window.gtag?.("event", "generate_lead", {
         lead_source: "lista_prioritaria",
         form_name: "lista_prioritaria_legends",
@@ -86,8 +86,7 @@ export default function ListaPrioritaria() {
           <p className="kicker">Inscrições 2027</p>
           <h1 className="headline">Escolha sua jornada Legends.</h1>
           <p className="lead">
-            Entre para a lista prioritária e receba primeiro o link de abertura das
-            inscrições, os hotéis conveniados e as atualizações oficiais da primeira edição.
+            Receba novidades da Legends, informações sobre hotéis conveniados e orientações para preparar sua participação.
           </p>
           <div className="facts">
             <div className="fact"><strong>100</strong><span>vagas Ultimate</span></div>
@@ -98,8 +97,8 @@ export default function ListaPrioritaria() {
         </div>
 
         <aside className="panel">
-          <p className="kicker">Lista prioritária</p>
-          <h2 className="panelTitle">Quero receber as informações primeiro.</h2>
+          <p className="kicker">Comunidade Legends</p>
+          <h2 className="panelTitle">Receba as novidades da Legends.</h2>
           <p className="panelIntro">
             Conte quem você é e o que espera desta experiência. A organização usará
             esses dados para preparar a prova e entrar em contato com você.
@@ -134,7 +133,7 @@ export default function ListaPrioritaria() {
             </div>
 
             <button className="button" type="submit" disabled={status === "sending"}>
-              {status === "sending" ? "Enviando…" : "Entrar para a lista prioritária →"}
+              {status === "sending" ? "Enviando…" : "Receber novidades →"}
             </button>
 
             {message ? (
