@@ -22,16 +22,16 @@ export default function ExperienceHome() {
     <ExperienceHeader />
     <main id="conteudo">
       <section className={styles.hero} aria-labelledby="experience-title">
-        <Image src="/hero-rio-ciclista-espelhado-web.jpg" alt="Ciclista atravessando uma ponte junto ao rio na Serra Gaúcha" fill priority sizes="100vw" className={styles.heroImage} />
+        <Image src="/hero-gravel-race-curva.jpg" alt="Vista aérea de um ciclista em uma curva de estrada cercada por vegetação" fill priority sizes="100vw" className={styles.heroImage} />
         <div className={styles.heroShade} />
         <div className={`${styles.container} ${styles.heroContent}`}>
           <p className={styles.eyebrow}>Serra Gaúcha · 29 abril — 02 maio 2027</p>
-          <h1 id="experience-title">Seu próximo<br />grande <em>desafio.</em></h1>
-          <p className={styles.heroLead}>Uma travessia de bicicleta pela Serra Gaúcha.<br />Quatro dias de jornada completa ou duas etapas finais.</p>
-          <a href="#formatos" className={styles.primary}>Escolher minha experiência <span aria-hidden="true">↗</span></a>
+          <h1 id="experience-title">Gravel Race.<br /><em>Dispute cada etapa.</em></h1>
+          <p className={styles.heroLead}>Uma competição de gravel por etapas na Serra Gaúcha.<br />Tempo registrado, classificação por categoria e disputa pelo pódio.</p>
+          <a href="#formatos" className={styles.primary}>Escolher minha prova <span aria-hidden="true">↗</span></a>
           <a href="/a-prova" className={styles.heroSecondary}>Conheça a prova <span aria-hidden="true">→</span></a>
         </div>
-        <div className={`${styles.container} ${styles.heroFoot}`}><span>GRAVEL RACE · EXPERIENCE</span><span>Onde o asfalto termina, a diversão começa.</span></div>
+        <div className={`${styles.container} ${styles.heroFoot}`}><span>ULTIMATE · 4 ETAPAS / SHORT · 2 ETAPAS</span><span>Classificação e premiação independentes por formato.</span></div>
       </section>
 
       <section className={`${styles.section} ${styles.paper}`} id="formatos" aria-labelledby="formats-title">
@@ -50,8 +50,8 @@ export default function ExperienceHome() {
       </section>
 
       <section className={styles.section} id="modalidades"><div className={styles.container}>
-        <div className={styles.sectionHead}><div><p className={styles.eyebrow}>02 / Escolha como participar</p><h2>Seu ritmo.<br /><em>Sua experiência.</em></h2></div><p>Os mesmos caminhos e a mesma estrutura de apoio. Você escolhe se quer disputar um resultado ou completar seu desafio pessoal.</p></div>
-        <div className={styles.modeGrid}><article><span className={styles.eyebrow}>Para competir</span><h3>Gravel Race</h3><p>Tempo registrado, classificação por categoria e premiação.</p><strong>Gravel e Cyclocross</strong><small>Sem assistência elétrica</small></article><article><span className={styles.eyebrow}>Para viver a travessia</span><h3>Legends Experience</h3><p>Desafio pessoal, sem ranking ou premiação competitiva.</p><strong>Gravel, MTB e E-bike</strong><small>E-bikes de pedal assistido, conforme regulamento</small></article></div>
+        <div className={styles.sectionHead}><div><p className={styles.eyebrow}>02 / Escolha como participar</p><h2>Sua prova.<br /><em>Seu objetivo.</em></h2></div><p>Os mesmos caminhos e a mesma estrutura de apoio. Você escolhe se quer disputar um resultado ou completar seu desafio pessoal.</p></div>
+        <div className={styles.modeGrid}><article className={styles.raceFeatured}><span className={styles.eyebrow}>Modalidade competitiva</span><h3>Gravel Race</h3><p>Dispute cada etapa e some pontos na classificação geral do seu formato.</p><ul className={styles.raceFacts}><li>Tempo registrado e classificação por categoria</li><li>Ultimate: 4 etapas · troféus do 1º ao 5º</li><li>Short: 2 etapas · troféus do 1º ao 3º</li></ul><strong>Gravel e Cyclocross</strong><small>Sem assistência elétrica · premiação por categoria</small><a href="/inscricoes" className={styles.primary}>Quero competir ↗</a></article><article><span className={styles.eyebrow}>Para viver a travessia</span><h3>Legends Experience</h3><p>Desafio pessoal, sem ranking ou premiação competitiva.</p><strong>Gravel, MTB e E-bike</strong><small>E-bikes de pedal assistido, conforme regulamento</small></article></div>
         <p className={styles.sectionNote}>As duas modalidades estão disponíveis na Ultimate e na Short. Navegação por GPS e preparação física são necessárias em ambas.</p>
       </div></section>
 
