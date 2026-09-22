@@ -163,7 +163,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
         <div className="shell">
           <div className="journeyHead"><h2>Escolha sua jornada.</h2><p>Os dois formatos compartilham a mesma estrutura nas etapas finais, mas possuem inscrições, limites de vagas, classificação e premiação independentes.</p></div>
           <div className="journeyGrid">
-            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}#jornadas`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p><span className="journeyDate">{option.dateLabel}</span><br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[0].price}</strong><span>Lote 01 · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Ver detalhes →</span></span></a>)}
+            {Object.values(launchConfig.journeys).map((option) => <a className={`journeyCard${option.id === format ? " active" : ""}`} href={`/inscricoes?formato=${option.id}#jornadas`} key={option.id}><div><span className="tag">{option.id === format ? "Formato selecionado" : "Selecionar formato"}</span><h3><span>Legends</span><em className="journeyScript">{option.id === "short" ? "Short" : "Ultimate"}</em></h3><p><span className="journeyDate">{option.dateLabel}</span><br />{option.cities}</p></div><div className="journeyStats"><strong>{option.lots[launchConfig.activeLotIndex].price}</strong><span>{option.lots[launchConfig.activeLotIndex].name} · {option.spots} vagas</span><span>{option.days} dias · {option.stageNumbers.length} etapas</span></div><span className="journeyAction"><span>{option.distance} · {option.ascent}</span><span>Ver detalhes →</span></span></a>)}
           </div>
           <a className="mainCta" href={registrationHref}><span>{registrationLabel}</span><span>→</span></a>
         </div>
@@ -180,7 +180,7 @@ export default async function InscricoesPage({ searchParams }: { searchParams: P
             <details name="registration-details" className="regAccordion" id="valores-e-lotes" open>
               <summary>
                 <span className="accordionIcon"><AccordionLeadIcon kind="values" /></span>
-                <span className="accordionTitle"><strong>Valores e lotes</strong><small>{journey.name} · Lote 01 · {journey.lots[0].price} · {journey.spots} vagas</small></span>
+                <span className="accordionTitle"><strong>Valores e lotes</strong><small>{journey.name} · {journey.lots[launchConfig.activeLotIndex].name} · {journey.lots[launchConfig.activeLotIndex].price} · {journey.spots} vagas</small></span>
                 <span className="accordionToggle" aria-hidden="true"><AccordionToggleIcons /></span>
               </summary>
               <div className="accordionBody">

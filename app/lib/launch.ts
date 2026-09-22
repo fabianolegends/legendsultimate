@@ -9,7 +9,7 @@ export const launchConfig = {
   registrationUrl: WINDFIT_REGISTRATION_URL,
   registrationOpen: true,
   priorityAccess: process.env.NEXT_PUBLIC_PRIORITY_ACCESS === "true",
-  activeLotIndex: 0,
+  activeLotIndex: 1,
   journeys: {
     ultimate: {
       id: "ultimate",

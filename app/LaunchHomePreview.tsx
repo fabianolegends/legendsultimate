@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
-import { getRegistrationHref } from "./lib/launch";
+import { getRegistrationHref, launchConfig } from "./lib/launch";
 import { localeFromPathname } from "./i18n/config";
 import { getHomeCopy } from "./i18n/home";
 
@@ -69,7 +69,7 @@ export default function LaunchHomePreview() {
         else ctas.appendChild(spots);
       }
       spots.setAttribute("aria-label", copy.hero.ultimateAria);
-      spots.innerHTML = `<span><i class="journeyScript">Ultimate</i><b> — ${copy.hero.ultimateDays}</b></span><strong>R$ 999</strong>`;
+      spots.innerHTML = `<span><i class="journeyScript">Ultimate</i><b> — ${copy.hero.ultimateDays}</b></span><strong>${launchConfig.journeys.ultimate.lots[launchConfig.activeLotIndex].price}</strong>`;
 
       let price = ctas.querySelector<HTMLAnchorElement>(".launchPrice");
       if (!price) {
@@ -79,7 +79,7 @@ export default function LaunchHomePreview() {
         ctas.appendChild(price);
       }
       price.setAttribute("aria-label", copy.hero.shortAria);
-      price.innerHTML = `<span><i class="journeyScript">Short</i><b> — ${copy.hero.shortDays}</b></span><strong>R$ 699</strong>`;
+      price.innerHTML = `<span><i class="journeyScript">Short</i><b> — ${copy.hero.shortDays}</b></span><strong>${launchConfig.journeys.short.lots[launchConfig.activeLotIndex].price}</strong>`;
 
     }
 
