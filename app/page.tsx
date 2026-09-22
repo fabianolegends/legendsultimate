@@ -55,7 +55,10 @@ function Logo({ className = "" }: { className?: string }) {
 }
 
 export function HomePage({ locale = "pt" }: { locale?: Locale }) {
-  if (locale === "pt") return <ExperienceHome />;
+  return locale === "pt" ? <ExperienceHome /> : <LocalizedHomePage locale={locale} />;
+}
+
+function LocalizedHomePage({ locale }: { locale: Locale }) {
   const t = getHomeCopy(locale);
   const localizedStages = stages.map((stage, index) => ({
     ...stage,
