@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { launchConfig, type JourneyFormat } from "./lib/launch";
 import styles from "./HomeRegistrationInfo.module.css";
 
@@ -98,9 +98,73 @@ const shortProgram = [
 ] as const;
 
 
-function getRows(format: JourneyFormat) {
+type StageProfile = {
+  id: string;
+  label: string;
+  eligibility: string;
+  route: string;
+  stats: string;
+  distance: number;
+  distanceLabel: string;
+  ascent: number;
+  ascentLabel: string;
+  href: string;
+  image: string;
+};
+
+const stageProfiles: StageProfile[] = [
+  { id: "stage-1", label: "Stage 01", eligibility: "Somente Ultimate", route: "Canela → São Francisco de Paula", stats: "111,9 km · 1.684 m+ · limite 10 h", distance: 111.9, distanceLabel: "111,9 km", ascent: 1684, ascentLabel: "1.684 m+", href: "/percursos/stage-1", image: "/stage-1-profile-final.png" },
+  { id: "stage-2", label: "Stage 02", eligibility: "Somente Ultimate", route: "São Francisco de Paula → Gramado", stats: "89,1 km · 1.520 m+ · limite 9 h", distance: 89.1, distanceLabel: "89,1 km", ascent: 1520, ascentLabel: "1.520 m+", href: "/percursos/stage-2", image: "/stage-2-profile-transparent.png" },
+  { id: "stage-3", label: "Stage 03", eligibility: "Ultimate + Short", route: "Gramado → Nova Petrópolis", stats: "99,3 km · 1.522 m+ · limite 10 h", distance: 99.3, distanceLabel: "99,3 km", ascent: 1522, ascentLabel: "1.522 m+", href: "/percursos/stage-3", image: "/stage-3-profile-transparent.png" },
+  { id: "stage-4", label: "Stage 04", eligibility: "Ultimate + Short", route: "Nova Petrópolis → Canela", stats: "70 km · 1.576 m+ · limite 6 h", distance: 70, distanceLabel: "70 km", ascent: 1576, ascentLabel: "1.576 m+", href: "/percursos/stage-4", image: "/stage-4-profile-transparent.png" },
+];
+
+function ElevationProfile({ stage, active }: { stage: StageProfile; active: boolean }) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!active) {
+      setProgress(0);
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setProgress(1);
+      return;
+    }
+
+    let frame = 0;
+    let startedAt = 0;
+    const duration = 5400;
+    const animate = (now: number) => {
+      if (!startedAt) startedAt = now;
+      const elapsed = Math.min((now - startedAt) / duration, 1);
+      setProgress(1 - Math.pow(1 - elapsed, 3));
+      if (elapsed < 1) frame = window.requestAnimationFrame(animate);
+    };
+    frame = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frame);
+  }, [active]);
+
+  const currentKm = (stage.distance * progress).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const currentAscent = Math.round(stage.ascent * progress).toLocaleString("pt-BR");
+
+  return <div className={styles.elevationProfile} aria-label={`Perfil animado da ${stage.label}`}>
+    <div className={styles.profileHeader}><span>Perfil de elevação</span><p><b>{currentKm} km</b><b>{currentAscent} m+</b></p></div>
+    <div className={styles.profileVisual}>
+      <img className={styles.profileBase} src={stage.image} alt="" />
+      <img className={styles.profileReveal} style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }} src={stage.image} alt="" />
+      <i className={styles.profileMarker} style={{ left: `${progress * 100}%` }} aria-hidden="true" />
+    </div>
+    <div className={styles.profileScale}><span>0 km</span><span>{stage.distanceLabel}</span><span>0 m+</span><span>{stage.ascentLabel}</span></div>
+  </div>;
+}
+
+
+function getRows(format: JourneyFormat, stagesOpen: boolean) {
   const journey = launchConfig.journeys[format];
   const activeLot = journey.lots[launchConfig.activeLotIndex];
+  const visibleStages = format === "ultimate" ? stageProfiles : stageProfiles.slice(2);
 
   return [
     {
@@ -136,7 +200,7 @@ function getRows(format: JourneyFormat) {
     {
       label: "Etapas",
       summary: `${journey.days} dias · ${journey.distance} · ${journey.ascent}`,
-      content: <div className={styles.stages}>{format === "ultimate" ? <><a href="/percursos/stage-1"><span>Stage 01 · somente Ultimate</span><b>Canela → São Francisco de Paula</b><small>111,9 km · 1.684 m+ · limite 10 h</small></a><a href="/percursos/stage-2"><span>Stage 02 · somente Ultimate</span><b>São Francisco de Paula → Gramado</b><small>89,1 km · 1.520 m+ · limite 9 h</small></a></> : null}<a href="/percursos/stage-3"><span>Stage 03 · Ultimate + Short</span><b>Gramado → Nova Petrópolis</b><small>99,3 km · 1.522 m+ · limite 10 h</small></a><a href="/percursos/stage-4"><span>Stage 04 · Ultimate + Short</span><b>Nova Petrópolis → Canela</b><small>70 km · 1.576 m+ · limite 6 h</small></a></div>,
+      content: <div className={styles.stages}>{visibleStages.map((stage) => <a href={stage.href} key={stage.id}><div className={styles.stageCopy}><span>{stage.label} · {stage.eligibility}</span><b>{stage.route}</b><small>{stage.stats}</small></div><ElevationProfile stage={stage} active={stagesOpen} /></a>)}</div>,
     },
     {
       label: "Programação",
@@ -161,7 +225,7 @@ export default function HomeRegistrationInfo() {
   const [open, setOpen] = useState<number | null>(0);
   const journey = launchConfig.journeys[format];
   const activeLot = journey.lots[launchConfig.activeLotIndex];
-  const rows = getRows(format);
+  const rows = getRows(format, open === 6);
 
   function selectFormat(nextFormat: JourneyFormat) {
     setFormat(nextFormat);
