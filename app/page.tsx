@@ -150,7 +150,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
           </div>
           <div className="mobileNavActions"><MobileMenu locale={locale} /></div>
         </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1>{t.hero.titleLead} <span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong><br />{t.hero.intro}</p><div className="heroCtas"><a className="button" href="/a-prova">{t.hero.discover} <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>{t.hero.registerNow}</a></div></div></div>
+        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1>{t.hero.titleLead} <span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong></p><div className="heroCtas"><a className="button" href="/a-prova">{t.hero.discover} <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>{t.hero.registerNow}</a></div></div></div>
       </section>
 
       <section className="launchSummary" aria-label={t.summary.aria}><div className="wide launchSummaryGrid">
