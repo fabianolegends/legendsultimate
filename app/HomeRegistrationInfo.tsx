@@ -4,6 +4,100 @@ import { useState } from "react";
 import { launchConfig, type JourneyFormat } from "./lib/launch";
 import styles from "./HomeRegistrationInfo.module.css";
 
+const ultimateProgram = [
+  {
+    date: "28 ABR",
+    stage: "Credenciamento",
+    route: "Canela",
+    events: [
+      ["12h–18h", "Credenciamento, conferência documental e entrega dos kits"],
+      ["18h30", "Briefing geral obrigatório"],
+    ],
+  },
+  {
+    date: "29 ABR",
+    stage: "Stage 01",
+    route: "Canela → São Francisco de Paula",
+    events: [
+      ["07h–07h30", "Entrega das bags"],
+      ["07h30", "Briefing da etapa"],
+      ["07h45", "Largada"],
+      ["17h", "Resultados oficiais"],
+      ["18h30", "Briefing pós-etapa"],
+    ],
+  },
+  {
+    date: "30 ABR",
+    stage: "Stage 02",
+    route: "São Francisco de Paula → Gramado",
+    events: [
+      ["07h–07h30", "Entrega das bags"],
+      ["07h30", "Briefing da etapa"],
+      ["07h45", "Largada"],
+      ["17h", "Resultados oficiais"],
+      ["18h30", "Briefing pós-etapa"],
+    ],
+  },
+  {
+    date: "01 MAI",
+    stage: "Stage 03",
+    route: "Gramado → Nova Petrópolis",
+    events: [
+      ["07h–07h30", "Entrega das bags"],
+      ["07h30", "Briefing da etapa"],
+      ["07h45", "Largada"],
+      ["17h", "Resultados oficiais"],
+      ["18h30", "Briefing pós-etapa"],
+    ],
+  },
+  {
+    date: "02 MAI",
+    stage: "Stage 04",
+    route: "Nova Petrópolis → Canela",
+    events: [
+      ["07h–07h30", "Entrega das bags"],
+      ["07h30", "Briefing da etapa"],
+      ["07h45", "Largada"],
+      ["17h", "Resultados oficiais"],
+      ["18h30", "Premiação geral e encerramento"],
+    ],
+  },
+] as const;
+
+const shortProgram = [
+  {
+    date: "30 ABR",
+    stage: "Credenciamento Short",
+    route: "Gramado",
+    events: [["A confirmar", "Credenciamento, conferência documental e entrega dos kits"]],
+  },
+  {
+    date: "01 MAI",
+    stage: "Stage 03",
+    route: "Gramado → Nova Petrópolis",
+    events: [
+      ["07h–07h30", "Entrega das bags"],
+      ["07h30", "Briefing da etapa"],
+      ["07h45", "Largada"],
+      ["17h", "Resultados oficiais"],
+      ["18h30", "Briefing pós-etapa"],
+    ],
+  },
+  {
+    date: "02 MAI",
+    stage: "Stage 04",
+    route: "Nova Petrópolis → Canela",
+    events: [
+      ["07h–07h30", "Entrega das bags"],
+      ["07h30", "Briefing da etapa"],
+      ["07h45", "Largada"],
+      ["17h", "Resultados oficiais"],
+      ["18h30", "Premiação geral e encerramento"],
+    ],
+  },
+] as const;
+
+
 function getRows(format: JourneyFormat) {
   const journey = launchConfig.journeys[format];
   const activeLot = journey.lots[launchConfig.activeLotIndex];
@@ -46,8 +140,8 @@ function getRows(format: JourneyFormat) {
     },
     {
       label: "Programação",
-      summary: format === "ultimate" ? "29 ABR a 02 MAI · 2027" : "01 — 02 MAI · 2027",
-      content: <div className={styles.schedule}>{format === "ultimate" ? <><p><b>28 ABR · Canela</b> Credenciamento, conferência documental, entrega de kits e briefing geral obrigatório.</p><p><b>29 ABR · Stage 01</b> Canela → São Francisco de Paula.</p><p><b>30 ABR · Stage 02</b> São Francisco de Paula → Gramado.</p></> : null}<p><b>01 MAI · Stage 03</b> Gramado → Nova Petrópolis.</p><p><b>02 MAI · Stage 04</b> Nova Petrópolis → Canela, premiação geral e encerramento.</p></div>,
+      summary: format === "ultimate" ? "28 ABR a 02 MAI · 2027" : "30 ABR a 02 MAI · 2027",
+      content: <div className={styles.schedule}>{(format === "ultimate" ? ultimateProgram : shortProgram).map((day) => <article key={`${day.date}-${day.stage}`}><header><span>{day.date}</span><strong>{day.stage}</strong></header><p>{day.route}</p><ul>{day.events.map(([time, event]) => <li key={`${time}-${event}`}><time>{time}</time><span>{event}</span></li>)}</ul></article>)}</div>,
     },
     {
       label: "Regulamento e documentos",
