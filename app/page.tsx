@@ -153,16 +153,6 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1><span className="heroBrand"><span>Legends</span><span>Bike Race</span></span><span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong></p><div className="heroCtas"><a className="button" href="/a-prova">{t.hero.discover} <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>{t.hero.registerNow}</a></div></div></div>
       </section>
 
-      <section className="launchSummary" aria-label={t.summary.aria}><div className="wide launchSummaryGrid">
-        <div className="launchFact launchDateFact"><strong>{t.summary.dateTop}</strong><span>{t.summary.dateBottom}</span></div>
-        <div className="launchFact"><strong>{t.summary.daysValue}</strong><span>{t.summary.daysLabel}</span></div>
-        <div className="launchFact"><strong>{t.summary.stagesValue}</strong><span>{t.summary.stagesLabel}</span></div>
-        <div className="launchFact"><strong>{t.summary.distance}</strong><span>km</span></div>
-        <div className="launchFact"><strong>6.302</strong><span>m+</span></div>
-        <div className="launchFact"><strong>2</strong><span>{t.summary.formats}</span></div>
-        <div className="launchFact"><strong>150</strong><span>{t.summary.spots}</span></div>
-      </div></section>
-
       {locale === "pt" ? <HomeRegistrationInfo /> : null}
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
