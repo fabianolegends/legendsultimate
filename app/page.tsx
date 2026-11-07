@@ -164,8 +164,6 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         <div className="launchFact"><strong>150</strong><span>{t.summary.spots}</span></div>
       </div></section>
 
-      <section className="formatChoice"><div className="wide"><div className="formatChoiceHead"><div><p className="kicker">{t.formats.eyebrow}</p><h2>{t.formats.titleLead}<br /><em>{t.formats.titleAccent}</em></h2></div><p>{t.formats.description}</p></div><div className="formatCards"><article className="formatCard"><span className="tag">{t.formats.ultimateTag}</span><h3><span>Legends</span><em className="journeyScript">Ultimate</em></h3><p>{t.formats.ultimateDescription}</p><div className="formatFacts">{t.formats.ultimateFacts.map((fact) => <span key={fact}>{fact}</span>)}</div><a href={getRegistrationHref("ultimate")}><span>{t.formats.ultimateCta}</span><span>→</span></a></article><article className="formatCard"><span className="tag">{t.formats.shortTag}</span><h3><span>Legends</span><em className="journeyScript">Short</em></h3><p>{t.formats.shortDescription}</p><div className="formatFacts">{t.formats.shortFacts.map((fact) => <span key={fact}>{fact}</span>)}</div><a href={getRegistrationHref("short")}><span>{t.formats.shortCta}</span><span>→</span></a></article></div></div></section>
-
       {locale === "pt" ? <HomeRegistrationInfo /> : null}
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
