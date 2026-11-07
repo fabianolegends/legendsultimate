@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import KitCarousel from "./KitCarousel";
 import MobileMenu from "./MobileMenu";
 import RouteExplorer from "./RouteExplorer";
-import LanguageSwitcher from "./LanguageSwitcher";
+import LanguageSwitcher from "./LanguageSwitcher";\nimport HomeRegistrationInfo from "./HomeRegistrationInfo";
 import { getRegistrationHref } from "./lib/launch";
 import { getHomeCopy } from "./i18n/home";
 import type { Locale } from "./i18n/config";
@@ -165,7 +165,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
 
       <section className="formatChoice"><div className="wide"><div className="formatChoiceHead"><div><p className="kicker">{t.formats.eyebrow}</p><h2>{t.formats.titleLead}<br /><em>{t.formats.titleAccent}</em></h2></div><p>{t.formats.description}</p></div><div className="formatCards"><article className="formatCard"><span className="tag">{t.formats.ultimateTag}</span><h3><span>Legends</span><em className="journeyScript">Ultimate</em></h3><p>{t.formats.ultimateDescription}</p><div className="formatFacts">{t.formats.ultimateFacts.map((fact) => <span key={fact}>{fact}</span>)}</div><a href={getRegistrationHref("ultimate")}><span>{t.formats.ultimateCta}</span><span>→</span></a></article><article className="formatCard"><span className="tag">{t.formats.shortTag}</span><h3><span>Legends</span><em className="journeyScript">Short</em></h3><p>{t.formats.shortDescription}</p><div className="formatFacts">{t.formats.shortFacts.map((fact) => <span key={fact}>{fact}</span>)}</div><a href={getRegistrationHref("short")}><span>{t.formats.shortCta}</span><span>→</span></a></article></div></div></section>
 
-      <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
+      {locale === "pt" ? <HomeRegistrationInfo /> : null}\n\n      <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
         <div className="manifestoContent">
           <p className="kicker">{t.manifesto.eyebrow}</p>
           <h2 className="manifestoQuote">{t.manifesto.lead} <em>{t.manifesto.accent}</em></h2>
