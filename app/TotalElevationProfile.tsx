@@ -130,7 +130,7 @@ export default function TotalElevationProfile() {
   return <section className={styles.section} ref={sectionRef} aria-label="Perfil altimétrico do percurso completo">
     <div className={styles.frame}>
       <div className={styles.heading}>
-        <div><p>Perfil altimétrico técnico</p><h2>Legends Ultimate · 370,7 km</h2></div>
+        <p>Perfil altimétrico técnico · Legends Ultimate</p>
         <span className={styles.source}>Dados oficiais · Ride with GPS</span>
       </div>
       <div className={styles.chart}>
