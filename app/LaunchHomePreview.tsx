@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
-import { getRegistrationHref, launchConfig } from "./lib/launch";
+import { getRegistrationHref } from "./lib/launch";
 import { localeFromPathname } from "./i18n/config";
 import { getHomeCopy } from "./i18n/home";
 
@@ -60,26 +60,7 @@ export default function LaunchHomePreview() {
       if (links[0]) { links[0].href = getRegistrationHref(); links[0].innerHTML = `${copy.navigation.register} <span>→</span>`; }
       if (links[1]) links[1].style.display = "none";
 
-      let spots = ctas.querySelector<HTMLAnchorElement>(".remainingSpotsCard");
-      if (!spots) {
-        spots = document.createElement("a");
-        spots.className = "remainingSpotsCard";
-        spots.href = getRegistrationHref("ultimate");
-        if (links[1]) links[1].insertAdjacentElement("afterend", spots);
-        else ctas.appendChild(spots);
-      }
-      spots.setAttribute("aria-label", copy.hero.ultimateAria);
-      spots.innerHTML = `<span><i class="journeyScript">Ultimate</i><b> — ${copy.hero.ultimateDays}</b></span><strong>${launchConfig.journeys.ultimate.lots[launchConfig.activeLotIndex].price}</strong>`;
-
-      let price = ctas.querySelector<HTMLAnchorElement>(".launchPrice");
-      if (!price) {
-        price = document.createElement("a");
-        price.className = "launchPrice";
-        price.href = getRegistrationHref("short");
-        ctas.appendChild(price);
-      }
-      price.setAttribute("aria-label", copy.hero.shortAria);
-      price.innerHTML = `<span><i class="journeyScript">Short</i><b> — ${copy.hero.shortDays}</b></span><strong>${launchConfig.journeys.short.lots[launchConfig.activeLotIndex].price}</strong>`;
+      ctas.querySelectorAll(".remainingSpotsCard,.launchPrice").forEach((element) => element.remove());
 
     }
 
