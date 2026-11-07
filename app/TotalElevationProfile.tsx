@@ -136,12 +136,9 @@ export default function TotalElevationProfile() {
       <div className={styles.chart}>
         <div className={styles.yAxis} aria-hidden="true">{yTicks.map((tick) => <span key={tick}>{number(tick)} m</span>)}</div>
         <svg viewBox="0 0 100 68" preserveAspectRatio="none" role="img" aria-label="Perfil altimétrico técnico animado do percurso total">
-          <defs>
-            <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#d48b50" stopOpacity=".26" /><stop offset="1" stopColor="#d48b50" stopOpacity=".02" /></linearGradient>
-            <clipPath id={`${gradientId}-clip`}><rect width={marker} height="68" /></clipPath>
-          </defs>
+          <defs><clipPath id={`${gradientId}-clip`}><rect width={marker} height="68" /></clipPath></defs>
           <line x1="0" x2="100" y1="7" y2="7" className={styles.grid} /><line x1="0" x2="100" y1="35.5" y2="35.5" className={styles.grid} /><line x1="0" x2="100" y1="64" y2="64" className={styles.grid} />
-          {profile ? <><polygon points={`${profile.points} 100,64 0,64`} fill={`url(#${gradientId})`} clipPath={`url(#${gradientId}-clip)`} /><polyline points={profile.points} className={styles.trackBase} /><polyline points={profile.points} className={styles.line} clipPath={`url(#${gradientId}-clip)`} /></> : <rect className={styles.loading} x="0" y="25" width="100" height="20" />}
+          {profile ? <><polyline points={profile.points} className={styles.trackBase} /><polyline points={profile.points} className={styles.line} clipPath={`url(#${gradientId}-clip)`} /></> : <rect className={styles.loading} x="0" y="25" width="100" height="20" />}
           <line x1={marker} x2={marker} y1="5" y2="64" className={styles.marker} />
           {profile ? <circle cx={marker} cy={7 + ((profile.maxAltitude - currentAltitude) / Math.max(profile.maxAltitude - profile.minAltitude, 1)) * 57} r="1.15" className={styles.markerDot} /> : null}
         </svg>
