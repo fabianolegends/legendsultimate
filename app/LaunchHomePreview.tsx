@@ -18,7 +18,6 @@ export default function LaunchHomePreview() {
   const pathname = usePathname();
   const locale = localeFromPathname(pathname);
   const copy = getHomeCopy(locale);
-  const [journeyTarget, setJourneyTarget] = useState<HTMLElement | null>(null);
   const [kitTarget, setKitTarget] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -69,13 +68,6 @@ export default function LaunchHomePreview() {
     if (technicalSection) technicalSection.classList.add("launchTechnicalReduced");
     home.querySelector<HTMLElement>(".profileSection")?.classList.add("launchProfileHidden");
 
-    const safety = home.querySelector<HTMLElement>(".safetySection");
-    if (safety?.parentNode) {
-      let root = document.getElementById("launch-journey-root");
-      if (!root) { root = document.createElement("div"); root.id = "launch-journey-root"; safety.parentNode.insertBefore(root, safety); }
-      setJourneyTarget(root);
-    }
-
     const faqCopy = home.querySelector<HTMLElement>(".faqSection .sectionHead > p:last-child");
     if (faqCopy) faqCopy.textContent = copy.faq.description;
     const faqList = home.querySelector<HTMLElement>(".faqSection .faqList");
@@ -124,20 +116,7 @@ export default function LaunchHomePreview() {
         <details className="journeyAccordion">
           <summary><b aria-hidden="true">+</b><strong>{copy.launch.journeyEyebrow}</strong><small>5 passos essenciais</small></summary>
           <div className="journeyAccordionBody">
-            <div className="launchJourneyHead"><div><p className="eyebrow">{copy.launch.journeyEyebrow}</p><h2>{copy.launch.journeyTitleLead}<br />{copy.launch.journeyTitleAccent}</h2></div><p>{copy.launch.journeyDescription}</p></div>
-            <div className="journeySteps">
-              {copy.launch.steps.map(([number, title, description]) => <article key={number}><b>{number}</b><h3>{title}</h3><p>{description}</p></article>)}
-            </div>
-            <div className="beforeBox"><strong>{copy.launch.beforeTitle}</strong><p>{copy.launch.beforeText}</p></div>
-          </div>
-        </details>
-      </div></section>, journeyTarget
-    )}
-
-    {kitTarget && createPortal(
-      <section className="launchIncluded" id="incluido"><div className="wrap">
-        <div className="launchIncludedHead"><div><p className="eyebrow">{copy.launch.includedEyebrow}</p><h2>{copy.launch.includedTitleLead}<br />{copy.launch.includedTitleAccent}</h2></div><p>{copy.launch.includedDescription}</p></div>
-        <div className="launchProducts">{copy.launch.products.map((name, index)=><article className="launchProduct" key={name}><img src={includedProductImages[index]} alt={name} /><h3>{name}</h3></article>)}</div>
+            <div className="launchJourneyHead"><div><p className="eyebrow">{copy.launch.    {kitTarget && createPortal(unchProduct" key={name}><img src={includedProductImages[index]} alt={name} /><h3>{name}</h3></article>)}</div>
         <div className="launchServices">{copy.launch.services.map(item=><span key={item}>{item}</span>)}</div>
         <div className="launchDocs"><a href="/inscricoes">{copy.launch.includedCta} →</a><a href="/regulamento">{copy.launch.regulation}</a><a href="/documentos-medicos">{copy.launch.medical}</a></div>
       </div></section>, kitTarget
