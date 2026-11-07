@@ -194,3 +194,5 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
 export default function Home() {
   return <HomePage locale="pt" />;
 }
+
+
