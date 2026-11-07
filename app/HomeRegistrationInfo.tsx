@@ -153,8 +153,7 @@ function ElevationProfile({ stage, active }: { stage: StageProfile; active: bool
     <div className={styles.profileVisual}>
       <img className={styles.profileBase} src={stage.image} alt="" />
       <img className={styles.profileReveal} style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }} src={stage.image} alt="" />
-      <i className={styles.profileMarker} style={{ left: `${progress * 100}%` }} aria-hidden="true" />
-      <p className={styles.profileReadout}><b>{currentKm} km</b><b>{currentAscent} m+</b></p>
+      <p className={styles.profileReadout}><span><small>Distância</small><b>{currentKm} km</b></span><span><small>Elevação acumulada</small><b>{currentAscent} m+</b></span></p>
     </div>
   </div>;
 }
@@ -199,7 +198,7 @@ function getRows(format: JourneyFormat, stagesOpen: boolean) {
     {
       label: "Etapas",
       summary: `${journey.days} dias · ${journey.distance} · ${journey.ascent}`,
-      content: <div className={styles.stages}>{visibleStages.map((stage) => <a href={stage.href} key={stage.id}><div className={styles.stageCopy}><span>{stage.label} · {stage.eligibility}</span><b>{stage.route}</b><small>{stage.stats}</small></div><ElevationProfile stage={stage} active={stagesOpen} /></a>)}</div>,
+      content: <div className={styles.stages}>{visibleStages.map((stage) => <a href={stage.href} key={stage.id}><div className={styles.stageCopy}><span>{stage.label} · {stage.eligibility}</span><b>{stage.route}</b></div><ElevationProfile stage={stage} active={stagesOpen} /></a>)}</div>,
     },
     {
       label: "Programação",
