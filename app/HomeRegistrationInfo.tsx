@@ -98,6 +98,14 @@ const shortProgram = [
 ] as const;
 
 
+const journeySteps = [
+  ["01", "Largue", "Com o GPX oficial, sua estratégia de hidratação, alimentação e equipamento."],
+  ["02", "Pedale", "Siga a rota por GPS e complete os checkpoints previstos para a etapa."],
+  ["03", "Chegue", "Ao final da etapa, sua atividade é validada e você entra na nova cidade-base."],
+  ["04", "Recupere", "Sua bag oficial é transportada pela organização. Bike Wash e mecânica básica ajudam na preparação."],
+  ["05", "Repita", "No dia seguinte, uma nova etapa, uma nova cidade e mais um capítulo da travessia."],
+] as const;
+
 type StageProfile = {
   id: string;
   label: string;
@@ -251,6 +259,11 @@ function getRows(format: JourneyFormat, stagesOpen: boolean) {
       label: "Etapas",
       summary: `${journey.days} dias · ${journey.distance} · ${journey.ascent}`,
       content: <div className={styles.stages}>{visibleStages.map((stage) => <a href={stage.href} key={stage.id}><div className={styles.stageCopy}><span>{stage.label} · {stage.eligibility}</span><b>{stage.route}</b></div><ElevationProfile stage={stage} active={stagesOpen} /></a>)}</div>,
+    },
+    {
+      label: "Como funciona a jornada",
+      summary: "5 passos essenciais",
+      content: <div className={styles.journey}><div className={styles.journeyIntro}><h3>Você pedala.<br /><em>A jornada segue.</em></h3><p>O essencial é entender como a jornada escolhida funciona na prática.</p></div><div className={styles.journeySteps}>{journeySteps.map(([number, title, description]) => <article key={number}><b>{number}</b><div><h3>{title}</h3><p>{description}</p></div></article>)}</div><div className={styles.journeyNote}><strong>Antes de se inscrever</strong><p>Hospedagem e refeições não estão incluídas. O transporte da bag oficial entre as cidades-base está incluído. O deslocamento pessoal do atleta permanece por conta do participante enquanto não houver serviço oficial de transfer divulgado.</p></div></div>,
     },
     {
       label: "Programação",
