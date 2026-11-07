@@ -110,13 +110,14 @@ type StageProfile = {
   ascentLabel: string;
   href: string;
   image: string;
+  path: string;
 };
 
 const stageProfiles: StageProfile[] = [
-  { id: "stage-1", label: "Stage 01", eligibility: "Somente Ultimate", route: "Canela → São Francisco de Paula", stats: "111,9 km · 1.684 m+ · limite 10 h", distance: 111.9, distanceLabel: "111,9 km", ascent: 1684, ascentLabel: "1.684 m+", href: "/percursos/stage-1", image: "/stage-1-profile-final.png" },
-  { id: "stage-2", label: "Stage 02", eligibility: "Somente Ultimate", route: "São Francisco de Paula → Gramado", stats: "89,1 km · 1.520 m+ · limite 9 h", distance: 89.1, distanceLabel: "89,1 km", ascent: 1520, ascentLabel: "1.520 m+", href: "/percursos/stage-2", image: "/stage-2-profile-transparent.png" },
-  { id: "stage-3", label: "Stage 03", eligibility: "Ultimate + Short", route: "Gramado → Nova Petrópolis", stats: "99,3 km · 1.522 m+ · limite 10 h", distance: 99.3, distanceLabel: "99,3 km", ascent: 1522, ascentLabel: "1.522 m+", href: "/percursos/stage-3", image: "/stage-3-profile-transparent.png" },
-  { id: "stage-4", label: "Stage 04", eligibility: "Ultimate + Short", route: "Nova Petrópolis → Canela", stats: "70 km · 1.576 m+ · limite 6 h", distance: 70, distanceLabel: "70 km", ascent: 1576, ascentLabel: "1.576 m+", href: "/percursos/stage-4", image: "/stage-4-profile-transparent.png" },
+  { id: "stage-1", label: "Stage 01", eligibility: "Somente Ultimate", route: "Canela → São Francisco de Paula", stats: "111,9 km · 1.684 m+ · limite 10 h", distance: 111.9, distanceLabel: "111,9 km", ascent: 1684, ascentLabel: "1.684 m+", href: "/percursos/stage-1", image: "/stage-1-profile-final.png", path: "M0 66 C4 61 7 71 11 63 S18 70 22 58 S29 64 34 50 S41 59 47 47 S54 52 60 38 S67 45 73 29 S80 37 86 25 S93 35 100 20" },
+  { id: "stage-2", label: "Stage 02", eligibility: "Somente Ultimate", route: "São Francisco de Paula → Gramado", stats: "89,1 km · 1.520 m+ · limite 9 h", distance: 89.1, distanceLabel: "89,1 km", ascent: 1520, ascentLabel: "1.520 m+", href: "/percursos/stage-2", image: "/stage-2-profile-transparent.png", path: "M0 20 C5 28 8 42 13 46 S21 55 27 59 S38 63 45 68 S56 73 64 66 S73 72 81 68 S89 73 94 60 S98 39 100 25" },
+  { id: "stage-3", label: "Stage 03", eligibility: "Ultimate + Short", route: "Gramado → Nova Petrópolis", stats: "99,3 km · 1.522 m+ · limite 10 h", distance: 99.3, distanceLabel: "99,3 km", ascent: 1522, ascentLabel: "1.522 m+", href: "/percursos/stage-3", image: "/stage-3-profile-transparent.png", path: "M0 24 C7 31 12 38 18 45 S31 53 39 60 S51 68 59 72 S70 77 80 76 S89 80 94 65 S98 38 100 22" },
+  { id: "stage-4", label: "Stage 04", eligibility: "Ultimate + Short", route: "Nova Petrópolis → Canela", stats: "70 km · 1.576 m+ · limite 6 h", distance: 70, distanceLabel: "70 km", ascent: 1576, ascentLabel: "1.576 m+", href: "/percursos/stage-4", image: "/stage-4-profile-transparent.png", path: "M0 54 C5 35 10 58 15 41 S24 50 30 31 S39 60 47 48 S55 68 63 57 S72 63 80 40 S89 53 94 32 S98 44 100 25" },
 ];
 
 function ElevationProfile({ stage, active }: { stage: StageProfile; active: boolean }) {
@@ -151,8 +152,11 @@ function ElevationProfile({ stage, active }: { stage: StageProfile; active: bool
 
   return <div className={styles.elevationProfile} aria-label={`Perfil animado da ${stage.label}`}>
     <div className={styles.profileVisual}>
-      <img className={styles.profileBase} src={stage.image} alt="" />
-      <img className={styles.profileReveal} style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }} src={stage.image} alt="" />
+      <svg className={styles.profileGraph} viewBox="0 0 100 84" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id={`fill-${stage.id}`} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#cf7d45" stopOpacity=".42" /><stop offset="1" stopColor="#cf7d45" stopOpacity=".04" /></linearGradient><clipPath id={`clip-${stage.id}`}><rect width={progress * 100} height="84" /></clipPath></defs>
+        <path d={`${stage.path} L100 82 L0 82 Z`} fill={`url(#fill-${stage.id})`} clipPath={`url(#clip-${stage.id})`} />
+        <path d={stage.path} className={styles.profileLine} pathLength="100" style={{ strokeDasharray: 100, strokeDashoffset: 100 - progress * 100 }} />
+      </svg>
       <p className={styles.profileReadout}><span><small>Distância</small><b>{currentKm} km</b></span><span><small>Elevação acumulada</small><b>{currentAscent} m+</b></span></p>
     </div>
   </div>;
