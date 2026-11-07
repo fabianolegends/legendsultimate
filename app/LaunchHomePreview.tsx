@@ -57,7 +57,7 @@ export default function LaunchHomePreview() {
     const ctas = home.querySelector<HTMLElement>(".heroCtas");
     if (ctas) {
       const links = Array.from(ctas.querySelectorAll<HTMLAnchorElement>("a"));
-      if (links[0]) { links[0].href = getRegistrationHref(); links[0].innerHTML = `${copy.navigation.register} <span>→</span>`; }
+      if (links[0]) { links[0].href = "#inscricoes"; links[0].innerHTML = `${copy.navigation.register} <span>↘</span>`; }
       if (links[1]) links[1].style.display = "none";
 
       ctas.querySelectorAll(".remainingSpotsCard,.launchPrice").forEach((element) => element.remove());
