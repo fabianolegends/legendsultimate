@@ -111,12 +111,10 @@ export default function LaunchHomePreview() {
       @media(max-width:620px){.redesign .heroCopy .kicker{font-size:28px;line-height:1.08;letter-spacing:.12em}}
     `}</style>
 
-    {journeyTarget && createPortal(
-      <section className="launchJourney"><div className="wrap">
-        <details className="journeyAccordion">
-          <summary><b aria-hidden="true">+</b><strong>{copy.launch.journeyEyebrow}</strong><small>5 passos essenciais</small></summary>
-          <div className="journeyAccordionBody">
-            <div className="launchJourneyHead"><div><p className="eyebrow">{copy.launch.    {kitTarget && createPortal(unchProduct" key={name}><img src={includedProductImages[index]} alt={name} /><h3>{name}</h3></article>)}</div>
+    {kitTarget && createPortal(
+      <section className="launchIncluded" id="incluido"><div className="wrap">
+        <div className="launchIncludedHead"><div><p className="eyebrow">{copy.launch.includedEyebrow}</p><h2>{copy.launch.includedTitleLead}<br />{copy.launch.includedTitleAccent}</h2></div><p>{copy.launch.includedDescription}</p></div>
+        <div className="launchProducts">{copy.launch.products.map((name, index)=><article className="launchProduct" key={name}><img src={includedProductImages[index]} alt={name} /><h3>{name}</h3></article>)}</div>
         <div className="launchServices">{copy.launch.services.map(item=><span key={item}>{item}</span>)}</div>
         <div className="launchDocs"><a href="/inscricoes">{copy.launch.includedCta} →</a><a href="/regulamento">{copy.launch.regulation}</a><a href="/documentos-medicos">{copy.launch.medical}</a></div>
       </div></section>, kitTarget
