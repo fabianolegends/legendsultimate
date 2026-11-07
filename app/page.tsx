@@ -78,7 +78,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         .redesign h2 em{font-style:normal;color:var(--copper)}
         .redesign .sectionHead{display:grid;grid-template-columns:1.4fr .8fr;gap:80px;align-items:end;margin-bottom:70px}
         .redesign .sectionHead p{font-size:18px;line-height:1.75;color:#9ba097;margin:0}
-        .heroRedesign{min-height:100svh;background:linear-gradient(90deg,rgba(6,8,7,.98),rgba(6,8,7,.77) 38%,rgba(6,8,7,.14) 72%),linear-gradient(0deg,rgba(6,8,7,.92),transparent 44%),url('/hero-bike-detail.jpg') center/cover;display:grid;grid-template-rows:104px 1fr auto;color:#f1ece3}
+        .heroRedesign{position:relative;isolation:isolate;overflow:hidden;min-height:100svh;background:#060807;display:grid;grid-template-rows:104px 1fr auto;color:#f1ece3}.heroRedesign:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(6,8,7,.98),rgba(6,8,7,.77) 38%,rgba(6,8,7,.14) 72%),linear-gradient(0deg,rgba(6,8,7,.92),transparent 44%)}.heroVideo{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(.8) contrast(1.06) brightness(.8)}
         .heroRedesign .nav{border-bottom:1px solid rgba(241,236,227,.12)}
         .heroRedesign .navCta{display:inline-flex;align-items:center;justify-content:center;background:var(--copper);border:0;color:#fff;padding:11px 17px;font-size:13px;letter-spacing:.09em;white-space:nowrap}
         .heroRedesign .navCta:hover{background:#df8b45;color:#fff}
@@ -138,6 +138,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
       `}</style>
 
       <section className="heroRedesign" id="inicio">
+        <video className="heroVideo" autoPlay muted loop playsInline poster="/hero-bike-detail.jpg" aria-hidden="true"><source src="https://d8j0ntlcm91z4.cloudfront.net/user_3JpJMNn7dHcjT62hE88sHPaOZI1/hf_20261107_205928_8a1fe6db-2afc-4475-8bc5-25c3ff23733b.mp4" type="video/mp4" /></video>
         <nav className="nav wide" aria-label={t.navigation.aria}>
           <a className="brand" href="#inicio"><Logo /></a>
           <div className="desktopNavCluster">
