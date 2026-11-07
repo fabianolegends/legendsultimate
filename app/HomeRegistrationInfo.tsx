@@ -150,13 +150,12 @@ function ElevationProfile({ stage, active }: { stage: StageProfile; active: bool
   const currentAscent = Math.round(stage.ascent * progress).toLocaleString("pt-BR");
 
   return <div className={styles.elevationProfile} aria-label={`Perfil animado da ${stage.label}`}>
-    <div className={styles.profileHeader}><span>Perfil de elevação</span><p><b>{currentKm} km</b><b>{currentAscent} m+</b></p></div>
     <div className={styles.profileVisual}>
       <img className={styles.profileBase} src={stage.image} alt="" />
       <img className={styles.profileReveal} style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }} src={stage.image} alt="" />
       <i className={styles.profileMarker} style={{ left: `${progress * 100}%` }} aria-hidden="true" />
+      <p className={styles.profileReadout}><b>{currentKm} km</b><b>{currentAscent} m+</b></p>
     </div>
-    <div className={styles.profileScale}><span>0 km</span><span>{stage.distanceLabel}</span><span>0 m+</span><span>{stage.ascentLabel}</span></div>
   </div>;
 }
 
