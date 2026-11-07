@@ -4,6 +4,7 @@ import MobileMenu from "./MobileMenu";
 import RouteExplorer from "./RouteExplorer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import HomeRegistrationInfo from "./HomeRegistrationInfo";
+import TotalElevationProfile from "./TotalElevationProfile";
 import { getRegistrationHref } from "./lib/launch";
 import { getHomeCopy } from "./i18n/home";
 import type { Locale } from "./i18n/config";
@@ -152,6 +153,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1><span className="heroBrand"><span>Legends</span><span>Bike Race</span></span><span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong></p><div className="heroCtas"><a className="button" href="/a-prova">{t.hero.discover} <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>{t.hero.registerNow}</a></div></div></div>
       </section>
 
+      {locale === "pt" ? <TotalElevationProfile /> : null}
       {locale === "pt" ? <HomeRegistrationInfo /> : null}
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
