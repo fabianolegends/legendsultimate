@@ -31,8 +31,8 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
   let distanceOffset = 0;
   for (let partIndex = 0; partIndex < parts.length; partIndex += 1) {
     const { distance } = routeParts[partIndex];
-    for (const [percent, rawElevation] of parts[partIndex].p) {
-      combined.push({ distance: distanceOffset + (percent / 100) * distance, elevation: rawElevation / 10 });
+    for (const [distanceProgress, rawElevation] of parts[partIndex].p) {
+      combined.push({ distance: distanceOffset + (distanceProgress / 10000) * distance, elevation: rawElevation / 10 });
     }
     distanceOffset += distance;
   }
