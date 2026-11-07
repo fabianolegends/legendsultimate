@@ -84,7 +84,7 @@ export default function HomeRegistrationInfo() {
         </div>
         <small>{journey.dateShort} · {journey.days} dias</small><b>{activeLot.price} <i>{activeLot.name}</i></b><a href={launchConfig.registrationUrl}>Me inscrever <em>→</em></a>
       </div>
-      <div className={styles.content}><aside><span>Leia no seu ritmo</span><p>As informações da página de inscrições agora fazem parte da home. Abra somente o que interessa antes de decidir.</p></aside><div className={styles.accordion}>{rows.map((row, index) => <details key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><strong>{row.label}</strong><small>{row.summary}</small><b>{open === index ? "×" : "+"}</b></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
+      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
     </div>
   </section>;
 }
