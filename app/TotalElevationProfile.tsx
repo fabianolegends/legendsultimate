@@ -16,6 +16,7 @@ const routeParts = [
 
 const routeDistance = 370.7;
 const routeAscent = 7226;
+const stageDistanceTotal = routeParts.reduce((total, stage) => total + stage.distance, 0);
 
 async function unpack(encoded: string): Promise<PackedProfile> {
   const binary = atob(encoded);
@@ -42,7 +43,7 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
   const maxHeight = Math.max(...heights);
   const heightRange = Math.max(maxHeight - minHeight, 1);
   const points = combined.map((point) => {
-    const x = Math.min(100, (point.distance / routeDistance) * 100);
+    const x = Math.min(100, (point.distance / stageDistanceTotal) * 100);
     const y = 7 + ((maxHeight - point.elevation) / heightRange) * 57;
     return `${x.toFixed(2)},${y.toFixed(2)}`;
   }).join(" ");
@@ -55,7 +56,7 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
   }
   const scale = rawGain ? routeAscent / rawGain : 0;
   const gain = Array.from({ length: 101 }, (_, index) => {
-    const targetDistance = (index / 100) * routeDistance;
+    const targetDistance = (index / 100) * stageDistanceTotal;
     let pointIndex = combined.findIndex((point) => point.distance >= targetDistance);
     if (pointIndex < 0) pointIndex = combined.length - 1;
     const previousIndex = Math.max(0, pointIndex - 1);
@@ -67,7 +68,7 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
   });
 
   const altitude = Array.from({ length: 101 }, (_, index) => {
-    const targetDistance = (index / 100) * routeDistance;
+    const targetDistance = (index / 100) * stageDistanceTotal;
     let pointIndex = combined.findIndex((point) => point.distance >= targetDistance);
     if (pointIndex < 0) pointIndex = combined.length - 1;
     const previousIndex = Math.max(0, pointIndex - 1);
