@@ -12,7 +12,7 @@ function getRows(format: JourneyFormat) {
     {
       label: "Valores e lotes",
       summary: `${activeLot.name} · ${activeLot.price} · ${journey.spots} vagas`,
-      content: <div className={styles.lots}>{journey.lots.map((lot, index) => <div className={index === launchConfig.activeLotIndex ? styles.activeLot : ""} key={lot.name}><span>{index === launchConfig.activeLotIndex ? `Lote ativo · ${lot.name}` : lot.name}</span><strong>{lot.price}</strong><small>{lot.period}</small></div>)}</div>,
+      content: <div className={styles.lots}>{journey.lots.map((lot, index) => <a className={index === launchConfig.activeLotIndex ? styles.activeLot : ""} href={launchConfig.registrationUrl} target="_blank" rel="noreferrer" key={lot.name} aria-label={`Inscrever-se na Windfit — ${lot.name}, ${lot.price}`}><span>{index === launchConfig.activeLotIndex ? `Lote ativo · ${lot.name}` : lot.name}</span><strong>{lot.price}</strong><small>{lot.period}</small></a>)}</div>,
     },
     {
       label: "O que está incluído",
