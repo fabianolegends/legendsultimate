@@ -284,6 +284,7 @@ export default function HomeRegistrationInfo() {
 
   return <section className={styles.section} id="inscricoes">
     <div className={`wide ${styles.frame}`}>
+      <div className={styles.head}><div><p className="kicker">Inscrições · informações completas</p><h2>Tudo para decidir.<br /><em>Sem procurar.</em></h2></div><p>Escolha a jornada e consulte valores, itens incluídos, categorias, programação e documentos sem sair da página inicial.</p></div>
       <div className={styles.highlight}>
         <div className={styles.formatPicker} aria-label="Escolha o formato da Legends">
           <button type="button" className={format === "ultimate" ? styles.selected : ""} aria-pressed={format === "ultimate"} onClick={() => selectFormat("ultimate")}><b>Ultimate</b><span>4 etapas</span></button>
