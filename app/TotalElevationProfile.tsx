@@ -5,7 +5,7 @@ import { getPackedTechnicalProfiles } from "./HomeRegistrationInfo";
 import styles from "./TotalElevationProfile.module.css";
 
 type PackedProfile = { p: Array<[number, number, number]> };
-type TotalProfile = { points: string; gain: number[] };
+type TotalProfile = { points: string; gain: number[]; altitude: number[]; minAltitude: number; maxAltitude: number };
 
 const routeParts = [
   { id: 56232690, distance: 111.908 },
@@ -43,7 +43,7 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
   const heightRange = Math.max(maxHeight - minHeight, 1);
   const points = combined.map((point) => {
     const x = Math.min(100, (point.distance / routeDistance) * 100);
-    const y = 8 + ((maxHeight - point.elevation) / heightRange) * 50;
+    const y = 7 + ((maxHeight - point.elevation) / heightRange) * 57;
     return `${x.toFixed(2)},${y.toFixed(2)}`;
   }).join(" ");
 
@@ -66,7 +66,19 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
     return Math.round((rawGainAt[previousIndex] + (rawGainAt[pointIndex] - rawGainAt[previousIndex]) * interpolation) * scale);
   });
 
-  return { points, gain };
+  const altitude = Array.from({ length: 101 }, (_, index) => {
+    const targetDistance = (index / 100) * routeDistance;
+    let pointIndex = combined.findIndex((point) => point.distance >= targetDistance);
+    if (pointIndex < 0) pointIndex = combined.length - 1;
+    const previousIndex = Math.max(0, pointIndex - 1);
+    const previous = combined[previousIndex];
+    const next = combined[pointIndex];
+    const distanceRange = Math.max(next.distance - previous.distance, 0.001);
+    const interpolation = Math.max(0, Math.min(1, (targetDistance - previous.distance) / distanceRange));
+    return previous.elevation + (next.elevation - previous.elevation) * interpolation;
+  });
+
+  return { points, gain, altitude, minAltitude: minHeight, maxAltitude: maxHeight };
 }
 
 function number(value: number, digits = 0) {
@@ -93,7 +105,7 @@ export default function TotalElevationProfile() {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setProgress(1); return; }
       const animate = (now: number) => {
         if (!startedAt) startedAt = now;
-        const elapsed = Math.min((now - startedAt) / 6800, 1);
+        const elapsed = Math.min((now - startedAt) / 11000, 1);
         setProgress(1 - Math.pow(1 - elapsed, 3));
         if (elapsed < 1) frame = window.requestAnimationFrame(animate);
       };
@@ -111,24 +123,30 @@ export default function TotalElevationProfile() {
   const upper = Math.min(100, lower + 1);
   const fractional = marker - lower;
   const elevation = profile ? profile.gain[lower] + (profile.gain[upper] - profile.gain[lower]) * fractional : routeAscent * progress;
+  const currentDistance = routeDistance * progress;
+  const currentAltitude = profile ? profile.altitude[lower] + (profile.altitude[upper] - profile.altitude[lower]) * fractional : 0;
+  const yTicks = profile ? [profile.maxAltitude, profile.maxAltitude - (profile.maxAltitude - profile.minAltitude) / 2, profile.minAltitude] : [];
 
   return <section className={styles.section} ref={sectionRef} aria-label="Perfil altimétrico do percurso completo">
     <div className={styles.frame}>
       <div className={styles.heading}>
-        <div><p>Legends Ultimate · percurso completo</p><h2>Todo o percurso.<br /><em>Uma só história.</em></h2></div>
-        <span className={styles.source}>Dados técnicos · Ride with GPS</span>
+        <div><p>Perfil altimétrico técnico</p><h2>Legends Ultimate · 370,7 km</h2></div>
+        <span className={styles.source}>Dados oficiais · Ride with GPS</span>
       </div>
       <div className={styles.chart}>
-        <span className={styles.ghost}>370,7</span>
-        <svg viewBox="0 0 100 68" preserveAspectRatio="none" role="img" aria-label="Perfil altimétrico animado do percurso total">
+        <div className={styles.yAxis} aria-hidden="true">{yTicks.map((tick) => <span key={tick}>{number(tick)} m</span>)}</div>
+        <svg viewBox="0 0 100 68" preserveAspectRatio="none" role="img" aria-label="Perfil altimétrico técnico animado do percurso total">
           <defs>
-            <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#d48b50" stopOpacity=".62" /><stop offset="1" stopColor="#d48b50" stopOpacity=".02" /></linearGradient>
+            <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#d48b50" stopOpacity=".26" /><stop offset="1" stopColor="#d48b50" stopOpacity=".02" /></linearGradient>
             <clipPath id={`${gradientId}-clip`}><rect width={marker} height="68" /></clipPath>
           </defs>
-          {profile ? <><polygon points={`${profile.points} 100,64 0,64`} fill={`url(#${gradientId})`} clipPath={`url(#${gradientId}-clip)`} /><polyline points={profile.points} className={styles.line} clipPath={`url(#${gradientId}-clip)`} /></> : <rect className={styles.loading} x="0" y="25" width="100" height="20" />}
-          <line x1={marker} x2={marker} y1="2" y2="64" className={styles.marker} />
+          <line x1="0" x2="100" y1="7" y2="7" className={styles.grid} /><line x1="0" x2="100" y1="35.5" y2="35.5" className={styles.grid} /><line x1="0" x2="100" y1="64" y2="64" className={styles.grid} />
+          {profile ? <><polygon points={`${profile.points} 100,64 0,64`} fill={`url(#${gradientId})`} clipPath={`url(#${gradientId}-clip)`} /><polyline points={profile.points} className={styles.trackBase} /><polyline points={profile.points} className={styles.line} clipPath={`url(#${gradientId}-clip)`} /></> : <rect className={styles.loading} x="0" y="25" width="100" height="20" />}
+          <line x1={marker} x2={marker} y1="5" y2="64" className={styles.marker} />
+          {profile ? <circle cx={marker} cy={7 + ((profile.maxAltitude - currentAltitude) / Math.max(profile.maxAltitude - profile.minAltitude, 1)) * 57} r="1.15" className={styles.markerDot} /> : null}
         </svg>
-        <div className={styles.metrics} aria-live="polite"><div><span>Distância</span><strong>{number(routeDistance * progress, 1)} km</strong></div><div><span>Elevação acumulada</span><strong>{number(elevation)} m+</strong></div></div>
+        <div className={styles.xAxis} aria-hidden="true"><span>0 km</span><span>100</span><span>200</span><span>300</span><span>370,7 km</span></div>
+        <div className={styles.metrics} aria-live="polite"><div><span>Distância percorrida</span><strong>{number(currentDistance, 1)} <i>/ 370,7 km</i></strong></div><div><span>Ganho acumulado</span><strong>{number(elevation)} <i>/ 7.226 m+</i></strong></div></div>
       </div>
     </div>
   </section>;
