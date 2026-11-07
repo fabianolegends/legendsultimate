@@ -266,6 +266,11 @@ function getRows(format: JourneyFormat, stagesOpen: boolean) {
       content: <div className={styles.journey}><div className={styles.journeyIntro}><h3>Você pedala.<br /><em>A jornada segue.</em></h3><p>O essencial é entender como a jornada escolhida funciona na prática.</p></div><div className={styles.journeySteps}>{journeySteps.map(([number, title, description]) => <article key={number}><b>{number}</b><div><h3>{title}</h3><p>{description}</p></div></article>)}</div><div className={styles.journeyNote}><strong>Antes de se inscrever</strong><p>Hospedagem e refeições não estão incluídas. O transporte da bag oficial entre as cidades-base está incluído. O deslocamento pessoal do atleta permanece por conta do participante enquanto não houver serviço oficial de transfer divulgado.</p></div></div>,
     },
     {
+      label: "Segurança e suporte",
+      summary: "SPOT · Starlink · Resgate",
+      content: <div className={styles.safetyGrid}><article><h3>SPOT</h3><p>Rastreamento satelital durante as etapas.</p></article><article><h3>Starlink</h3><p>Comunicação entre os veículos oficiais de apoio.</p></article><article><h3>Resgate</h3><p>Ambulância, equipes de resgate e veículos de segurança.</p></article><article><h3>Sem apoio externo</h3><p>A assistência é centralizada pela organização para preservar igualdade e segurança.</p></article></div>,
+    },
+    {
       label: "Programação",
       summary: format === "ultimate" ? "28 ABR a 02 MAI · 2027" : "30 ABR a 02 MAI · 2027",
       content: <div className={styles.schedule}>{(format === "ultimate" ? ultimateProgram : shortProgram).map((day) => <article key={`${day.date}-${day.stage}`}><header><span>{day.date}</span><strong>{day.stage}</strong></header><p>{day.route}</p><ul>{day.events.map(([time, event]) => <li key={`${time}-${event}`}><time>{time}</time><span>{event}</span></li>)}</ul></article>)}</div>,
