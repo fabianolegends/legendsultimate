@@ -57,13 +57,13 @@ const rows = [
 ];
 
 export default function HomeRegistrationInfo() {
-  const [open, setOpen] = useState(0);
+  const [open, setOpen] = useState<number | null>(0);
 
   return <section className={styles.section} id="inscricoes">
     <div className={`wide ${styles.frame}`}>
       <div className={styles.head}><div><p className="kicker">Inscrições · informações completas</p><h2>Tudo para decidir.<br /><em>Sem procurar.</em></h2></div><p>Escolha a jornada e consulte valores, itens incluídos, categorias, programação e documentos sem sair da página inicial.</p></div>
       <div className={styles.highlight}><span>Formato selecionado</span><strong>Legends Ultimate</strong><small>29 ABR — 02 MAI · 4 dias</small><b>R$ 1.199 <i>Lote 02</i></b><a href="https://event.windfit.app/legends-ultimate-stage-race">Me inscrever <em>→</em></a></div>
-      <div className={styles.content}><aside><span>Leia no seu ritmo</span><p>As informações da página de inscrições agora fazem parte da home. Abra somente o que interessa antes de decidir.</p></aside><div className={styles.accordion}>{rows.map((row, index) => <details key={row.label} open={open === index} onToggle={(event) => { if ((event.currentTarget as HTMLDetailsElement).open) setOpen(index); }}><summary><strong>{row.label}</strong><small>{row.summary}</small><b>{open === index ? "×" : "+"}</b></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
+      <div className={styles.content}><aside><span>Leia no seu ritmo</span><p>As informações da página de inscrições agora fazem parte da home. Abra somente o que interessa antes de decidir.</p></aside><div className={styles.accordion}>{rows.map((row, index) => <details key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><strong>{row.label}</strong><small>{row.summary}</small><b>{open === index ? "×" : "+"}</b></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
     </div>
   </section>;
 }
