@@ -109,31 +109,81 @@ type StageProfile = {
   ascent: number;
   ascentLabel: string;
   href: string;
-  image: string;
-  path: string;
+  rideWithGpsId: number;
 };
 
 const stageProfiles: StageProfile[] = [
-  { id: "stage-1", label: "Stage 01", eligibility: "Somente Ultimate", route: "Canela → São Francisco de Paula", stats: "111,9 km · 1.684 m+ · limite 10 h", distance: 111.9, distanceLabel: "111,9 km", ascent: 1684, ascentLabel: "1.684 m+", href: "/percursos/stage-1", image: "/stage-1-profile-final.png", path: "M0 66 C4 61 7 71 11 63 S18 70 22 58 S29 64 34 50 S41 59 47 47 S54 52 60 38 S67 45 73 29 S80 37 86 25 S93 35 100 20" },
-  { id: "stage-2", label: "Stage 02", eligibility: "Somente Ultimate", route: "São Francisco de Paula → Gramado", stats: "89,1 km · 1.520 m+ · limite 9 h", distance: 89.1, distanceLabel: "89,1 km", ascent: 1520, ascentLabel: "1.520 m+", href: "/percursos/stage-2", image: "/stage-2-profile-transparent.png", path: "M0 20 C5 28 8 42 13 46 S21 55 27 59 S38 63 45 68 S56 73 64 66 S73 72 81 68 S89 73 94 60 S98 39 100 25" },
-  { id: "stage-3", label: "Stage 03", eligibility: "Ultimate + Short", route: "Gramado → Nova Petrópolis", stats: "99,3 km · 1.522 m+ · limite 10 h", distance: 99.3, distanceLabel: "99,3 km", ascent: 1522, ascentLabel: "1.522 m+", href: "/percursos/stage-3", image: "/stage-3-profile-transparent.png", path: "M0 24 C7 31 12 38 18 45 S31 53 39 60 S51 68 59 72 S70 77 80 76 S89 80 94 65 S98 38 100 22" },
-  { id: "stage-4", label: "Stage 04", eligibility: "Ultimate + Short", route: "Nova Petrópolis → Canela", stats: "70 km · 1.576 m+ · limite 6 h", distance: 70, distanceLabel: "70 km", ascent: 1576, ascentLabel: "1.576 m+", href: "/percursos/stage-4", image: "/stage-4-profile-transparent.png", path: "M0 54 C5 35 10 58 15 41 S24 50 30 31 S39 60 47 48 S55 68 63 57 S72 63 80 40 S89 53 94 32 S98 44 100 25" },
+  { id: "stage-1", label: "Stage 01", eligibility: "Somente Ultimate", route: "Canela → São Francisco de Paula", stats: "111,9 km · 1.684 m+ · limite 10 h", distance: 111.908, distanceLabel: "111,9 km", ascent: 1683.9, ascentLabel: "1.684 m+", href: "/percursos/stage-1", rideWithGpsId: 56232690 },
+  { id: "stage-2", label: "Stage 02", eligibility: "Somente Ultimate", route: "São Francisco de Paula → Gramado", stats: "89,9 km · 1.590 m+ · limite 9 h", distance: 89.9166, distanceLabel: "89,9 km", ascent: 1590.24, ascentLabel: "1.590 m+", href: "/percursos/stage-2", rideWithGpsId: 56232708 },
+  { id: "stage-3", label: "Stage 03", eligibility: "Ultimate + Short", route: "Gramado → Nova Petrópolis", stats: "99,3 km · 1.522 m+ · limite 10 h", distance: 99.3242, distanceLabel: "99,3 km", ascent: 1521.95, ascentLabel: "1.522 m+", href: "/percursos/stage-3", rideWithGpsId: 56232721 },
+  { id: "stage-4", label: "Stage 04", eligibility: "Ultimate + Short", route: "Nova Petrópolis → Canela", stats: "70,0 km · 1.576 m+ · limite 6 h", distance: 69.9754, distanceLabel: "70,0 km", ascent: 1576.22, ascentLabel: "1.576 m+", href: "/percursos/stage-4", rideWithGpsId: 56232745 },
 ];
+
+type TechnicalProfile = { points: string; climbByPercent: number[] };
+
+function buildTechnicalProfile(payload: unknown): TechnicalProfile | null {
+  const route = payload as { distance?: number; track_points?: Array<{ d: number; e: number }> };
+  const points = route.track_points?.filter((point) => Number.isFinite(point.d) && Number.isFinite(point.e)) ?? [];
+  const distance = route.distance ?? 0;
+  if (points.length < 2 || !distance) return null;
+
+  const bucketCount = 180;
+  const buckets = Array.from({ length: bucketCount }, () => [] as Array<{ d: number; e: number }>);
+  let cumulative = 0;
+  const rises: number[] = [0];
+
+  points.forEach((point, index) => {
+    if (index) cumulative += Math.max(0, point.e - points[index - 1].e);
+    rises.push(cumulative);
+    buckets[Math.min(bucketCount - 1, Math.floor((point.d / distance) * bucketCount))].push(point);
+  });
+
+  const envelope: Array<{ d: number; e: number }> = [points[0]];
+  buckets.forEach((bucket) => {
+    if (!bucket.length) return;
+    const low = bucket.reduce((best, point) => point.e < best.e ? point : best);
+    const high = bucket.reduce((best, point) => point.e > best.e ? point : best);
+    envelope.push(...(low.d <= high.d ? [low, high] : [high, low]));
+  });
+  envelope.push(points[points.length - 1]);
+
+  const ordered = envelope.filter((point, index, all) => index === 0 || point.d !== all[index - 1].d);
+  const minElevation = Math.min(...points.map((point) => point.e));
+  const maxElevation = Math.max(...points.map((point) => point.e));
+  const elevationRange = Math.max(maxElevation - minElevation, 1);
+  const chartPoints = ordered.map((point) => {
+    const x = (point.d / distance) * 100;
+    const y = 6 + ((maxElevation - point.e) / elevationRange) * 54;
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(" ");
+
+  let pointIndex = 0;
+  const climbByPercent = Array.from({ length: 101 }, (_, index) => {
+    const targetDistance = distance * (index / 100);
+    while (pointIndex < points.length - 1 && points[pointIndex + 1].d <= targetDistance) pointIndex += 1;
+    return Math.round((rises[pointIndex] / Math.max(cumulative, 1)) * 10000);
+  });
+
+  return { points: chartPoints, climbByPercent };
+}
 
 function ElevationProfile({ stage, active }: { stage: StageProfile; active: boolean }) {
   const [progress, setProgress] = useState(0);
+  const [profile, setProfile] = useState<TechnicalProfile | null>(null);
 
   useEffect(() => {
-    if (!active) {
-      setProgress(0);
-      return;
-    }
+    const controller = new AbortController();
+    setProfile(null);
+    fetch(`https://ridewithgps.com/routes/${stage.rideWithGpsId}.json`, { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+      .then((payload) => { if (!controller.signal.aborted) setProfile(buildTechnicalProfile(payload)); })
+      .catch(() => { if (!controller.signal.aborted) setProfile(null); });
+    return () => controller.abort();
+  }, [stage.rideWithGpsId]);
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setProgress(1);
-      return;
-    }
-
+  useEffect(() => {
+    if (!active) { setProgress(0); return; }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setProgress(1); return; }
     let frame = 0;
     let startedAt = 0;
     const duration = 5400;
@@ -147,21 +197,29 @@ function ElevationProfile({ stage, active }: { stage: StageProfile; active: bool
     return () => window.cancelAnimationFrame(frame);
   }, [active]);
 
+  const marker = progress * 100;
+  const lowerMarker = Math.floor(marker);
+  const markerFraction = marker - lowerMarker;
+  const lowerClimb = profile?.climbByPercent[lowerMarker] ?? 0;
+  const upperClimb = profile?.climbByPercent[Math.min(100, lowerMarker + 1)] ?? lowerClimb;
+  const climbProgress = (lowerClimb + (upperClimb - lowerClimb) * markerFraction) / 10000;
   const currentKm = (stage.distance * progress).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const currentAscent = Math.round(stage.ascent * progress).toLocaleString("pt-BR");
+  const currentAscent = Math.round(stage.ascent * climbProgress).toLocaleString("pt-BR");
 
-  return <div className={styles.elevationProfile} aria-label={`Perfil animado da ${stage.label}`}>
+  return <div className={styles.elevationProfile} aria-label={`Perfil técnico animado da ${stage.label}`}>
     <div className={styles.profileVisual}>
-      <svg className={styles.profileGraph} viewBox="0 0 100 84" preserveAspectRatio="none" aria-hidden="true">
-        <defs><linearGradient id={`fill-${stage.id}`} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#cf7d45" stopOpacity=".42" /><stop offset="1" stopColor="#cf7d45" stopOpacity=".04" /></linearGradient><clipPath id={`clip-${stage.id}`}><rect width={progress * 100} height="84" /></clipPath></defs>
-        <path d={`${stage.path} L100 82 L0 82 Z`} fill={`url(#fill-${stage.id})`} clipPath={`url(#clip-${stage.id})`} />
-        <path d={stage.path} className={styles.profileLine} pathLength="100" style={{ strokeDasharray: 100, strokeDashoffset: 100 - progress * 100 }} />
-      </svg>
+      {profile ? <svg className={styles.profileGraph} viewBox="0 0 100 84" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id={`fill-${stage.id}`} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#cf7d45" stopOpacity=".42" /><stop offset="1" stopColor="#cf7d45" stopOpacity=".04" /></linearGradient>
+          <clipPath id={`clip-${stage.id}`}><rect width={progress * 100} height="84" /></clipPath>
+        </defs>
+        <polygon className={styles.profileFill} points={`${profile.points} 100,66 0,66`} fill={`url(#fill-${stage.id})`} clipPath={`url(#clip-${stage.id})`} />
+        <polyline points={profile.points} className={styles.profileLine} clipPath={`url(#clip-${stage.id})`} />
+      </svg> : <div className={styles.profileLoading} aria-hidden="true" />}
       <p className={styles.profileReadout}><span><small>Distância</small><b>{currentKm} km</b></span><span><small>Elevação acumulada</small><b>{currentAscent} m+</b></span></p>
     </div>
   </div>;
 }
-
 
 function getRows(format: JourneyFormat, stagesOpen: boolean) {
   const journey = launchConfig.journeys[format];
