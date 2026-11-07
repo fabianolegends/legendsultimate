@@ -154,7 +154,6 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
       </section>
 
       <section className="launchSummary" aria-label={t.summary.aria}><div className="wide launchSummaryGrid">
-        <div className="launchSummaryTitle"><span>{t.summary.eyebrow}</span><strong>{t.summary.title}</strong></div>
         <div className="launchFact launchDateFact"><strong>{t.summary.dateTop}</strong><span>{t.summary.dateBottom}</span></div>
         <div className="launchFact"><strong>{t.summary.daysValue}</strong><span>{t.summary.daysLabel}</span></div>
         <div className="launchFact"><strong>{t.summary.stagesValue}</strong><span>{t.summary.stagesLabel}</span></div>
