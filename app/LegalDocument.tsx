@@ -3,7 +3,7 @@ type RegulationSection = readonly [string, string, readonly string[]];
 type LegalDocumentProps = {
   locale: "es" | "en";
   eyebrow: string;
-  title: string;
+  title: React.ReactNode;
   description: string;
   backLabel: string;
   indexLabel: string;
