@@ -1672,7 +1672,7 @@
 @media (min-width: 761px) {
   .redesign .manifestoRedesign > .wide.manifestoFeature {
     align-items: start !important;
-    padding-top: 100px !important;
+    padding-top: 44px !important;
   }
 
   .redesign .manifestoRedesign .manifestoContent,
@@ -1683,10 +1683,15 @@
   .redesign .manifestoRedesign .manifestoContent {
     padding-top: 0 !important;
   }
+
+  .redesign .launchIncluded {
+    padding-bottom: 44px !important;
+  }
 }
 
-/* Ritmo vertical entre conteúdo incluído e kit. */
-@media (min-width: 761px) {
-  .redesign .launchIncluded { padding-bottom: 44px !important; }
-  .redesign .manifestoRedesign > .wide.manifestoFeature { padding-top: 44px !important; }
+/* No celular, aproxima o perfil técnico do fim do hero. */
+@media (max-width: 740px) {
+  .totalElevationProfile {
+    padding-top: 13px !important;
+  }
 }
