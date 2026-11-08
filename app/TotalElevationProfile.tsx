@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { getPackedTechnicalProfiles } from "./HomeRegistrationInfo";
 import styles from "./TotalElevationProfile.module.css";
+import type { Locale } from "./i18n/config";
 
 type PackedProfile = { p: Array<[number, number, number]> };
 type TotalProfile = { points: string; gain: number[]; altitude: number[]; minAltitude: number; maxAltitude: number };
@@ -82,11 +83,17 @@ function buildTotalProfile(parts: PackedProfile[]): TotalProfile | null {
   return { points, gain, altitude, minAltitude: minHeight, maxAltitude: maxHeight };
 }
 
-function number(value: number, digits = 0) {
-  return value.toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+function number(value: number, locale: Locale, digits = 0) {
+  return value.toLocaleString(locale === "pt" ? "pt-BR" : locale === "es" ? "es-ES" : "en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
-export default function TotalElevationProfile() {
+const profileCopy: Record<Locale, { aria: string; heading: string; source: string; chart: string; distance: string; elevation: string; distanceDone: string; gain: string }> = {
+  pt: { aria: "Perfil altimétrico do percurso completo", heading: "Perfil altimétrico técnico · Legends Ultimate", source: "Dados oficiais · Ride with GPS", chart: "Perfil altimétrico técnico animado do percurso total", distance: "Distância", elevation: "Elevação acumulada", distanceDone: "Distância percorrida", gain: "Ganho acumulado" },
+  es: { aria: "Perfil altimétrico del recorrido completo", heading: "Perfil altimétrico técnico · Legends Ultimate", source: "Datos oficiales · Ride with GPS", chart: "Perfil altimétrico técnico animado del recorrido total", distance: "Distancia", elevation: "Desnivel acumulado", distanceDone: "Distancia recorrida", gain: "Desnivel acumulado" },
+  en: { aria: "Elevation profile of the full route", heading: "Technical elevation profile · Legends Ultimate", source: "Official data · Ride with GPS", chart: "Animated technical elevation profile of the full route", distance: "Distance", elevation: "Elevation gain", distanceDone: "Distance covered", gain: "Elevation gain" },
+};
+
+export default function TotalElevationProfile({ locale = "pt" }: { locale?: Locale }) {
   const sectionRef = useRef<HTMLElement>(null);
   const [profile, setProfile] = useState<TotalProfile | null>(null);
   const [progress, setProgress] = useState(0);
@@ -127,24 +134,25 @@ export default function TotalElevationProfile() {
   const currentDistance = routeDistance * progress;
   const currentAltitude = profile ? profile.altitude[lower] + (profile.altitude[upper] - profile.altitude[lower]) * fractional : 0;
   const yTicks = profile ? [profile.maxAltitude, profile.maxAltitude - (profile.maxAltitude - profile.minAltitude) / 2, profile.minAltitude] : [];
+  const copy = profileCopy[locale];
 
-  return <section className={styles.section} ref={sectionRef} aria-label="Perfil altimétrico do percurso completo">
+  return <section className={styles.section} ref={sectionRef} aria-label={copy.aria}>
     <div className={styles.frame}>
       <div className={styles.heading}>
-        <p>Perfil altimétrico técnico · Legends Ultimate</p>
-        <span className={styles.source}>Dados oficiais · Ride with GPS</span>
+        <p>{copy.heading}</p>
+        <span className={styles.source}>{copy.source}</span>
       </div>
       <div className={styles.chart}>
-        <div className={styles.yAxis} aria-hidden="true">{yTicks.map((tick) => <span key={tick}>{number(tick)} m</span>)}</div>
-        <svg viewBox="0 0 100 68" preserveAspectRatio="none" role="img" aria-label="Perfil altimétrico técnico animado do percurso total">
+        <div className={styles.yAxis} aria-hidden="true">{yTicks.map((tick) => <span key={tick}>{number(tick, locale)} m</span>)}</div>
+        <svg viewBox="0 0 100 68" preserveAspectRatio="none" role="img" aria-label={copy.chart}>
           <defs><clipPath id={`${gradientId}-clip`}><rect width={marker} height="68" /></clipPath></defs>
           <line x1="0" x2="100" y1="7" y2="7" className={styles.grid} /><line x1="0" x2="100" y1="35.5" y2="35.5" className={styles.grid} /><line x1="0" x2="100" y1="64" y2="64" className={styles.grid} />
           {profile ? <><polyline points={profile.points} className={styles.trackBase} /><polyline points={profile.points} className={styles.line} clipPath={`url(#${gradientId}-clip)`} /></> : <rect className={styles.loading} x="0" y="25" width="100" height="20" />}
           <line x1={marker} x2={marker} y1="5" y2="64" className={styles.marker} />
           {profile ? <circle cx={marker} cy={7 + ((profile.maxAltitude - currentAltitude) / Math.max(profile.maxAltitude - profile.minAltitude, 1)) * 57} r="1.15" className={styles.markerDot} /> : null}
         </svg>
-        <div className={styles.xAxis} aria-hidden="true"><span>0 km</span><span>100</span><span>200</span><span>300</span><span>370,7 km</span></div>
-        <div className={styles.metrics} aria-live="polite"><div><span>Distância percorrida</span><strong>{number(currentDistance, 1)} <i>/ 370,7 km</i></strong></div><div><span>Ganho acumulado</span><strong>{number(elevation)} <i>/ 7.226 m+</i></strong></div></div>
+        <div className={styles.xAxis} aria-hidden="true"><span>0 km</span><span>100</span><span>200</span><span>300</span><span>{number(routeDistance, locale, 1)} km</span></div>
+        <div className={styles.metrics} aria-live="polite"><div><span>{copy.distanceDone}</span><strong>{number(currentDistance, locale, 1)} <i>/ {number(routeDistance, locale, 1)} km</i></strong></div><div><span>{copy.gain}</span><strong>{number(elevation, locale)} <i>/ {number(routeAscent, locale)} m+</i></strong></div></div>
       </div>
     </div>
   </section>;
