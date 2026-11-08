@@ -13,7 +13,7 @@ export default function MobileMenu({ locale = "pt" }: { locale?: Locale }) {
   const copy = getHomeCopy(locale);
   const homeHref = locale === "pt" ? "/" : `/${locale}`;
   const links = [
-    [copy.navigation.registration, `${homeHref}#inscricoes`],
+    [copy.navigation.home, homeHref],
     [copy.navigation.race, "/a-prova"],
     [copy.navigation.routes, `${homeHref}#percursos`],
     [copy.navigation.included, `${homeHref}#incluido`],
