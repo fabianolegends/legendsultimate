@@ -196,7 +196,7 @@ const homeCopy = {
       product: "Um produto",
       brandDescription: "Gravel, territórios e histórias que continuam depois da linha de chegada.",
       explore: "Explore",
-      home: "Início",
+      home: "Home",
       race: "A prova",
       routes: "Percursos",
       registrations: "Inscrições",
