@@ -301,10 +301,13 @@ export default function HomeRegistrationInfo() {
   const rows = getRows(format, open === 6);
 
   useEffect(() => {
-    const openRoutes = () => { if (window.location.hash === "#percursos") setOpen(6); };
-    openRoutes();
-    window.addEventListener("hashchange", openRoutes);
-    return () => window.removeEventListener("hashchange", openRoutes);
+    const openFromHash = () => {
+      if (window.location.hash === "#percursos") setOpen(6);
+      if (window.location.hash === "#modalidades") setOpen(3);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
   }, []);
 
   function selectFormat(nextFormat: JourneyFormat) {
@@ -322,7 +325,7 @@ export default function HomeRegistrationInfo() {
         </div>
         <small>{journey.dateShort} · {journey.days} dias</small><b>{activeLot.price} <i>{activeLot.name}</i></b><a href={launchConfig.registrationUrl}>Me inscrever <em>→</em></a>
       </div>
-      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details id={row.label === "Etapas" ? "percursos" : undefined} key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
+      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details id={row.label === "Etapas" ? "percursos" : row.label === "Modalidades" ? "modalidades" : undefined} key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
     </div>
   </section>;
 }
