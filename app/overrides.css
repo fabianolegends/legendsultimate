@@ -1667,3 +1667,16 @@
 
 /* Organização do cabeçalho: navegação à direita e acesso abaixo das redes */
 .heroRedesign .navLinks{margin-left:auto;justify-content:flex-end}.navActionStack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.navActionStack .headerSocials{margin:0}.navActionStack .navCta{padding:8px 14px;font-size:11px}.mobileNavActions{align-items:center}@media(max-width:900px){.navActionStack{display:block}.navActionStack .navCta{padding:9px 11px}}
+
+/* Aproxima o fim do conteúdo incluído da abertura da seção do kit. */
+@media (min-width: 761px) {
+  .redesign .manifestoRedesign > .wide.manifestoFeature {
+    align-items: start !important;
+    padding-top: 100px !important;
+  }
+
+  .redesign .manifestoRedesign .manifestoContent,
+  .redesign .manifestoRedesign .manifestoKitVisual {
+    align-self: start !important;
+  }
+}
