@@ -113,6 +113,39 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         .heroCopy h1 .heroBrand>span+span{margin-left:.13em}@media(max-width:760px){.heroCopy h1 .heroBrand>span+span{margin-left:0}}.launchDateFact strong{font-size:48px;line-height:.86}.launchDateFact span{font-size:20px;margin-top:6px}
         @media(max-width:640px){.launchDateFact{flex-basis:25%}.launchDateFact strong{font-size:24px;line-height:.92}.launchDateFact span{font-size:10px;margin-top:4px;white-space:nowrap}}
         .launchIncluded{background:var(--paper);color:var(--ink);padding:100px 0}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchIncludedHead>p{color:#646761;line-height:1.7;margin:0}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:22px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 23px 'Barlow Condensed';text-transform:uppercase;margin:12px 0 0}.launchServices{display:grid;grid-template-columns:repeat(4,1fr);margin-top:18px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:15px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 12px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.launchDocs a{padding:13px 16px;border:1px solid var(--copper);font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:var(--copper);color:#fff}.launchFaqLink{display:inline-flex;margin-top:25px}.redesign .heroCopy .kicker{font-size:clamp(30px,2.3vw,36px);line-height:1.05;letter-spacing:.18em}@media(max-width:900px){.launchIncludedHead{grid-template-columns:1fr}.launchProducts,.launchServices{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}}@media(max-width:620px){.launchIncluded{padding:68px 0}.launchIncludedHead{margin-bottom:26px}.launchIncludedHead>p{display:none}.launchProducts{grid-template-columns:1fr 1fr}.redesign .heroCopy .kicker{font-size:28px;line-height:1.08;letter-spacing:.12em}}
+
+        /* Menu do hero: degradê contínuo para contraste estável sobre a fotografia. */
+        .heroRedesign > .nav{
+          isolation:isolate;
+          background:linear-gradient(90deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.93) 37%,rgba(0,0,0,.82) 68%,rgba(0,0,0,.66) 100%);
+          box-shadow:0 14px 34px rgba(0,0,0,.18);
+        }
+        .heroRedesign > .nav .navLinks a{color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.92)}
+        .heroRedesign > .nav .headerSocials a{color:#fff;opacity:.94;text-shadow:0 1px 10px rgba(0,0,0,.92)}
+        .heroRedesign > .nav .navCta{box-shadow:0 1px 12px rgba(0,0,0,.32)}
+        .heroRedesign .languageSwitcher:not(.languageSwitcherMobile){gap:8px;padding:0 4px}
+        .heroRedesign .languageSwitcher:not(.languageSwitcherMobile) a{
+          min-width:34px;
+          height:34px;
+          font-size:21px;
+          border-color:rgba(241,236,227,.16);
+          background:rgba(0,0,0,.12);
+          text-shadow:0 1px 8px rgba(0,0,0,.92);
+        }
+        .heroRedesign .languageSwitcher:not(.languageSwitcherMobile) a:hover{
+          border-color:rgba(186,112,73,.78);
+          background:rgba(186,112,73,.18);
+        }
+        .heroRedesign .languageSwitcher:not(.languageSwitcherMobile) a.isActive{
+          border-color:var(--legends-terracotta,var(--copper));
+          background:rgba(186,112,73,.18);
+        }
+        .heroRedesign .languageSwitcher:not(.languageSwitcherMobile) a span{
+          display:block;
+          transform:translateY(-.5px);
+          filter:drop-shadow(0 1px 2px rgba(0,0,0,.72));
+        }
+
       `}</style>
 
       <section className="heroRedesign" id="inicio">
