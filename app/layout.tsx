@@ -9,7 +9,6 @@ import "./font-aliases.css";
 import "./legends-footer.css";
 import "./brand-colors.css";
 import BikeOfficialSection from "./BikeOfficialSection";
-import LaunchHomePreview from "./LaunchHomePreview";
 import CookieConsent from "./CookieConsent";
 import LegendsGlobalFooter from "./LegendsGlobalFooter";
 import GlobalPageNavigation from "./GlobalPageNavigation";
@@ -109,7 +108,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body id="topo" className={`${manrope.className} ${manrope.variable} antialiased`}>
         <DocumentLanguage />
         {children}
-        <LaunchHomePreview />
         <BikeOfficialSection />
         <LegendsGlobalFooter />
         <GlobalPageNavigation />
