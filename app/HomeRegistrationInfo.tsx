@@ -257,6 +257,7 @@ function getRows(format: JourneyFormat, stagesOpen: boolean, locale: Locale) {
   const activeLot = journey.lots[launchConfig.activeLotIndex];
   const t = getHomeCopy(locale);
   const c = registrationCopy[locale];
+  const documentBase = locale === "pt" ? "" : `/${locale}`;
   const program = (format === "ultimate" ? ultimateProgram : shortProgram).map((day) => ({ ...day, stage: localizeProgramText(day.stage, locale), events: day.events.map(([time, event]) => [time, localizeProgramText(event, locale)] as const) }));
   const visibleStages = (format === "ultimate" ? stageProfiles : stageProfiles.slice(2)).map((stage, index) => ({ ...stage, eligibility: stage.eligibility.includes("Somente") ? t.routes.ultimateOnly : t.routes.shared, label: `Stage ${String(index + (format === "ultimate" ? 1 : 3)).padStart(2, "0")}` }));
 
@@ -314,7 +315,7 @@ function getRows(format: JourneyFormat, stagesOpen: boolean, locale: Locale) {
     {
       label: c.documents,
       summary: c.rules,
-      content: <div className={styles.documents}><a href="/regulamento"><b>01</b><span>{locale === "pt" ? "Regulamento" : locale === "es" ? "Reglamento" : "Regulations"}</span><small>{locale === "pt" ? "Formatos, categorias, segurança, penalidades e transferência." : locale === "es" ? "Formatos, categorías, seguridad, penalizaciones y transferencias." : "Formats, categories, safety, penalties and transfers."}</small></a><a href="/documentos-medicos"><b>02</b><span>{c.medical}</span><small>{locale === "pt" ? "Atestado médico e Declaração de Saúde obrigatórios." : locale === "es" ? "Certificado médico y Declaración de Salud obligatorios." : "Medical certificate and Health Declaration are mandatory."}</small></a></div>,
+      content: <div className={styles.documents}><a href={`${documentBase}/regulamento`}><b>01</b><span>{locale === "pt" ? "Regulamento" : locale === "es" ? "Reglamento" : "Regulations"}</span><small>{locale === "pt" ? "Formatos, categorias, segurança, penalidades e transferência." : locale === "es" ? "Formatos, categorías, seguridad, penalizaciones y transferencias." : "Formats, categories, safety, penalties and transfers."}</small></a><a href={`${documentBase}/documentos-medicos`}><b>02</b><span>{c.medical}</span><small>{locale === "pt" ? "Atestado médico e Declaração de Saúde obrigatórios." : locale === "es" ? "Certificado médico y Declaración de Salud obligatorios." : "Medical certificate and Health Declaration are mandatory."}</small></a></div>,
     },
     {
       label: c.hotels,
