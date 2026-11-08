@@ -138,7 +138,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         <div className="launchIncludedHead"><div><p className="kicker">{t.launch.includedEyebrow}</p><h2>{t.launch.includedTitleLead}<br /><em>{t.launch.includedTitleAccent}</em></h2></div><p>{t.launch.includedDescription}</p></div>
         <div className="launchProducts">{t.launch.products.map((name, index) => <article className="launchProduct" key={name}><img src={["/images/kit/camiseta-casual.webp","/images/kit/bag-50-litros.webp","/images/kit/cap-ciclismo.webp","/images/kit/placa-gravel.webp"][index]} alt={name} /><h3>{name}</h3></article>)}</div>
         <div className="launchServices">{t.launch.services.map((item) => <span key={item}>{item}</span>)}</div>
-        <div className="launchDocs"><a href={registrationHref}>{t.launch.includedCta} →</a><a href="/regulamento">{t.launch.regulation}</a><a href="/documentos-medicos">{t.launch.medical}</a></div>
+        <div className="launchDocs"><a href={registrationHref}>{t.launch.includedCta} →</a><a href={locale === "pt" ? "/regulamento" : `/${locale}/regulamento`}>{t.launch.regulation}</a><a href={locale === "pt" ? "/documentos-medicos" : `/${locale}/documentos-medicos`}>{t.launch.medical}</a></div>
       </div></section>
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
