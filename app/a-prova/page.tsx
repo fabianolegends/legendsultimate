@@ -44,7 +44,7 @@ export default function AboutRace() {
 
       <section className="aboutNavigation shell" id="formatos">
         <div><p className="detailEyebrow">Formatos da jornada</p><h2>Escolha quanto<br /><em>da história viver.</em></h2></div>
-        <div className="navigationText"><p><strong>Legends Ultimate</strong><br />29 de abril a 2 de maio · 4 etapas · 370,3 km · 6.302 m+ · 100 vagas · troféus do 1º ao 5º por categoria.</p><p><strong>Legends Short</strong><br />1º e 2 de maio · Stages 03 e 04 · 169,3 km · 3.098 m+ · 50 vagas · troféus do 1º ao 3º por categoria.</p><a className="button aboutButton" href="/inscricoes#jornadas">Comparar formatos <span>→</span></a></div>
+        <div className="navigationText"><p><strong>Legends Ultimate</strong><br />29 de abril a 2 de maio · 4 etapas · 370,3 km · 6.302 m+ · 100 vagas · troféus do 1º ao 5º por categoria.</p><p><strong>Legends Short</strong><br />1º e 2 de maio · Stages 03 e 04 · 169,3 km · 3.098 m+ · 50 vagas · troféus do 1º ao 3º por categoria.</p><a className="button aboutButton" href="/#inscricoes">Comparar formatos <span>→</span></a></div>
       </section>
 
       <section className="aboutConcept" id="conceito">
