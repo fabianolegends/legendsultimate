@@ -1,6 +1,8 @@
 import { localeDetails, locales, type Locale } from "./i18n/config";
 import { getHomeCopy } from "./i18n/home";
 
+const flags: Record<Locale, string> = { pt: "🇧🇷", es: "🇪🇸", en: "🇬🇧" };
+
 export default function LanguageSwitcher({ locale, mobile = false }: { locale: Locale; mobile?: boolean }) {
   return (
     <nav className={mobile ? "languageSwitcher languageSwitcherMobile" : "languageSwitcher"} aria-label={getHomeCopy(locale).navigation.languageSelector}>
@@ -13,8 +15,9 @@ export default function LanguageSwitcher({ locale, mobile = false }: { locale: L
           key={item}
           lang={localeDetails[item].htmlLang}
           title={localeDetails[item].label}
+          aria-label={localeDetails[item].label}
         >
-          {localeDetails[item].shortLabel}
+          <span aria-hidden="true">{flags[item]}</span>
         </a>
       ))}
     </nav>
