@@ -26,6 +26,9 @@ export default function LegendsGlobalFooter() {
   const locale = localeFromPathname(pathname);
   const copy = getHomeCopy(locale).footer;
   const homeHref = localeDetails[locale].href;
+  const registrationsHref = `${homeHref}#inscricoes`;
+  const routesHref = `${homeHref}#percursos`;
+  const faqHref = `${homeHref}#faq`;
 
   if (!pathname || isHiddenRoute(pathname)) return null;
 
@@ -77,15 +80,14 @@ export default function LegendsGlobalFooter() {
             <p className="legendsFooterEyebrow">{copy.explore}</p>
             <a href={homeHref}>{copy.home}</a>
             <a href="/a-prova">{copy.race}</a>
-            <a href="/percursos">{copy.routes}</a>
-            <a href="/inscricoes">{copy.registrations}</a>
-            <a href="/faq#perguntas">{copy.frequentlyAsked}</a>
+            <a href={routesHref}>{copy.routes}</a>
+            <a href={registrationsHref}>{copy.registrations}</a>
+            <a href={faqHref}>{copy.frequentlyAsked}</a>
           </nav>
 
           <nav className="legendsFooterColumn" aria-label={`${copy.documents} Legends`}>
             <p className="legendsFooterEyebrow">{copy.documents}</p>
             <a href="/regulamento">{copy.regulation}</a>
-            <a href="/manual-do-atleta">{copy.manual}</a>
             <a href="/documentos-medicos">{copy.medical}</a>
             <a href="/politica-de-privacidade">{copy.privacy}</a>
           </nav>
