@@ -136,7 +136,7 @@ export default function TotalElevationProfile({ locale = "pt" }: { locale?: Loca
   const yTicks = profile ? [profile.maxAltitude, profile.maxAltitude - (profile.maxAltitude - profile.minAltitude) / 2, profile.minAltitude] : [];
   const copy = profileCopy[locale];
 
-  return <section className={styles.section} ref={sectionRef} aria-label={copy.aria}>
+  return <section className={`${styles.section} totalElevationProfile`} ref={sectionRef} aria-label={copy.aria}>
     <div className={styles.frame}>
       <div className={styles.heading}>
         <p>{copy.heading}</p>
