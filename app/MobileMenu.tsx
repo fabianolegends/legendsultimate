@@ -11,12 +11,13 @@ export default function MobileMenu({ locale = "pt" }: { locale?: Locale }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const copy = getHomeCopy(locale);
+  const homeHref = locale === "pt" ? "/" : `/${locale}`;
   const links = [
-    [copy.navigation.registration, "/#inscricoes"],
+    [copy.navigation.registration, `${homeHref}#inscricoes`],
     [copy.navigation.race, "/a-prova"],
-    [copy.navigation.routes, "/percursos"],
-    [copy.navigation.included, "#incluido"],
-    [copy.navigation.faq, "/faq#perguntas"],
+    [copy.navigation.routes, `${homeHref}#percursos`],
+    [copy.navigation.included, `${homeHref}#incluido`],
+    [copy.navigation.faq, locale === "pt" ? "/faq#perguntas" : `${homeHref}#faq`],
   ];
 
   useEffect(() => setMounted(true), []);
