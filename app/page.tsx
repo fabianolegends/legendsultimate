@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
-import KitCarousel from "./KitCarousel";
 import MobileMenu from "./MobileMenu";
-import RouteExplorer from "./RouteExplorer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import HomeRegistrationInfo from "./HomeRegistrationInfo";
 import TotalElevationProfile from "./TotalElevationProfile";
-import { getRegistrationHref } from "./lib/launch";
 import { getHomeCopy } from "./i18n/home";
 import type { Locale } from "./i18n/config";
 
@@ -37,36 +34,16 @@ export const metadata: Metadata = {
   },
 };
 
-const stages = [
-  { n: "STAGE 01", city: "Canela", arrival: "São Francisco de Paula", stats: "111,9 km · 1.684 m+", distance: "111,9 km", elevation: "1.684 m+", eligibility: "Somente Ultimate", route: "/stage-route-1.png", href: "/percursos/stage-1" },
-  { n: "STAGE 02", city: "São Francisco de Paula", arrival: "Gramado", stats: "89,1 km · 1.520 m+", distance: "89,1 km", elevation: "1.520 m+", eligibility: "Somente Ultimate", route: "/stage-route-2.png", href: "/percursos/stage-2" },
-  { n: "STAGE 03", city: "Gramado", arrival: "Nova Petrópolis", stats: "99,3 km · 1.522 m+", distance: "99,3 km", elevation: "1.522 m+", eligibility: "Ultimate + Short", route: "/stage-route-3.png", href: "/percursos/stage-3" },
-  { n: "STAGE 04", city: "Nova Petrópolis", arrival: "Canela", stats: "70,0 km · 1.576 m+", distance: "70,0 km", elevation: "1.576 m+", eligibility: "Ultimate + Short", route: "/stage-route-4.png", href: "/percursos/stage-4" },
-];
-
-const supportGroups = [
-  ["Logística", "Transporte da bagagem", "Hidratação nos checkpoints", "Medalha de conclusão"],
-  ["Segurança", "Seguro básico", "Equipe oficial de apoio"],
-  ["Percurso", "GPX oficial", "Checkpoints de controle"],
-  ["Pós-etapa", "Bike wash", "Mecânica básica"],
-];
-
 function Logo({ className = "" }: { className?: string }) {
   return <img className={`officialLogo ${className}`} src="/legends-logo-official.png" alt="Legends Bike Race" />;
 }
 
 export function HomePage({ locale = "pt" }: { locale?: Locale }) {
   const t = getHomeCopy(locale);
-  const localizedStages = stages.map((stage, index) => ({
-    ...stage,
-    stats: locale === "en" ? stage.stats.replaceAll(",", ".") : stage.stats,
-    distance: locale === "en" ? stage.distance.replaceAll(",", ".") : stage.distance,
-    elevation: locale === "en" ? stage.elevation.replaceAll(".", ",") : stage.elevation,
-    eligibility: index < 2 ? t.routes.ultimateOnly : t.routes.shared,
-  }));
-  const localizedDifferences = t.differences.items;
   const localizedFaqs = t.faq.items;
-  const localizedEngineFeatures = t.raceEngine.items;
+  const homeHref = locale === "pt" ? "/" : `/${locale}`;
+  const registrationHref = `${homeHref}#inscricoes`;
+  const faqHref = locale === "pt" ? "/faq#perguntas" : `${homeHref}#faq`;
 
   return (
     <main className="redesign" lang={t.htmlLang}>
@@ -135,13 +112,14 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         .heroRedesign{position:relative;isolation:isolate}.heroRedesign:after{content:'';position:absolute;z-index:0;right:0;bottom:0;left:0;height:270px;pointer-events:none;background:linear-gradient(180deg,rgba(17,20,17,0) 0%,rgba(17,20,17,.42) 48%,#111411 100%)}.heroRedesign>.nav,.heroRedesign>.heroMain{position:relative;z-index:1}.heroCopy h1 .heroBrand{display:block;color:#f1ece3;font-size:1.92em;line-height:.72;letter-spacing:-.04em;opacity:.72;white-space:nowrap}.heroCopy h1 .heroBrand>span{display:inline}.heroCopy h1 .heroEdition{display:inline-block}@media(min-width:1000px){.heroCopy{max-width:1120px}.heroCopy h1 .heroBrand{font-size:2.5em;letter-spacing:-.05em}}.heroCopy h1 .heroAccent{margin-left:.07em}@media(max-width:760px){.heroCopy h1 .heroBrand{font-size:1.58em;line-height:.76;letter-spacing:-.035em;white-space:normal}.heroCopy h1 .heroBrand>span{display:block}.heroCopy h1 .heroEdition{display:block;margin-top:.22em}.heroCopy h1 .heroAccent{margin-left:0}}html{scroll-behavior:smooth}.backToTop{position:fixed;right:22px;bottom:22px;z-index:1000;display:inline-flex;align-items:center;gap:7px;padding:4px;border:0;background:transparent;color:#f1ece3;font:700 12px 'Barlow Condensed';letter-spacing:.11em;text-transform:uppercase;text-shadow:0 1px 8px rgba(0,0,0,.9);transition:.2s}.backToTop span{color:var(--copper);font-size:17px;line-height:1}.backToTop:hover{color:var(--copper);transform:translateY(-2px)}@media(max-width:640px){.backToTop{right:14px;bottom:14px;padding:4px}.backToTop b{display:inline}.backToTop span{font-size:18px}}
         .heroCopy h1 .heroBrand>span+span{margin-left:.13em}@media(max-width:760px){.heroCopy h1 .heroBrand>span+span{margin-left:0}}.launchDateFact strong{font-size:48px;line-height:.86}.launchDateFact span{font-size:20px;margin-top:6px}
         @media(max-width:640px){.launchDateFact{flex-basis:25%}.launchDateFact strong{font-size:24px;line-height:.92}.launchDateFact span{font-size:10px;margin-top:4px;white-space:nowrap}}
+        .launchIncluded{background:var(--paper);color:var(--ink);padding:100px 0}.launchIncludedHead{display:grid;grid-template-columns:1.3fr .8fr;gap:70px;align-items:end;margin-bottom:45px}.launchIncludedHead>p{color:#646761;line-height:1.7;margin:0}.launchProducts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(17,17,17,.16)}.launchProduct{padding:22px;border-right:1px solid rgba(17,17,17,.16)}.launchProduct:last-child{border:0}.launchProduct img{width:100%;aspect-ratio:1/1;object-fit:contain}.launchProduct h3{font:700 23px 'Barlow Condensed';text-transform:uppercase;margin:12px 0 0}.launchServices{display:grid;grid-template-columns:repeat(4,1fr);margin-top:18px;border-top:1px solid rgba(17,17,17,.18);border-left:1px solid rgba(17,17,17,.18)}.launchServices span{padding:15px;border-right:1px solid rgba(17,17,17,.18);border-bottom:1px solid rgba(17,17,17,.18);font:600 12px 'Barlow Condensed';text-transform:uppercase}.launchDocs{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.launchDocs a{padding:13px 16px;border:1px solid var(--copper);font:700 12px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.07em}.launchDocs a:first-child{background:var(--copper);color:#fff}.launchFaqLink{display:inline-flex;margin-top:25px}.redesign .heroCopy .kicker{font-size:clamp(30px,2.3vw,36px);line-height:1.05;letter-spacing:.18em}@media(max-width:900px){.launchIncludedHead{grid-template-columns:1fr}.launchProducts,.launchServices{grid-template-columns:1fr 1fr}.launchProduct:nth-child(2){border-right:0}}@media(max-width:620px){.launchIncluded{padding:68px 0}.launchIncludedHead{margin-bottom:26px}.launchIncludedHead>p{display:none}.launchProducts{grid-template-columns:1fr 1fr}.redesign .heroCopy .kicker{font-size:28px;line-height:1.08;letter-spacing:.12em}}
       `}</style>
 
       <section className="heroRedesign" id="inicio">
         <nav className="nav wide" aria-label={t.navigation.aria}>
           <a className="brand" href="#inicio"><Logo /></a>
           <div className="desktopNavCluster">
-            <div className="navLinks"><a href="/a-prova">{t.navigation.race}</a><a href="#percursos">{t.navigation.routes}</a><a href="#modalidades">{t.modes.navigation}</a><a href="/race-engine">Race Engine</a><a href="/faq#perguntas">{t.navigation.faq}</a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">{t.footer.contact}</a></div>
+            <div className="navLinks"><a data-launch-link="inscricoes" href={registrationHref}>{t.navigation.registration}</a><a href="/a-prova">{t.navigation.race}</a><a href="#percursos">{t.navigation.routes}</a><a data-launch-link="incluido" href="#incluido">{t.navigation.included}</a><a href={faqHref}>{t.navigation.faq}</a></div>
             <span className="navDivider" aria-hidden="true" />
             <div className="headerSocials" aria-label="Redes sociais da Legends"><a href="https://www.instagram.com/legends.race/" target="_blank" rel="noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" className="fillIcon"/></svg></a><a href="https://www.facebook.com/1272724699251164" target="_blank" rel="noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.7.3-1 1-1Z" className="fillIcon"/></svg></a><a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.8A8 8 0 0 1 8.1 18.8L4 20l1.2-4A8 8 0 1 1 20 11.8Z"/><path d="M9 8.5c.3 2.5 2 4.2 4.5 5l1.2-1.2c.3-.3.6-.3.9-.1l2 1c.3.2.4.5.3.8-.5 1.5-1.7 2.2-3.2 2-4.2-.7-7-3.5-7.7-7.7-.2-1.5.5-2.7 2-3.2.3-.1.6 0 .8.3l1 2c.2.3.2.6-.1.9L9 8.5Z" className="fillIcon"/></svg></a><a href="https://www.youtube.com/@legendsbikerace" target="_blank" rel="noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" className="fillIcon"/></svg></a></div>
             <span className="navDivider" aria-hidden="true" />
@@ -150,13 +128,18 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
           </div>
           <div className="mobileNavActions"><MobileMenu locale={locale} /></div>
         </nav>
-        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1><span className="heroBrand"><span>Legends</span><span>Bike Race</span></span><span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong></p><div className="heroCtas"><a className="button" href="/a-prova">{t.hero.discover} <span>→</span></a><a className="secondaryCta" href={getRegistrationHref()}>{t.hero.registerNow}</a></div></div></div>
+        <div className="heroMain wide"><div className="heroCopy"><p className="kicker">{t.hero.date}</p><h1><span className="heroBrand"><span>Legends</span><span>Bike Race</span></span><span className="heroAccent">{t.hero.titleAccent}</span></h1><p className="heroIntro"><strong>{t.hero.introStrong}</strong></p><div className="heroCtas"><a className="button" href={registrationHref}>{t.navigation.register} <span>↘</span></a></div></div></div>
       </section>
 
       <TotalElevationProfile locale={locale} />
       <HomeRegistrationInfo locale={locale} />
 
-      <section className="includedSection"><div className="wide"><div className="kitCompactHead"><div><p className="kicker">{t.launch.includedEyebrow}</p><h2>{t.launch.includedTitleLead}<br /><em>{t.launch.includedTitleAccent}</em></h2></div><p>{t.launch.includedDescription}</p></div>{locale === "pt" ? <><KitCarousel /><div className="supportStrip">{supportGroups.map(([title,...items]) => <div className="supportGroup" key={title}><h3>{title}</h3><ul>{items.map(item => <li key={item}>{item}</li>)}</ul></div>)}</div></> : null}</div></section>
+      <section className="launchIncluded" id="incluido"><div className="wide">
+        <div className="launchIncludedHead"><div><p className="kicker">{t.launch.includedEyebrow}</p><h2>{t.launch.includedTitleLead}<br /><em>{t.launch.includedTitleAccent}</em></h2></div><p>{t.launch.includedDescription}</p></div>
+        <div className="launchProducts">{t.launch.products.map((name, index) => <article className="launchProduct" key={name}><img src={["/images/kit/camiseta-casual.webp","/images/kit/bag-50-litros.webp","/images/kit/cap-ciclismo.webp","/images/kit/placa-gravel.webp"][index]} alt={name} /><h3>{name}</h3></article>)}</div>
+        <div className="launchServices">{t.launch.services.map((item) => <span key={item}>{item}</span>)}</div>
+        <div className="launchDocs"><a href={registrationHref}>{t.launch.includedCta} →</a><a href="/regulamento">{t.launch.regulation}</a><a href="/documentos-medicos">{t.launch.medical}</a></div>
+      </div></section>
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
         <div className="manifestoContent">
@@ -170,9 +153,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         </figure>
       </div></section>
 
-      <section className="engineHome" id="race-engine"><div className="wide"><div className="engineHomeHead"><div><p className="kicker">{t.raceEngine.eyebrow}</p><h2>{t.raceEngine.titleLead}<br /><em>{t.raceEngine.titleAccent}</em></h2></div><div className="engineIntroSide"><p>{t.raceEngine.description}</p><a className="engineLink" href="/race-engine">{t.raceEngine.cta} <span>→</span></a></div></div><div className="engineCards engineCardsCompact">{localizedEngineFeatures.map(([icon,title,text])=><article className="engineCard" key={title}><span className="engineIcon" aria-hidden="true">{icon}</span><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></div></section>
-      {locale === "pt" ? <section className="profileSection"><div className="wide profileBox"><blockquote>Não é para iniciantes.<br />Não é para todos.<br /><em>É para quem está pronto.</em></blockquote><ul><li>Entusiastas do ciclismo de diferentes idades, unidos pelo desejo de viajar, superar desafios e descobrir novos destinos.</li><li>Não é necessário ser atleta profissional, mas é indispensável estar treinado para dois ou quatro dias consecutivos, conforme a jornada escolhida.</li><li>O participante deve ter autonomia, disciplina e capacidade de administrar esforço, alimentação, equipamento e navegação.</li><li><strong>Not for everyone. Only for Legends.</strong></li></ul></div></section> : null}
-      <section className="faqSection" id="faq"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.faq.eyebrow}</p><h2>{t.faq.titleLead}<br /><em>{t.faq.titleAccent}</em></h2></div><p>{t.faq.description}</p></div><div className="faqList">{localizedFaqs.map(([q,a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div></div></section>
+      <section className="faqSection" id="faq"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.faq.eyebrow}</p><h2>{t.faq.titleLead}<br /><em>{t.faq.titleAccent}</em></h2></div><p>{t.faq.description}</p></div><div className="faqList">{localizedFaqs.map(([q,a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div><a className="launchFaqLink button" href={faqHref}>{t.faq.all} <span>→</span></a></div></section>
     </main>
   );
 }
