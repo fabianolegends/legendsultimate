@@ -1679,4 +1679,8 @@
   .redesign .manifestoRedesign .manifestoKitVisual {
     align-self: start !important;
   }
+
+  .redesign .manifestoRedesign .manifestoContent {
+    padding-top: 0 !important;
+  }
 }
