@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Manual do Atleta Legends Bike Race 2027",
   description: "Acesse em breve o Manual do Atleta da Legends Bike Race 2027, com orientações de percurso, equipamentos, logística e segurança da prova.",
   alternates: { canonical: "/manual-do-atleta" },
+  robots: { index: false, follow: true },
 };
 
 export default function ManualAtletaPage() {
