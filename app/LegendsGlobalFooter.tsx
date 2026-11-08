@@ -29,6 +29,8 @@ export default function LegendsGlobalFooter() {
   const registrationsHref = `${homeHref}#inscricoes`;
   const routesHref = `${homeHref}#percursos`;
   const faqHref = `${homeHref}#faq`;
+  const regulationHref = locale === "pt" ? "/regulamento" : `/${locale}/regulamento`;
+  const medicalHref = locale === "pt" ? "/documentos-medicos" : `/${locale}/documentos-medicos`;
 
   if (!pathname || isHiddenRoute(pathname)) return null;
 
@@ -87,8 +89,8 @@ export default function LegendsGlobalFooter() {
 
           <nav className="legendsFooterColumn" aria-label={`${copy.documents} Legends`}>
             <p className="legendsFooterEyebrow">{copy.documents}</p>
-            <a href="/regulamento">{copy.regulation}</a>
-            <a href="/documentos-medicos">{copy.medical}</a>
+            <a href={regulationHref}>{copy.regulation}</a>
+            <a href={medicalHref}>{copy.medical}</a>
             <a href="/politica-de-privacidade">{copy.privacy}</a>
           </nav>
 
