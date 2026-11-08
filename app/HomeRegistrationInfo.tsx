@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { launchConfig, type JourneyFormat } from "./lib/launch";
 import styles from "./HomeRegistrationInfo.module.css";
+import modeStyles from "./RegistrationModes.module.css";
 
 const ultimateProgram = [
   {
@@ -247,7 +248,7 @@ function getRows(format: JourneyFormat, stagesOpen: boolean) {
     {
       label: "Modalidades",
       summary: "Gravel Race + Legends Experience",
-      content: <div className={styles.cards}><article><span>Competição</span><h3>Gravel Race</h3><p>Para Gravel e Cyclocross sem assistência elétrica, com tempo, checkpoints, pontuação e classificação.</p></article><article><span>Experiência</span><h3>Legends Experience</h3><p>Para Gravel, MTB e E-bikes de pedal assistido, sem ranking ou premiação esportiva.</p></article></div>,
+      content: <div className={`${styles.cards} ${modeStyles.modeCards}`}><article><span>Modalidade competitiva</span><h3>Legends Gravel Race</h3><p>Para ciclistas de gravel ou cyclocross que desejam disputar as etapas do formato escolhido com tempo registrado, classificação por pontos, categorias e premiação final.</p><ul><li>Classificação oficial independente por formato</li><li>Pontuação por etapa</li><li>Mesmas categorias na Ultimate e na Short</li><li>Troféus ao final da jornada</li></ul></article><article><span>Modalidade turismo</span><h3>Legends Experience</h3><p>Para participantes de Gravel, MTB e E-bike que desejam viver o formato escolhido com a mesma estrutura, sem pressão por tempo, ranking ou resultado competitivo.</p><ul><li>Sem classificação</li><li>MTB e E-bike permitidas</li><li>Mesma logística e segurança</li><li>Foco em turismo e desafio pessoal</li></ul></article></div>,
     },
     {
       label: "Categorias",
