@@ -1695,3 +1695,18 @@
     padding-top: 13px !important;
   }
 }
+
+/* Compacta a transição entre o conteúdo incluído e o kit no mobile. */
+@media (max-width: 760px) {
+  .redesign .launchIncluded {
+    padding-bottom: 50px !important;
+  }
+
+  .redesign .manifestoRedesign .manifestoContent {
+    padding-bottom: 12px !important;
+  }
+
+  .redesign .manifestoRedesign .manifestoKitVisual {
+    padding-top: 0 !important;
+  }
+}
