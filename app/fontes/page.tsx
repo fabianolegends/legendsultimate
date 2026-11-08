@@ -34,7 +34,7 @@ const options = [
   },
 ];
 
-export const metadata = { title: "Comparativo de fontes" };
+export const metadata = { title: "Comparativo de fontes", robots: { index: false, follow: false } };
 
 export default function FontesPage() {
   return (
