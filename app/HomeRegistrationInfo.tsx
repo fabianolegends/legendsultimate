@@ -299,6 +299,13 @@ export default function HomeRegistrationInfo() {
   const activeLot = journey.lots[launchConfig.activeLotIndex];
   const rows = getRows(format, open === 6);
 
+  useEffect(() => {
+    const openRoutes = () => { if (window.location.hash === "#percursos") setOpen(6); };
+    openRoutes();
+    window.addEventListener("hashchange", openRoutes);
+    return () => window.removeEventListener("hashchange", openRoutes);
+  }, []);
+
   function selectFormat(nextFormat: JourneyFormat) {
     setFormat(nextFormat);
     setOpen(0);
@@ -314,7 +321,7 @@ export default function HomeRegistrationInfo() {
         </div>
         <small>{journey.dateShort} · {journey.days} dias</small><b>{activeLot.price} <i>{activeLot.name}</i></b><a href={launchConfig.registrationUrl}>Me inscrever <em>→</em></a>
       </div>
-      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
+      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details id={row.label === "Etapas" ? "percursos" : undefined} key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
     </div>
   </section>;
 }
