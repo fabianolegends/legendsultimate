@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { launchConfig, type JourneyFormat } from "./lib/launch";
+import { getHomeCopy } from "./i18n/home";
+import type { Locale } from "./i18n/config";
 import styles from "./HomeRegistrationInfo.module.css";
 import modeStyles from "./RegistrationModes.module.css";
 
@@ -169,7 +171,7 @@ function buildTechnicalProfile(payload: PackedTechnicalProfile): TechnicalProfil
   return { points: chartPoints, climbByPercent };
 }
 
-function ElevationProfile({ stage, active }: { stage: StageProfile; active: boolean }) {
+function ElevationProfile({ stage, active, locale }: { stage: StageProfile; active: boolean; locale: Locale }) {
   const [progress, setProgress] = useState(0);
   const [profile, setProfile] = useState<TechnicalProfile | null>(null);
 
@@ -206,10 +208,12 @@ function ElevationProfile({ stage, active }: { stage: StageProfile; active: bool
   const lowerClimb = profile?.climbByPercent[lowerMarker] ?? 0;
   const upperClimb = profile?.climbByPercent[Math.min(100, lowerMarker + 1)] ?? lowerClimb;
   const climbProgress = (lowerClimb + (upperClimb - lowerClimb) * markerFraction) / 10000;
-  const currentKm = (stage.distance * progress).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const currentAscent = Math.round(stage.ascent * climbProgress).toLocaleString("pt-BR");
+  const numberLocale = locale === "pt" ? "pt-BR" : locale === "es" ? "es-ES" : "en-US";
+  const currentKm = (stage.distance * progress).toLocaleString(numberLocale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const currentAscent = Math.round(stage.ascent * climbProgress).toLocaleString(numberLocale);
+  const labels = locale === "pt" ? { technical: "Perfil técnico animado da", distance: "Distância", elevation: "Elevação acumulada" } : locale === "es" ? { technical: "Perfil técnico animado de", distance: "Distancia", elevation: "Desnivel acumulado" } : { technical: "Animated technical profile of", distance: "Distance", elevation: "Elevation gain" };
 
-  return <div className={styles.elevationProfile} aria-label={"Perfil técnico animado da " + stage.label}>
+  return <div className={styles.elevationProfile} aria-label={labels.technical + " " + stage.label}>
     <div className={styles.profileVisual}>
       {profile ? <svg className={styles.profileGraph} viewBox="0 0 100 84" preserveAspectRatio="none" aria-hidden="true">
         <defs>
@@ -219,86 +223,114 @@ function ElevationProfile({ stage, active }: { stage: StageProfile; active: bool
         <polygon className={styles.profileFill} points={profile.points + " 100,66 0,66"} fill={"url(#fill-" + stage.id + ")"} clipPath={"url(#clip-" + stage.id + ")"} />
         <polyline points={profile.points} className={styles.profileLine} clipPath={"url(#clip-" + stage.id + ")"} />
       </svg> : <div className={styles.profileLoading} aria-hidden="true" />}
-      <p className={styles.profileReadout}><span><small>Distância</small><b>{currentKm} km</b></span><span><small>Elevação acumulada</small><b>{currentAscent} m+</b></span></p>
+      <p className={styles.profileReadout}><span><small>{labels.distance}</small><b>{currentKm} km</b></span><span><small>{labels.elevation}</small><b>{currentAscent} m+</b></span></p>
     </div>
   </div>;
 }
 
-function getRows(format: JourneyFormat, stagesOpen: boolean) {
+const registrationCopy: Record<Locale, {
+  kicker: string; titleLead: string; titleAccent: string; introduction: string; formatAria: string; days: string; stages: string; register: string;
+  values: string; activeLot: string; spots: string; included: string; includedSummary: string; provided: string; excluded: string; premium: string; premiumSummary: string;
+  premiumFull: string; premiumOnly: string; premiumFullText: string; premiumOnlyText: string; categories: string; male: string; female: string; years: string; award: string;
+  journey: string; journeySummary: string; safety: string; schedule: string; documents: string; hotels: string; rules: string; medical: string; manual: string;
+}> = {
+  pt: { kicker: "Inscrições · informações completas", titleLead: "Tudo para decidir.", titleAccent: "Sem procurar.", introduction: "Escolha a jornada e consulte valores, itens incluídos, categorias, programação e documentos sem sair da página inicial.", formatAria: "Escolha o formato da Legends", days: "dias", stages: "etapas", register: "Me inscrever", values: "Valores e lotes", activeLot: "Lote ativo", spots: "vagas", included: "O que está incluído", includedSummary: "18 entregas da organização", provided: "Incluído", excluded: "Não incluído", premium: "Kit Premium", premiumSummary: "Kit completo R$ 399 · camisa R$ 189", premiumFull: "Kit completo", premiumOnly: "Somente camisa", premiumFullText: "Camisa de ciclismo, colete e dois pares de meias.", premiumOnlyText: "Camisa oficial de ciclismo Legends Bike Race.", categories: "Categorias", male: "Masculino", female: "Feminino", years: "anos", award: "Premiação", journey: "Como funciona a jornada", journeySummary: "5 passos essenciais", safety: "Segurança e suporte", schedule: "Programação", documents: "Regulamento e documentos", hotels: "Hospedagens conveniadas", rules: "Regras · saúde · manual", medical: "Documento médico", manual: "Manual do atleta" },
+  es: { kicker: "Inscripciones · información completa", titleLead: "Todo para decidir.", titleAccent: "Sin buscar.", introduction: "Elige tu travesía y consulta valores, elementos incluidos, categorías, programación y documentos sin salir de la página principal.", formatAria: "Elige el formato Legends", days: "días", stages: "etapas", register: "Inscribirme", values: "Valores y lotes", activeLot: "Lote activo", spots: "plazas", included: "Qué está incluido", includedSummary: "18 entregas de la organización", provided: "Incluido", excluded: "No incluido", premium: "Kit Premium", premiumSummary: "Kit completo R$ 399 · camiseta R$ 189", premiumFull: "Kit completo", premiumOnly: "Solo camiseta", premiumFullText: "Camiseta de ciclismo, chaleco y dos pares de medias.", premiumOnlyText: "Camiseta oficial de ciclismo Legends Bike Race.", categories: "Categorías", male: "Masculino", female: "Femenino", years: "años", award: "Premiación", journey: "Cómo funciona la travesía", journeySummary: "5 pasos esenciales", safety: "Seguridad y soporte", schedule: "Programación", documents: "Reglamento y documentos", hotels: "Alojamientos asociados", rules: "Reglas · salud · manual", medical: "Documento médico", manual: "Manual del ciclista" },
+  en: { kicker: "Registration · complete information", titleLead: "Everything to decide.", titleAccent: "Without searching.", introduction: "Choose your journey and view pricing, included items, categories, schedule and documents without leaving the homepage.", formatAria: "Choose the Legends format", days: "days", stages: "stages", register: "Register", values: "Pricing and lots", activeLot: "Active lot", spots: "spots", included: "What's included", includedSummary: "18 organizer deliverables", provided: "Included", excluded: "Not included", premium: "Premium Kit", premiumSummary: "Complete kit R$ 399 · jersey R$ 189", premiumFull: "Complete kit", premiumOnly: "Jersey only", premiumFullText: "Cycling jersey, vest and two pairs of socks.", premiumOnlyText: "Official Legends Bike Race cycling jersey.", categories: "Categories", male: "Men", female: "Women", years: "years", award: "Awards", journey: "How the journey works", journeySummary: "5 essential steps", safety: "Safety and support", schedule: "Schedule", documents: "Rules and documents", hotels: "Partner accommodations", rules: "Rules · health · manual", medical: "Medical document", manual: "Athlete guide" },
+};
+
+function localizeProgramText(value: string, locale: Locale) {
+  if (locale === "pt") return value;
+  const translations: Record<Exclude<Locale, "pt">, Record<string, string>> = {
+    es: {
+      "Credenciamento": "Acreditación", "Credenciamento Short": "Acreditación Short", "Entrega das bags": "Entrega de bags", "Briefing da etapa": "Briefing de etapa", "Largada": "Salida", "Resultados oficiais": "Resultados oficiales", "Briefing pós-etapa": "Briefing postetapa", "Premiação geral e encerramento": "Premiación general y cierre", "Credenciamento, conferência documental e entrega dos kits": "Acreditación, control documental y entrega de kits"
+    },
+    en: {
+      "Credenciamento": "Check-in", "Credenciamento Short": "Short check-in", "Entrega das bags": "Bag drop-off", "Briefing da etapa": "Stage briefing", "Largada": "Start", "Resultados oficiais": "Official results", "Briefing pós-etapa": "Post-stage briefing", "Premiação geral e encerramento": "Overall awards and closing", "Credenciamento, conferência documental e entrega dos kits": "Check-in, document review and kit collection"
+    },
+  };
+  return translations[locale][value] ?? value;
+}
+
+function getRows(format: JourneyFormat, stagesOpen: boolean, locale: Locale) {
   const journey = launchConfig.journeys[format];
   const activeLot = journey.lots[launchConfig.activeLotIndex];
-  const visibleStages = format === "ultimate" ? stageProfiles : stageProfiles.slice(2);
+  const t = getHomeCopy(locale);
+  const c = registrationCopy[locale];
+  const program = (format === "ultimate" ? ultimateProgram : shortProgram).map((day) => ({ ...day, stage: localizeProgramText(day.stage, locale), events: day.events.map(([time, event]) => [time, localizeProgramText(event, locale)] as const) }));
+  const visibleStages = (format === "ultimate" ? stageProfiles : stageProfiles.slice(2)).map((stage, index) => ({ ...stage, eligibility: stage.eligibility.includes("Somente") ? t.routes.ultimateOnly : t.routes.shared, label: `Stage ${String(index + (format === "ultimate" ? 1 : 3)).padStart(2, "0")}` }));
 
   return [
     {
-      label: "Valores e lotes",
-      summary: `${activeLot.name} · ${activeLot.price} · ${journey.spots} vagas`,
-      content: <div className={styles.lots}>{journey.lots.map((lot, index) => { const isActive = index === launchConfig.activeLotIndex; const lotContent = <><span>{isActive ? `Lote ativo · ${lot.name}` : lot.name}</span><strong>{lot.price}</strong><small>{lot.period}</small></>; return isActive ? <a className={styles.activeLot} href={launchConfig.registrationUrl} target="_blank" rel="noreferrer" key={lot.name} aria-label={`Inscrever-se na Windfit — ${lot.name}, ${lot.price}`}>{lotContent}</a> : <div key={lot.name}>{lotContent}</div>; })}</div>,
+      label: c.values,
+      summary: `${activeLot.name} · ${activeLot.price} · ${journey.spots} ${c.spots}`,
+      content: <div className={styles.lots}>{journey.lots.map((lot, index) => { const isActive = index === launchConfig.activeLotIndex; const lotContent = <><span>{isActive ? `${c.activeLot} · ${lot.name}` : lot.name}</span><strong>{lot.price}</strong><small>{lot.period}</small></>; return isActive ? <a className={styles.activeLot} href={launchConfig.registrationUrl} target="_blank" rel="noreferrer" key={lot.name} aria-label={`${c.register} — ${lot.name}, ${lot.price}`}>{lotContent}</a> : <div key={lot.name}>{lotContent}</div>; })}</div>,
     },
     {
-      label: "O que está incluído",
-      summary: "18 entregas da organização",
-      content: <div className={styles.included}><div><h3>Incluído</h3><ul><li>Participação nas etapas do formato escolhido</li><li>Camiseta casual, bag oficial de 50 L e cap oficial</li><li>Rastreador SPOT, placa oficial e medalha de conclusão</li><li>Transporte da bag entre as cidades-base</li><li>Hidratação, GPX oficial e checkpoints</li><li>Seguro básico, apoio, segurança e resgate</li><li>Bike wash, mecânica básica e briefings</li></ul></div><div><h3>Não incluído</h3><ul><li>Kit Premium Legends Bike Race</li><li>Hospedagem e refeições</li><li>Transporte do participante e da bicicleta</li><li>Passagens, combustível, pedágios e estacionamento</li><li>Equipamentos, peças e serviços particulares</li></ul></div></div>,
+      label: c.included,
+      summary: c.includedSummary,
+      content: <div className={styles.included}><div><h3>{c.provided}</h3><ul><li>{locale === "pt" ? "Participação nas etapas do formato escolhido" : locale === "es" ? "Participación en las etapas del formato elegido" : "Participation in the stages of the selected format"}</li><li>{t.launch.products.join(", ")}</li><li>SPOT, GPX, checkpoints e medalha de conclusão</li><li>{locale === "pt" ? "Transporte da bag entre as cidades-base" : locale === "es" ? "Transporte de la bag entre ciudades base" : "Bag transport between host cities"}</li><li>{t.launch.services.slice(0, 4).join(", ")}</li><li>{t.launch.services.slice(4).join(", ")}</li></ul></div><div><h3>{c.excluded}</h3><ul><li>Kit Premium Legends Bike Race</li><li>{locale === "pt" ? "Hospedagem e refeições" : locale === "es" ? "Alojamiento y comidas" : "Accommodation and meals"}</li><li>{locale === "pt" ? "Transporte do participante e da bicicleta" : locale === "es" ? "Transporte del participante y de la bicicleta" : "Participant and bike transport"}</li><li>{locale === "pt" ? "Passagens, combustível, pedágios e estacionamento" : locale === "es" ? "Pasajes, combustible, peajes y estacionamiento" : "Tickets, fuel, tolls and parking"}</li><li>{locale === "pt" ? "Equipamentos, peças e serviços particulares" : locale === "es" ? "Equipos, repuestos y servicios particulares" : "Equipment, parts and private services"}</li></ul></div></div>,
     },
     {
-      label: "Kit Premium",
-      summary: "Kit completo R$ 399 · camisa R$ 189",
-      content: <div className={`${styles.cards} ${styles.premiumCards}`}><article><img className={styles.premiumImage} src="/kit-premium-lbr.webp" alt="Kit Premium Legends Bike Race com camisa, colete e dois pares de meias" /><div className={styles.premiumCopy}><span>Kit completo</span><strong>R$ 399</strong><p>Camisa de ciclismo, colete e dois pares de meias.</p></div></article><article><img className={styles.premiumImage} src="/camisa-ciclismo-lbr.webp" alt="Camisa de ciclismo Legends Bike Race vista de frente e de costas" /><div className={styles.premiumCopy}><span>Somente camisa</span><strong>R$ 189</strong><p>Camisa oficial de ciclismo Legends Bike Race.</p></div></article></div>,
+      label: c.premium,
+      summary: c.premiumSummary,
+      content: <div className={`${styles.cards} ${styles.premiumCards}`}><article><img className={styles.premiumImage} src="/kit-premium-lbr.webp" alt="Legends Bike Race Premium Kit" /><div className={styles.premiumCopy}><span>{c.premiumFull}</span><strong>R$ 399</strong><p>{c.premiumFullText}</p></div></article><article><img className={styles.premiumImage} src="/camisa-ciclismo-lbr.webp" alt="Legends Bike Race cycling jersey" /><div className={styles.premiumCopy}><span>{c.premiumOnly}</span><strong>R$ 189</strong><p>{c.premiumOnlyText}</p></div></article></div>,
     },
     {
-      label: "Modalidades",
+      label: t.modes.navigation,
       summary: "Gravel Race + Legends Experience",
-      content: <div className={`${styles.cards} ${modeStyles.modeCards}`}><article><span>Modalidade competitiva</span><h3>Legends Gravel Race</h3><p>Para ciclistas de gravel ou cyclocross que desejam disputar as etapas do formato escolhido com tempo registrado, classificação por pontos, categorias e premiação final.</p><ul><li>Classificação oficial independente por formato</li><li>Pontuação por etapa</li><li>Mesmas categorias na Ultimate e na Short</li><li>Troféus ao final da jornada</li></ul></article><article><span>Modalidade turismo</span><h3>Legends Experience</h3><p>Para participantes de Gravel, MTB e E-bike que desejam viver o formato escolhido com a mesma estrutura, sem pressão por tempo, ranking ou resultado competitivo.</p><ul><li>Sem classificação</li><li>MTB e E-bike permitidas</li><li>Mesma logística e segurança</li><li>Foco em turismo e desafio pessoal</li></ul></article></div>,
+      content: <div className={`${styles.cards} ${modeStyles.modeCards}`}><article><span>{t.modes.raceTag}</span><h3>Legends Gravel Race</h3><p>{t.modes.raceDescription}</p><ul>{t.modes.raceItems.map((item) => <li key={item}>{item}</li>)}</ul></article><article><span>{t.modes.experienceTag}</span><h3>Legends Experience</h3><p>{t.modes.experienceDescription}</p><ul>{t.modes.experienceItems.map((item) => <li key={item}>{item}</li>)}</ul></article></div>,
     },
     {
-      label: "Categorias",
-      summary: "Masculino: 4 · Feminino: 2",
-      content: <div className={styles.cards}><article><span>Masculino</span><p><b>Open</b> 18–29 anos<br /><b>Master A</b> 30–39 anos<br /><b>Master B</b> 40–49 anos<br /><b>Senior</b> 50 anos ou mais</p></article><article><span>Feminino</span><p><b>Feminino A</b> 18–40 anos<br /><b>Feminino B</b> 41 anos ou mais</p></article></div>,
+      label: c.categories,
+      summary: `${c.male}: 4 · ${c.female}: 2`,
+      content: <div className={styles.cards}><article><span>{c.male}</span><p><b>Open</b> 18–29 {c.years}<br /><b>Master A</b> 30–39 {c.years}<br /><b>Master B</b> 40–49 {c.years}<br /><b>Senior</b> 50 {locale === "pt" ? "anos ou mais" : locale === "es" ? "años o más" : "years or older"}</p></article><article><span>{c.female}</span><p><b>{c.female} A</b> 18–40 {c.years}<br /><b>{c.female} B</b> 41 {locale === "pt" ? "anos ou mais" : locale === "es" ? "años o más" : "years or older"}</p></article></div>,
     },
     {
-      label: "Premiação",
-      summary: `${journey.name.replace("Legends ", "")} · troféus do 1º ao ${journey.awardPlaces}º`,
-      content: <p className={styles.copy}>Na {journey.name}, os {journey.awardPlaces} primeiros colocados de cada categoria da Gravel Race recebem troféu. A classificação é definida pelo somatório dos pontos das {journey.days} etapas. A Legends Experience não possui classificação competitiva ou premiação esportiva.</p>,
+      label: c.award,
+      summary: `${journey.name.replace("Legends ", "")} · ${locale === "pt" ? `troféus do 1º ao ${journey.awardPlaces}º` : locale === "es" ? `trofeos del 1.º al ${journey.awardPlaces}.º` : `trophies from 1st to ${journey.awardPlaces}th`}`,
+      content: <p className={styles.copy}>{locale === "pt" ? `Na ${journey.name}, os ${journey.awardPlaces} primeiros colocados de cada categoria da Gravel Race recebem troféu. A classificação é definida pelo somatório dos pontos das ${journey.days} etapas. A Legends Experience não possui classificação competitiva ou premiação esportiva.` : locale === "es" ? `En ${journey.name}, los ${journey.awardPlaces} primeros de cada categoría de Gravel Race reciben trofeo. La clasificación se define por la suma de puntos de las ${journey.days} etapas. Legends Experience no tiene clasificación competitiva ni premiación deportiva.` : `In ${journey.name}, the top ${journey.awardPlaces} riders in each Gravel Race category receive a trophy. Rankings are based on the total points from the ${journey.days} stages. Legends Experience has no competitive ranking or sporting awards.`}</p>,
     },
     {
-      label: "Etapas",
-      summary: `${journey.days} dias · ${journey.distance} · ${journey.ascent}`,
-      content: <div className={styles.stages}>{visibleStages.map((stage) => <a href={stage.href} key={stage.id}><div className={styles.stageCopy}><span>{stage.label} · {stage.eligibility}</span><b>{stage.route}</b></div><ElevationProfile stage={stage} active={stagesOpen} /></a>)}</div>,
+      label: t.navigation.routes,
+      summary: `${journey.days} ${c.days} · ${journey.distance} · ${journey.ascent}`,
+      content: <div className={styles.stages}>{visibleStages.map((stage) => <a href={stage.href} key={stage.id}><div className={styles.stageCopy}><span>{stage.label} · {stage.eligibility}</span><b>{stage.route}</b></div><ElevationProfile stage={stage} active={stagesOpen} locale={locale} /></a>)}</div>,
     },
     {
-      label: "Como funciona a jornada",
-      summary: "5 passos essenciais",
-      content: <div className={styles.journey}><div className={styles.journeyIntro}><h3>Você pedala.<br /><em>A jornada segue.</em></h3><p>O essencial é entender como a jornada escolhida funciona na prática.</p></div><div className={styles.journeySteps}>{journeySteps.map(([number, title, description]) => <article key={number}><b>{number}</b><div><h3>{title}</h3><p>{description}</p></div></article>)}</div><div className={styles.journeyNote}><strong>Antes de se inscrever</strong><p>Hospedagem e refeições não estão incluídas. O transporte da bag oficial entre as cidades-base está incluído. O deslocamento pessoal do atleta permanece por conta do participante enquanto não houver serviço oficial de transfer divulgado.</p></div></div>,
+      label: c.journey,
+      summary: c.journeySummary,
+      content: <div className={styles.journey}><div className={styles.journeyIntro}><h3>{t.launch.journeyTitleLead}<br /><em>{t.launch.journeyTitleAccent}</em></h3><p>{t.launch.journeyDescription}</p></div><div className={styles.journeySteps}>{t.launch.steps.map(([number, title, description]) => <article key={number}><b>{number}</b><div><h3>{title}</h3><p>{description}</p></div></article>)}</div><div className={styles.journeyNote}><strong>{t.launch.beforeTitle}</strong><p>{t.launch.beforeText}</p></div></div>,
     },
     {
-      label: "Segurança e suporte",
-      summary: "SPOT · Starlink · Resgate",
-      content: <div className={styles.safetyGrid}><article><h3>SPOT</h3><p>Rastreamento satelital durante as etapas.</p></article><article><h3>Starlink</h3><p>Comunicação entre os veículos oficiais de apoio.</p></article><article><h3>Resgate</h3><p>Ambulância, equipes de resgate e veículos de segurança.</p></article><article><h3>Sem apoio externo</h3><p>A assistência é centralizada pela organização para preservar igualdade e segurança.</p></article></div>,
+      label: c.safety,
+      summary: "SPOT · Starlink · Rescue",
+      content: <div className={styles.safetyGrid}>{t.safety.items.map(([title, description]) => <article key={title}><h3>{title}</h3><p>{description}</p></article>)}</div>,
     },
     {
-      label: "Programação",
-      summary: format === "ultimate" ? "28 ABR a 02 MAI · 2027" : "30 ABR a 02 MAI · 2027",
-      content: <div className={styles.schedule}>{(format === "ultimate" ? ultimateProgram : shortProgram).map((day) => <article key={`${day.date}-${day.stage}`}><header><span>{day.date}</span><strong>{day.stage}</strong></header><p>{day.route}</p><ul>{day.events.map(([time, event]) => <li key={`${time}-${event}`}><time>{time}</time><span>{event}</span></li>)}</ul></article>)}</div>,
+      label: c.schedule,
+      summary: format === "ultimate" ? "28 APR — 02 MAY · 2027" : "30 APR — 02 MAY · 2027",
+      content: <div className={styles.schedule}>{program.map((day) => <article key={`${day.date}-${day.stage}`}><header><span>{day.date}</span><strong>{day.stage}</strong></header><p>{day.route}</p><ul>{day.events.map(([time, event]) => <li key={`${time}-${event}`}><time>{time}</time><span>{event}</span></li>)}</ul></article>)}</div>,
     },
     {
-      label: "Regulamento e documentos",
-      summary: "Regras · saúde · manual",
-      content: <div className={styles.documents}><a href="/regulamento"><b>01</b><span>Regulamento</span><small>Formatos, categorias, segurança, penalidades e transferência.</small></a><a href="/documentos-medicos"><b>02</b><span>Documento médico</span><small>Atestado médico e Declaração de Saúde obrigatórios.</small></a><a href="/manual-do-atleta"><b>03</b><span>Manual do atleta</span><small>Logística e equipamentos perto do evento.</small></a></div>,
+      label: c.documents,
+      summary: c.rules,
+      content: <div className={styles.documents}><a href="/regulamento"><b>01</b><span>{locale === "pt" ? "Regulamento" : locale === "es" ? "Reglamento" : "Regulations"}</span><small>{locale === "pt" ? "Formatos, categorias, segurança, penalidades e transferência." : locale === "es" ? "Formatos, categorías, seguridad, penalizaciones y transferencias." : "Formats, categories, safety, penalties and transfers."}</small></a><a href="/documentos-medicos"><b>02</b><span>{c.medical}</span><small>{locale === "pt" ? "Atestado médico e Declaração de Saúde obrigatórios." : locale === "es" ? "Certificado médico y Declaración de Salud obligatorios." : "Medical certificate and Health Declaration are mandatory."}</small></a><a href="/manual-do-atleta"><b>03</b><span>{c.manual}</span><small>{locale === "pt" ? "Logística e equipamentos perto do evento." : locale === "es" ? "Logística y equipamiento cerca del evento." : "Logistics and equipment close to the event."}</small></a></div>,
     },
     {
-      label: "Hospedagens conveniadas",
+      label: c.hotels,
       summary: journey.cities,
-      content: <p className={styles.copy}>A rede de hospedagens está em cadastramento. Os hotéis serão selecionados com café da manhã antecipado, entrega das bags e check-in ajustado à rotina de cada etapa. A relação completa será publicada nos canais oficiais.</p>,
+      content: <p className={styles.copy}>{locale === "pt" ? "A rede de hospedagens está em cadastramento. Os hotéis serão selecionados com café da manhã antecipado, entrega das bags e check-in ajustado à rotina de cada etapa. A relação completa será publicada nos canais oficiais." : locale === "es" ? "La red de alojamientos está en registro. Los hoteles serán seleccionados con desayuno temprano, entrega de bags y check-in adaptado a la rutina de cada etapa. La lista completa se publicará en los canales oficiales." : "The accommodation network is being registered. Hotels will be selected with early breakfast, bag delivery and check-in adapted to each stage. The complete list will be published through official channels."}</p>,
     },
   ];
 }
 
-export default function HomeRegistrationInfo() {
+export default function HomeRegistrationInfo({ locale = "pt" }: { locale?: Locale }) {
   const [format, setFormat] = useState<JourneyFormat>("ultimate");
   const [open, setOpen] = useState<number | null>(0);
   const journey = launchConfig.journeys[format];
   const activeLot = journey.lots[launchConfig.activeLotIndex];
-  const rows = getRows(format, open === 6);
+  const rows = getRows(format, open === 6, locale);
+  const c = registrationCopy[locale];
 
   useEffect(() => {
     const openFromHash = () => {
@@ -317,15 +349,15 @@ export default function HomeRegistrationInfo() {
 
   return <section className={styles.section} id="inscricoes">
     <div className={`wide ${styles.frame}`}>
-      <div className={styles.head}><div><p className="kicker">Inscrições · informações completas</p><h2>Tudo para decidir.<br /><em>Sem procurar.</em></h2></div><p>Escolha a jornada e consulte valores, itens incluídos, categorias, programação e documentos sem sair da página inicial.</p></div>
+      <div className={styles.head}><div><p className="kicker">{c.kicker}</p><h2>{c.titleLead}<br /><em>{c.titleAccent}</em></h2></div><p>{c.introduction}</p></div>
       <div className={styles.highlight}>
-        <div className={styles.formatPicker} aria-label="Escolha o formato da Legends">
-          <button type="button" className={format === "ultimate" ? styles.selected : ""} aria-pressed={format === "ultimate"} onClick={() => selectFormat("ultimate")}><b>Ultimate</b><span>4 etapas</span></button>
-          <button type="button" className={format === "short" ? styles.selected : ""} aria-pressed={format === "short"} onClick={() => selectFormat("short")}><b>Short</b><span>2 etapas</span></button>
+        <div className={styles.formatPicker} aria-label={c.formatAria}>
+          <button type="button" className={format === "ultimate" ? styles.selected : ""} aria-pressed={format === "ultimate"} onClick={() => selectFormat("ultimate")}><b>Ultimate</b><span>4 {c.stages}</span></button>
+          <button type="button" className={format === "short" ? styles.selected : ""} aria-pressed={format === "short"} onClick={() => selectFormat("short")}><b>Short</b><span>2 {c.stages}</span></button>
         </div>
-        <small>{journey.dateShort} · {journey.days} dias</small><b>{activeLot.price} <i>{activeLot.name}</i></b><a href={launchConfig.registrationUrl}>Me inscrever <em>→</em></a>
+        <small>{journey.dateShort} · {journey.days} {c.days}</small><b>{activeLot.price} <i>{activeLot.name}</i></b><a href={launchConfig.registrationUrl}>{c.register} <em>→</em></a>
       </div>
-      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details id={row.label === "Etapas" ? "percursos" : row.label === "Modalidades" ? "modalidades" : undefined} key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
+      <div className={styles.content}><div className={styles.accordion}>{rows.map((row, index) => <details id={index === 6 ? "percursos" : index === 3 ? "modalidades" : undefined} key={row.label} open={open === index} onToggle={(event) => { setOpen((event.currentTarget as HTMLDetailsElement).open ? index : null); }}><summary><b>{open === index ? "×" : "+"}</b><strong>{row.label}</strong><small>{row.summary}</small></summary><div className={styles.body}>{row.content}</div></details>)}</div></div>
     </div>
   </section>;
 }
