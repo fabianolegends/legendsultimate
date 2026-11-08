@@ -1,0 +1,10 @@
+.modeCards{gap:18px;background:transparent}
+.modeCards article{min-height:0;padding:30px;background:#0d100e;border:1px solid rgba(198,122,59,.38)}
+.modeCards article:last-child{background:rgba(241,236,227,.06)}
+.modeCards h3{margin:15px 0;color:#f1ece3;font:700 clamp(28px,2.45vw,39px)/.95 'Barlow Condensed';text-transform:uppercase}
+.modeCards p{max-width:560px;min-height:74px}
+.modeCards ul{display:grid;gap:10px;margin:25px 0 0;padding:21px 0 0;border-top:1px solid rgba(241,236,227,.15);list-style:none}
+.modeCards li{position:relative;padding-left:20px;color:#dedbd4;font:500 14px/1.45 Manrope}
+.modeCards li:before{position:absolute;left:0;color:#c67a3b;content:'→'}
+
+@media(max-width:900px){.modeCards{gap:12px}.modeCards article{padding:24px}.modeCards p{min-height:0}}
