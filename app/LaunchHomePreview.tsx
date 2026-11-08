@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { getRegistrationHref } from "./lib/launch";
-import { localeFromPathname } from "./i18n/config";
+import { localeDetails, localeFromPathname } from "./i18n/config";
 import { getHomeCopy } from "./i18n/home";
 
 const includedProductImages = [
@@ -17,6 +17,7 @@ const includedProductImages = [
 export default function LaunchHomePreview() {
   const pathname = usePathname();
   const locale = localeFromPathname(pathname);
+  const registrationHref = `${localeDetails[locale].href}#inscricoes`;
   const copy = getHomeCopy(locale);
   const [kitTarget, setKitTarget] = useState<HTMLElement | null>(null);
 
@@ -32,7 +33,7 @@ export default function LaunchHomePreview() {
       });
       if (!desktopNav.querySelector('[data-launch-link="inscricoes"]')) {
         const registration = document.createElement("a");
-        registration.href = "/inscricoes";
+        registration.href = registrationHref;
         registration.textContent = copy.navigation.registration;
         registration.dataset.launchLink = "inscricoes";
         desktopNav.insertBefore(registration, desktopNav.firstChild);
@@ -56,7 +57,7 @@ export default function LaunchHomePreview() {
     const ctas = home.querySelector<HTMLElement>(".heroCtas");
     if (ctas) {
       const links = Array.from(ctas.querySelectorAll<HTMLAnchorElement>("a"));
-      if (links[0]) { links[0].href = "#inscricoes"; links[0].innerHTML = `${copy.navigation.register} <span>↘</span>`; }
+      if (links[0]) { links[0].href = registrationHref; links[0].innerHTML = `${copy.navigation.register} <span>↘</span>`; }
       if (links[1]) links[1].style.display = "none";
 
       ctas.querySelectorAll(".remainingSpotsCard,.launchPrice").forEach((element) => element.remove());
@@ -95,7 +96,7 @@ export default function LaunchHomePreview() {
       }
       setKitTarget(root);
     }
-  }, [copy, locale]);
+  }, [copy, locale, registrationHref]);
 
   return <>
     <style>{`
@@ -116,7 +117,7 @@ export default function LaunchHomePreview() {
         <div className="launchIncludedHead"><div><p className="eyebrow">{copy.launch.includedEyebrow}</p><h2>{copy.launch.includedTitleLead}<br />{copy.launch.includedTitleAccent}</h2></div><p>{copy.launch.includedDescription}</p></div>
         <div className="launchProducts">{copy.launch.products.map((name, index)=><article className="launchProduct" key={name}><img src={includedProductImages[index]} alt={name} /><h3>{name}</h3></article>)}</div>
         <div className="launchServices">{copy.launch.services.map(item=><span key={item}>{item}</span>)}</div>
-        <div className="launchDocs"><a href="/inscricoes">{copy.launch.includedCta} →</a><a href="/regulamento">{copy.launch.regulation}</a><a href="/documentos-medicos">{copy.launch.medical}</a></div>
+        <div className="launchDocs"><a href={registrationHref}>{copy.launch.includedCta} →</a><a href="/regulamento">{copy.launch.regulation}</a><a href="/documentos-medicos">{copy.launch.medical}</a></div>
       </div></section>, kitTarget
     )}
   </>;
