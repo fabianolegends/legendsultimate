@@ -137,6 +137,8 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
       <TotalElevationProfile locale={locale} />
       <HomeRegistrationInfo locale={locale} />
 
+      <LegendsAthleteCarousel />
+
       <section className="launchIncluded" id="incluido"><div className="wide">
         <div className="launchIncludedHead"><div><p className="kicker">{t.launch.includedEyebrow}</p><h2>{t.launch.includedTitleLead}<br /><em>{t.launch.includedTitleAccent}</em></h2></div><p>{t.launch.includedDescription}</p></div>
         <div className="launchProducts">{t.launch.products.map((name, index) => <article className="launchProduct" key={name}><img src={["/images/kit/camiseta-casual.webp","/images/kit/bag-50-litros.webp","/images/kit/cap-ciclismo.webp","/images/kit/placa-gravel.webp"][index]} alt={name} /><h3>{name}</h3></article>)}</div>
@@ -155,8 +157,6 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
           <figcaption>{t.manifesto.caption}</figcaption>
         </figure>
       </div></section>
-
-      <LegendsAthleteCarousel />
 
       <section className="faqSection" id="faq"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.faq.eyebrow}</p><h2>{t.faq.titleLead}<br /><em>{t.faq.titleAccent}</em></h2></div><p>{t.faq.description}</p></div><div className="faqList">{localizedFaqs.map(([q,a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div><a className="launchFaqLink button" href={faqHref}>{t.faq.all} <span>→</span></a></div></section>
     </main>
