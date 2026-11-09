@@ -37,7 +37,7 @@ export default function LegendsAthleteCarousel() {
   return (
     <section className="legendsAthletes" aria-labelledby="legends-athletes-title">
       <style>{`
-        .legendsAthletes{padding:96px 0;background:#0e110f;color:#f1ece3;overflow:hidden}
+        .legendsAthletes{padding:56px 0 96px;background:#0e110f;color:#f1ece3;overflow:hidden}
         .legendsAthletesHead{display:flex;align-items:end;justify-content:space-between;gap:36px;margin-bottom:30px}
         .legendsAthletesHead .kicker{margin:0 0 10px;color:#c67a3b;font:700 13px 'Barlow Condensed';letter-spacing:.22em;text-transform:uppercase}
         .legendsAthletes h2{margin:0;font:700 clamp(46px,5vw,72px)/.9 'Barlow Condensed';letter-spacing:-.025em;text-transform:uppercase}
