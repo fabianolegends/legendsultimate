@@ -3,6 +3,7 @@ import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
 import HomeRegistrationInfo from "./HomeRegistrationInfo";
 import TotalElevationProfile from "./TotalElevationProfile";
+import LegendsAthleteCarousel from "./LegendsAthleteCarousel";
 import { getHomeCopy } from "./i18n/home";
 import type { Locale } from "./i18n/config";
 
@@ -155,6 +156,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         </figure>
       </div></section>
 
+      <LegendsAthleteCarousel />
       <section className="faqSection" id="faq"><div className="wide"><div className="sectionHead"><div><p className="kicker">{t.faq.eyebrow}</p><h2>{t.faq.titleLead}<br /><em>{t.faq.titleAccent}</em></h2></div><p>{t.faq.description}</p></div><div className="faqList">{localizedFaqs.map(([q,a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div><a className="launchFaqLink button" href={faqHref}>{t.faq.all} <span>→</span></a></div></section>
     </main>
   );
