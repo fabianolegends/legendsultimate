@@ -32,6 +32,7 @@ type RegistrationInput = {
   phone?: string | null;
   location?: string | null;
   registered_at?: string | null;
+  document_number?: string | null;
   cpf_cnpj?: string | null;
   postal_code?: string | null;
   address?: string | null;
@@ -241,6 +242,10 @@ function normalizeInput(
     external_registration_id: cleanNullable(input.external_registration_id),
     phone: cleanNullable(input.phone),
     location: cleanNullable(input.location),
+    document_number:
+      cleanNullable(input.document_number ?? input.cpf_cnpj)
+        ?.replace(/[^a-zA-Z0-9]/g, "")
+        .toUpperCase() ?? null,
     cpf_cnpj: cleanNullable(input.cpf_cnpj)?.replace(/\D/g, "") ?? null,
     postal_code: cleanNullable(input.postal_code)?.replace(/\D/g, "") ?? null,
     address: cleanNullable(input.address),
@@ -292,7 +297,7 @@ export async function GET(request: NextRequest) {
     const baseFields =
       "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
     const detailFields = `${baseFields}, phone, location, registered_at, terms_accepted_at, privacy_accepted_at`;
-    const billingFields = `${detailFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
+    const billingFields = `${detailFields}, document_number, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
     const fields = `${billingFields}, registration_lot_id, registration_lot_name, registration_base_fee_cents, senior_discount_applied, senior_discount_cents, premium_kit_selected, premium_kit_fee_cents, casual_shirt_size, jersey_size, regulation_version`;
     let query = supabase
       .from("registrations")
@@ -729,7 +734,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error:
-              "Execute a migration 010_windfit_registration_details.sql antes de importar este arquivo.",
+              "Execute as migrations pendentes do Supabase, incluindo 031_athlete_card_photos.sql, antes de importar este arquivo.",
           },
           { status: 409 },
         );
