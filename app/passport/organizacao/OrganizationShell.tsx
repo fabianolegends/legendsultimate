@@ -16,7 +16,6 @@ const groups: Array<{ label: string; items: NavItem[] }> = [
   { label: "Preparação", items: [
     { href: "/passport/organizacao/eventos", label: "Eventos", icon: "◇" },
     { href: "/passport/organizacao/inscritos", label: "Inscritos", icon: "◎" },
-    { href: "/passport/organizacao/fotos-atletas", label: "Fotos dos atletas", icon: "▣" },
     { href: "/passport/organizacao/rotas", label: "Percursos oficiais", icon: "↝" },
     { href: "/passport/organizacao/checkpoints", label: "Checkpoints", icon: "⌖" },
   ] },

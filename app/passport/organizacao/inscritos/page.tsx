@@ -231,17 +231,6 @@ function parseCsv(text: string) {
     city: ["cidade", "city"],
     location: ["cidade_estado_pais", "localizacao", "location"],
     phone: ["telefone", "telefone_do_atleta", "celular", "phone", "whatsapp"],
-    document_number: [
-      "documento",
-      "numero_documento",
-      "numero_do_documento",
-      "document_number",
-      "cpf",
-      "cpf_cnpj",
-      "dni",
-      "cedula",
-      "passaporte",
-    ],
     registered_at: [
       "data_da_inscricao",
       "data_inscricao",
@@ -314,7 +303,6 @@ function parseCsv(text: string) {
         payment_status:
           read("payment_status") || registrationStatus || undefined,
         phone: read("phone") || null,
-        document_number: read("document_number") || null,
         location: read("location") || null,
         registered_at: read("registered_at") || null,
       };

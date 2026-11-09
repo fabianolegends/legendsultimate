@@ -32,7 +32,6 @@ type RegistrationInput = {
   phone?: string | null;
   location?: string | null;
   registered_at?: string | null;
-  document_number?: string | null;
   cpf_cnpj?: string | null;
   postal_code?: string | null;
   address?: string | null;
@@ -55,11 +54,6 @@ function makeRegistrationCode() {
 function cleanNullable(value: unknown) {
   const text = String(value ?? "").trim();
   return text || null;
-}
-
-function withoutDocumentNumber<T extends Record<string, unknown>>(value: T) {
-  const { document_number: _documentNumber, ...legacy } = value;
-  return legacy;
 }
 
 function normalizeDate(value: unknown) {
@@ -247,13 +241,6 @@ function normalizeInput(
     external_registration_id: cleanNullable(input.external_registration_id),
     phone: cleanNullable(input.phone),
     location: cleanNullable(input.location),
-    ...(cleanNullable(input.document_number ?? input.cpf_cnpj)
-      ? {
-          document_number: cleanNullable(input.document_number ?? input.cpf_cnpj)
-            ?.replace(/[^a-zA-Z0-9]/g, "")
-            .toUpperCase(),
-        }
-      : {}),
     cpf_cnpj: cleanNullable(input.cpf_cnpj)?.replace(/\D/g, "") ?? null,
     postal_code: cleanNullable(input.postal_code)?.replace(/\D/g, "") ?? null,
     address: cleanNullable(input.address),
@@ -734,25 +721,15 @@ export async function POST(request: NextRequest) {
         normalizedByEmail.set(normalizedRow.email, normalizedRow);
       });
       const normalized = [...normalizedByEmail.values()];
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("registrations")
         .upsert(normalized, { onConflict: "event_id,email" })
         .select("*");
-      if (error?.code === "42703" && normalized.some((row) => "document_number" in row)) {
-        const legacy = await supabase
-          .from("registrations")
-          .upsert(normalized.map(withoutDocumentNumber), {
-            onConflict: "event_id,email",
-          })
-          .select("*");
-        data = legacy.data;
-        error = legacy.error;
-      }
       if (error?.code === "42703")
         return NextResponse.json(
           {
             error:
-              "Execute as migrations pendentes do Supabase, incluindo 031_athlete_card_photos.sql, antes de importar este arquivo.",
+              "Execute a migration 010_windfit_registration_details.sql antes de importar este arquivo.",
           },
           { status: 409 },
         );
@@ -781,20 +758,11 @@ export async function POST(request: NextRequest) {
       body.registration ?? (body as RegistrationInput),
       { forcedSource: "manual" },
     );
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from("registrations")
       .insert(normalized)
       .select("*")
       .single();
-    if (error?.code === "42703" && "document_number" in normalized) {
-      const legacy = await supabase
-        .from("registrations")
-        .insert(withoutDocumentNumber(normalized))
-        .select("*")
-        .single();
-      data = legacy.data;
-      error = legacy.error;
-    }
     if (error) throw error;
     return NextResponse.json({ registration: data });
   } catch (error) {
@@ -834,22 +802,12 @@ export async function PATCH(request: NextRequest) {
     const normalized = normalizeInput(body.registration ?? {}, {
       forcedSource,
     });
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from("registrations")
       .update(normalized)
       .eq("id", id)
       .select("*")
       .single();
-    if (error?.code === "42703" && "document_number" in normalized) {
-      const legacy = await supabase
-        .from("registrations")
-        .update(withoutDocumentNumber(normalized))
-        .eq("id", id)
-        .select("*")
-        .single();
-      data = legacy.data;
-      error = legacy.error;
-    }
     if (error) throw error;
     await syncLinkedAthlete(supabase, data);
     return NextResponse.json({ registration: data });
