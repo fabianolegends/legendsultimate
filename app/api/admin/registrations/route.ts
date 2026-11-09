@@ -57,6 +57,11 @@ function cleanNullable(value: unknown) {
   return text || null;
 }
 
+function withoutDocumentNumber<T extends Record<string, unknown>>(value: T) {
+  const { document_number: _documentNumber, ...legacy } = value;
+  return legacy;
+}
+
 function normalizeDate(value: unknown) {
   const text = String(value ?? "").trim();
   if (!text) return null;
@@ -242,10 +247,13 @@ function normalizeInput(
     external_registration_id: cleanNullable(input.external_registration_id),
     phone: cleanNullable(input.phone),
     location: cleanNullable(input.location),
-    document_number:
-      cleanNullable(input.document_number ?? input.cpf_cnpj)
-        ?.replace(/[^a-zA-Z0-9]/g, "")
-        .toUpperCase() ?? null,
+    ...(cleanNullable(input.document_number ?? input.cpf_cnpj)
+      ? {
+          document_number: cleanNullable(input.document_number ?? input.cpf_cnpj)
+            ?.replace(/[^a-zA-Z0-9]/g, "")
+            .toUpperCase(),
+        }
+      : {}),
     cpf_cnpj: cleanNullable(input.cpf_cnpj)?.replace(/\D/g, "") ?? null,
     postal_code: cleanNullable(input.postal_code)?.replace(/\D/g, "") ?? null,
     address: cleanNullable(input.address),
@@ -297,7 +305,7 @@ export async function GET(request: NextRequest) {
     const baseFields =
       "id, event_id, athlete_id, registration_code, bib_number, full_name, email, birth_date, gender, category, modality, country_code, city, status, claimed_at, created_at, updated_at, source, external_registration_id, payment_status, imported_at, last_synced_at";
     const detailFields = `${baseFields}, phone, location, registered_at, terms_accepted_at, privacy_accepted_at`;
-    const billingFields = `${detailFields}, document_number, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
+    const billingFields = `${detailFields}, cpf_cnpj, postal_code, address, address_number, address_complement, province`;
     const fields = `${billingFields}, registration_lot_id, registration_lot_name, registration_base_fee_cents, senior_discount_applied, senior_discount_cents, premium_kit_selected, premium_kit_fee_cents, casual_shirt_size, jersey_size, regulation_version`;
     let query = supabase
       .from("registrations")
@@ -726,10 +734,20 @@ export async function POST(request: NextRequest) {
         normalizedByEmail.set(normalizedRow.email, normalizedRow);
       });
       const normalized = [...normalizedByEmail.values()];
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("registrations")
         .upsert(normalized, { onConflict: "event_id,email" })
         .select("*");
+      if (error?.code === "42703" && normalized.some((row) => "document_number" in row)) {
+        const legacy = await supabase
+          .from("registrations")
+          .upsert(normalized.map(withoutDocumentNumber), {
+            onConflict: "event_id,email",
+          })
+          .select("*");
+        data = legacy.data;
+        error = legacy.error;
+      }
       if (error?.code === "42703")
         return NextResponse.json(
           {
@@ -763,11 +781,20 @@ export async function POST(request: NextRequest) {
       body.registration ?? (body as RegistrationInput),
       { forcedSource: "manual" },
     );
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("registrations")
       .insert(normalized)
       .select("*")
       .single();
+    if (error?.code === "42703" && "document_number" in normalized) {
+      const legacy = await supabase
+        .from("registrations")
+        .insert(withoutDocumentNumber(normalized))
+        .select("*")
+        .single();
+      data = legacy.data;
+      error = legacy.error;
+    }
     if (error) throw error;
     return NextResponse.json({ registration: data });
   } catch (error) {
@@ -807,12 +834,22 @@ export async function PATCH(request: NextRequest) {
     const normalized = normalizeInput(body.registration ?? {}, {
       forcedSource,
     });
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("registrations")
       .update(normalized)
       .eq("id", id)
       .select("*")
       .single();
+    if (error?.code === "42703" && "document_number" in normalized) {
+      const legacy = await supabase
+        .from("registrations")
+        .update(withoutDocumentNumber(normalized))
+        .eq("id", id)
+        .select("*")
+        .single();
+      data = legacy.data;
+      error = legacy.error;
+    }
     if (error) throw error;
     await syncLinkedAthlete(supabase, data);
     return NextResponse.json({ registration: data });
