@@ -37,7 +37,7 @@ export default function LegendsAthleteCarousel() {
   return (
     <section className="legendsAthletes" aria-labelledby="legends-athletes-title">
       <style>{`
-        .legendsAthletes{padding:56px 0 96px;background:#0e110f;color:#f1ece3;overflow:hidden}
+        .legendsAthletes{padding:28px 0 96px;background:#0e110f;color:#f1ece3;overflow:hidden}
         .legendsAthletesHead{display:flex;align-items:end;justify-content:space-between;gap:36px;margin-bottom:30px}
         .legendsAthletesHead .kicker{margin:0 0 10px;color:#c67a3b;font:700 13px 'Barlow Condensed';letter-spacing:.22em;text-transform:uppercase}
         .legendsAthletes h2{margin:0;font:700 clamp(46px,5vw,72px)/.9 'Barlow Condensed';letter-spacing:-.025em;text-transform:uppercase}
@@ -52,11 +52,7 @@ export default function LegendsAthleteCarousel() {
         .legendsAthleteCard{position:relative;isolation:isolate;flex:0 0 calc((100% - 64px)/5);aspect-ratio:3/4;overflow:hidden;background:#191d19;scroll-snap-align:start}
         .legendsAthleteCard img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
         .legendsAthleteCard:hover img{transform:scale(1.045)}
-        .legendsAthleteCard:after{content:"";position:absolute;z-index:1;inset:40% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.88));pointer-events:none}
-        .legendsAthleteCaption{position:absolute;z-index:2;right:0;bottom:0;left:0;padding:18px;color:#f1ece3}
-        .legendsAthleteCaption strong{display:block;font:700 clamp(20px,1.7vw,28px)/.94 'Barlow Condensed';letter-spacing:.02em;text-transform:uppercase}
-        .legendsAthleteCaption span{display:block;margin-top:7px;color:#e3a16a;font:700 10px 'Barlow Condensed';letter-spacing:.15em;text-transform:uppercase}
-        @media(max-width:760px){.legendsAthletes{padding:68px 0}.legendsAthletesHead{display:grid;grid-template-columns:1fr auto;gap:18px;margin-bottom:24px}.legendsAthletesHead>p{display:none}.legendsAthletes h2{font-size:42px}.legendsAthleteControls button{width:42px;height:42px}.legendsAthleteTrack{gap:12px}.legendsAthleteCard{flex-basis:calc((100% - 12px)/2)}.legendsAthleteCaption{padding:14px}.legendsAthleteCaption strong{font-size:22px}}
+                @media(max-width:760px){.legendsAthletes{padding:68px 0}.legendsAthletesHead{display:grid;grid-template-columns:1fr auto;gap:18px;margin-bottom:24px}.legendsAthletesHead>p{display:none}.legendsAthletes h2{font-size:42px}.legendsAthleteControls button{width:42px;height:42px}.legendsAthleteTrack{gap:12px}.legendsAthleteCard{flex-basis:calc((100% - 12px)/2)}}
       `}</style>
       <div className="wide">
         <header className="legendsAthletesHead">
@@ -70,7 +66,7 @@ export default function LegendsAthleteCarousel() {
         <div className="legendsAthleteViewport" ref={viewportRef} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
           <div className="legendsAthleteTrack">{athletes.map((athlete) => <article className="legendsAthleteCard" key={athlete.name}>
             <img src={athlete.image} alt={`Card de ${athlete.name}`} />
-            <div className="legendsAthleteCaption"><strong>{athlete.name}</strong><span>{athlete.location}</span></div>
+            
           </article>)}</div>
         </div>
       </div>
