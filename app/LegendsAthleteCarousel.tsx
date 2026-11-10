@@ -20,8 +20,6 @@ const athletes = [
 export default function LegendsAthleteCarousel() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
-  const autoScrollStopped = isPaused || isHovering;
 
   function move(direction: 1 | -1) {
     const viewport = viewportRef.current;
@@ -39,7 +37,7 @@ export default function LegendsAthleteCarousel() {
   }
 
   useEffect(() => {
-    if (autoScrollStopped) return;
+    if (isPaused) return;
     const viewport = viewportRef.current;
     if (!viewport) return;
 
@@ -60,7 +58,7 @@ export default function LegendsAthleteCarousel() {
 
     frameId = window.requestAnimationFrame(scroll);
     return () => window.cancelAnimationFrame(frameId);
-  }, [autoScrollStopped]);
+  }, [isPaused]);
 
   return (
     <section className="legendsAthletes" aria-labelledby="legends-athletes-title">
@@ -92,7 +90,7 @@ export default function LegendsAthleteCarousel() {
             <button type="button" onClick={() => move(1)} aria-label="Ver próximos atletas">→</button>
           </nav>
         </header>
-        <div className="legendsAthleteViewport" ref={viewportRef} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onFocus={() => setIsHovering(true)} onBlur={() => setIsHovering(false)}>
+        <div className="legendsAthleteViewport" ref={viewportRef}>
           <div className="legendsAthleteTrack">{athletes.map((athlete) => <article className="legendsAthleteCard" key={athlete.name}>
             <img src={athlete.image} alt={`Card de ${athlete.name}`} />
             
