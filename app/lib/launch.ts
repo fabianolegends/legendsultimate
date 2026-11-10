@@ -25,8 +25,8 @@ export const launchConfig = {
       awardPlaces: 5,
       lots: [
         { name: "Lote 01", price: "R$ 999", period: "18/08 a 20/09/2026" },
-        { name: "Lote 02", price: "R$ 1.199", period: "21/09 a 10/12/2026" },
-        { name: "Lote 03", price: "R$ 1.399", period: "11/12/2026 a 20/03/2027" },
+        { name: "Lote 02", price: "R$ 1.199", period: "21/09/2026 a 10/01/2027" },
+        { name: "Lote 03", price: "R$ 1.399", period: "11/01/2027 a 20/03/2027" },
       ],
     },
     short: {
@@ -43,8 +43,8 @@ export const launchConfig = {
       awardPlaces: 3,
       lots: [
         { name: "Lote 01", price: "R$ 699", period: "18/08 a 20/09/2026" },
-        { name: "Lote 02", price: "R$ 799", period: "21/09 a 10/12/2026" },
-        { name: "Lote 03", price: "R$ 899", period: "11/12/2026 a 20/03/2027" },
+        { name: "Lote 02", price: "R$ 799", period: "21/09/2026 a 10/01/2027" },
+        { name: "Lote 03", price: "R$ 899", period: "11/01/2027 a 20/03/2027" },
       ],
     },
   },
