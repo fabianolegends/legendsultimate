@@ -26,14 +26,14 @@ export default function LegendsAthleteCarousel() {
     if (!viewport) return;
     const maxScroll = viewport.scrollWidth - viewport.clientWidth;
     if (direction === 1 && viewport.scrollLeft >= maxScroll - 8) {
-      viewport.scrollTo({ left: 0, behavior: "smooth" });
+      viewport.scrollLeft = 0;
       return;
     }
     if (direction === -1 && viewport.scrollLeft <= 8) {
-      viewport.scrollTo({ left: maxScroll, behavior: "smooth" });
+      viewport.scrollLeft = maxScroll;
       return;
     }
-    viewport.scrollBy({ left: direction * viewport.clientWidth * 0.86, behavior: "smooth" });
+    viewport.scrollLeft += direction * viewport.clientWidth * 0.86;
   }
 
   useEffect(() => {
@@ -41,23 +41,15 @@ export default function LegendsAthleteCarousel() {
     const viewport = viewportRef.current;
     if (!viewport) return;
 
-    let frameId = 0;
-    let previousTime = performance.now();
     const speed = 28;
-
-    const scroll = (time: number) => {
-      const elapsed = time - previousTime;
-      previousTime = time;
+    const timer = window.setInterval(() => {
       const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-      if (maxScroll > 0) {
-        const nextScroll = viewport.scrollLeft + (speed * elapsed) / 1000;
-        viewport.scrollLeft = nextScroll >= maxScroll ? 0 : nextScroll;
-      }
-      frameId = window.requestAnimationFrame(scroll);
-    };
+      if (maxScroll <= 0) return;
+      const nextScroll = viewport.scrollLeft + speed * 0.032;
+      viewport.scrollLeft = nextScroll >= maxScroll ? 0 : nextScroll;
+    }, 32);
 
-    frameId = window.requestAnimationFrame(scroll);
-    return () => window.cancelAnimationFrame(frameId);
+    return () => window.clearInterval(timer);
   }, [isPaused]);
 
   return (
