@@ -74,7 +74,7 @@ export default function LegendsAthleteCarousel() {
         .legendsAthleteControls{display:flex;gap:8px}
         .legendsAthleteControls button{display:grid;place-items:center;width:48px;height:48px;border:1px solid rgba(198,122,59,.55);background:transparent;color:#f1ece3;font-size:24px;cursor:pointer;transition:.2s}
         .legendsAthleteControls button:hover,.legendsAthleteControls button:focus-visible{background:#c67a3b;color:#111411;outline:0}
-        .legendsAthleteViewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+        .legendsAthleteViewport{overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}
         .legendsAthleteViewport::-webkit-scrollbar{display:none}
         .legendsAthleteTrack{display:flex;gap:16px}
         .legendsAthleteCard{position:relative;isolation:isolate;flex:0 0 calc((100% - 64px)/5);aspect-ratio:3/4;overflow:hidden;background:#191d19;scroll-snap-align:start}
