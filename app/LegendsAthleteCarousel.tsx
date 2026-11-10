@@ -19,24 +19,48 @@ const athletes = [
 
 export default function LegendsAthleteCarousel() {
   const viewportRef = useRef<HTMLDivElement>(null);
-  const [paused, setPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const autoScrollStopped = isPaused || isHovering;
 
   function move(direction: 1 | -1) {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const atEnd = viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 8;
-    if (direction === 1 && atEnd) {
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (direction === 1 && viewport.scrollLeft >= maxScroll - 8) {
       viewport.scrollTo({ left: 0, behavior: "smooth" });
       return;
     }
-    viewport.scrollBy({ left: direction * viewport.clientWidth, behavior: "smooth" });
+    if (direction === -1 && viewport.scrollLeft <= 8) {
+      viewport.scrollTo({ left: maxScroll, behavior: "smooth" });
+      return;
+    }
+    viewport.scrollBy({ left: direction * viewport.clientWidth * 0.86, behavior: "smooth" });
   }
 
   useEffect(() => {
-    if (paused) return;
-    const timer = window.setInterval(() => move(1), 5200);
-    return () => window.clearInterval(timer);
-  }, [paused]);
+    if (autoScrollStopped) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    let frameId = 0;
+    let previousTime = performance.now();
+    const speed = 28;
+
+    const scroll = (time: number) => {
+      const elapsed = time - previousTime;
+      previousTime = time;
+      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+      if (maxScroll > 0) {
+        const nextScroll = viewport.scrollLeft + (speed * elapsed) / 1000;
+        viewport.scrollLeft = nextScroll >= maxScroll ? 0 : nextScroll;
+      }
+      frameId = window.requestAnimationFrame(scroll);
+    };
+
+    frameId = window.requestAnimationFrame(scroll);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [autoScrollStopped]);
 
   return (
     <section className="legendsAthletes" aria-labelledby="legends-athletes-title">
@@ -64,10 +88,11 @@ export default function LegendsAthleteCarousel() {
           <p>Conheça os atletas confirmados que já escolheram viver a Legends Bike Race.</p>
           <nav className="legendsAthleteControls" aria-label="Navegação dos atletas confirmados">
             <button type="button" onClick={() => move(-1)} aria-label="Ver atletas anteriores">←</button>
+            <button type="button" onClick={() => setIsPaused((value) => !value)} aria-pressed={isPaused} aria-label={isPaused ? "Retomar rolagem automática" : "Pausar rolagem automática"}>{isPaused ? "▶" : "Ⅱ"}</button>
             <button type="button" onClick={() => move(1)} aria-label="Ver próximos atletas">→</button>
           </nav>
         </header>
-        <div className="legendsAthleteViewport" ref={viewportRef} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+        <div className="legendsAthleteViewport" ref={viewportRef} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onFocus={() => setIsHovering(true)} onBlur={() => setIsHovering(false)}>
           <div className="legendsAthleteTrack">{athletes.map((athlete) => <article className="legendsAthleteCard" key={athlete.name}>
             <img src={athlete.image} alt={`Card de ${athlete.name}`} />
             
