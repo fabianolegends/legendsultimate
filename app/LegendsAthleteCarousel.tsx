@@ -41,7 +41,7 @@ export default function LegendsAthleteCarousel() {
     const viewport = viewportRef.current;
     if (!viewport) return;
 
-    const speed = 28;
+    const speed = 40;
     const timer = window.setInterval(() => {
       const maxScroll = viewport.scrollWidth - viewport.clientWidth;
       if (maxScroll <= 0) return;
