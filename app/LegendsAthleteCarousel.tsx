@@ -11,6 +11,10 @@ const athletes = [
   { name: "Jeison Reis", location: "Caxias do Sul, RS · Brasil", image: `${media}JEISON%20REIS%20-%20Legends%202027%20.jpg` },
   { name: "Luis Cândido de Azevedo", location: "Osório, RS · Brasil", image: `${media}LUIS%20CANDIDO%20DE%20AZEVEDO%20-%20Legends%202027%20.jpg` },
   { name: "Thiago de Aguiar Leão", location: "Porto Alegre, RS · Brasil", image: `${media}thiago-de-aguiar-leao.jpg` },
+  { name: "Auri De Bortoli", image: `${media}Auri%20De%20Bortoli%20-%20Legends%202027%20.jpg` },
+  { name: "Claiton Bittencourt", image: `${media}CLAITON%20BITTENCOURT%20-%20Legends%202027%20.jpg` },
+  { name: "Iveraldo Zampieron", image: `${media}Iveraldo%20Zampieron%20-%20Legends%202027%20.jpg` },
+  { name: "Santuzza Andrade", image: `${media}Santuzza%20Andrade%20-%20Legends%202027%20.jpg` },
 ];
 
 export default function LegendsAthleteCarousel() {
