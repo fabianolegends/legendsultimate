@@ -15,6 +15,7 @@ const athletes = [
   { name: "Claiton Bittencourt", image: `${media}CLAITON%20BITTENCOURT%20%20-%20Legends%202027%20.jpg` },
   { name: "Iveraldo Zampieron", image: `${media}Iveraldo%20Zampieron%20-%20Legends%202027%20.jpg` },
   { name: "Santuzza Andrade", image: `${media}Santuzza%20Andrade%20-%20Legends%202027%20.jpg` },
+  { name: "Pedro Ritter", image: `${media}Pedro%20Ritter%20-%20Legends%202027%20.jpg` },
 ];
 
 export default function LegendsAthleteCarousel() {
