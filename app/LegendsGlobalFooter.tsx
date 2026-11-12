@@ -101,6 +101,7 @@ export default function LegendsGlobalFooter() {
             <div className="legendsFooterSocials" aria-label="Redes sociais">
               <a href="https://www.instagram.com/legends.race/" target="_blank" rel="noreferrer">Instagram</a>
               <a href="https://www.facebook.com/1272724699251164" target="_blank" rel="noreferrer">Facebook</a>
+              <a href="https://wa.me/5554996329164" target="_blank" rel="noreferrer">WhatsApp</a>
               <a href="https://www.youtube.com/@legendsbikerace" target="_blank" rel="noreferrer">YouTube</a>
             </div>
           </div>
