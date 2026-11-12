@@ -20,10 +20,10 @@ export const metadata: Metadata = {
     title: "Legends Bike Race 2027 | Gravel na Serra Gaúcha",
     description: "Escolha entre Legends Ultimate e Legends Short e viva uma stage race premium de gravel pela Serra Gaúcha.",
     images: [{
-      url: "https://www.legendsbikerace.com.br/hero-bike-detail.jpg",
+      url: "https://fwexmctrrhavnksunxer.supabase.co/storage/v1/object/public/legends-athlete-cards/Ciclista%20na%20ponte%20sobre%20o%20rio.png",
       width: 1920,
       height: 1080,
-      alt: "Detalhe da sapatilha e da bicicleta sobre uma estrada de gravel",
+      alt: "Ciclista cruzando ponte de madeira sobre um rio na Serra Gaúcha",
       type: "image/jpeg",
     }],
   },
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Legends Bike Race 2027 | Gravel na Serra Gaúcha",
     description: "Uma stage race premium de gravel por quatro destinos da Serra Gaúcha.",
-    images: ["https://www.legendsbikerace.com.br/hero-bike-detail.jpg"],
+    images: ["https://fwexmctrrhavnksunxer.supabase.co/storage/v1/object/public/legends-athlete-cards/Ciclista%20na%20ponte%20sobre%20o%20rio.png"],
   },
 };
 
@@ -56,7 +56,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
         .redesign h2 em{font-style:normal;color:var(--copper)}
         .redesign .sectionHead{display:grid;grid-template-columns:1.4fr .8fr;gap:80px;align-items:end;margin-bottom:70px}
         .redesign .sectionHead p{font-size:18px;line-height:1.75;color:#9ba097;margin:0}
-        .heroRedesign{min-height:calc(100svh - 170px);background-image:linear-gradient(90deg,rgba(6,8,7,.98),rgba(6,8,7,.77) 38%,rgba(6,8,7,.14) 72%),linear-gradient(0deg,#111411 0%,rgba(17,20,17,.94) 14%,rgba(17,20,17,.52) 34%,rgba(17,20,17,0) 58%),url('/hero-bike-detail.jpg');background-repeat:no-repeat;background-position:0 0,0 0,50% 50%;background-size:auto,auto,auto 108%;display:grid;grid-template-rows:104px 1fr auto;color:#f1ece3;animation:heroBreath 18s cubic-bezier(.42,0,.2,1) infinite alternate}@keyframes heroBreath{0%{background-position:0 0,0 0,50% 50%;background-size:auto,auto,auto 108%}100%{background-position:0 0,0 0,53% 47%;background-size:auto,auto,auto 114%}}@media(min-width:641px){.heroRedesign{animation-name:heroBreathWide;background-size:auto,auto,108% auto}@keyframes heroBreathWide{0%{background-position:0 0,0 0,50% 50%;background-size:auto,auto,108% auto}100%{background-position:0 0,0 0,53% 47%;background-size:auto,auto,114% auto}}}@keyframes heroTextReveal{from{opacity:0;transform:translateY(26px);filter:blur(7px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}@keyframes heroAccentReveal{from{color:#f1ece3;letter-spacing:.08em}to{color:var(--legends-terracotta,var(--copper));letter-spacing:inherit}}.heroCopy .kicker{opacity:0;animation:heroTextReveal .68s cubic-bezier(.16,1,.3,1) .1s forwards}.heroCopy h1{opacity:0;animation:heroTextReveal .82s cubic-bezier(.16,1,.3,1) .23s forwards}.heroCopy h1 .heroAccent{display:inline-block;animation:heroAccentReveal .7s cubic-bezier(.16,1,.3,1) .8s forwards}.heroCopy .heroIntro{opacity:0;animation:heroTextReveal .7s cubic-bezier(.16,1,.3,1) .43s forwards}.heroCopy .heroCtas{opacity:0;animation:heroTextReveal .7s cubic-bezier(.16,1,.3,1) .58s forwards}@media(prefers-reduced-motion:reduce){.heroRedesign{animation:none;background-size:auto,auto,cover}.heroCopy .kicker,.heroCopy h1,.heroCopy h1 .heroAccent,.heroCopy .heroIntro,.heroCopy .heroCtas{animation:none;opacity:1;transform:none;filter:none}}
+        .heroRedesign{min-height:calc(100svh - 170px);background-image:linear-gradient(90deg,rgba(6,8,7,.98),rgba(6,8,7,.77) 38%,rgba(6,8,7,.14) 72%),linear-gradient(0deg,#111411 0%,rgba(17,20,17,.94) 14%,rgba(17,20,17,.52) 34%,rgba(17,20,17,0) 58%),url('https://fwexmctrrhavnksunxer.supabase.co/storage/v1/object/public/legends-athlete-cards/Ciclista%20na%20ponte%20sobre%20o%20rio.png');background-repeat:no-repeat;background-position:0 0,0 0,50% 50%;background-size:auto,auto,auto 108%;display:grid;grid-template-rows:104px 1fr auto;color:#f1ece3;animation:heroBreath 18s cubic-bezier(.42,0,.2,1) infinite alternate}@keyframes heroBreath{0%{background-position:0 0,0 0,50% 50%;background-size:auto,auto,auto 108%}100%{background-position:0 0,0 0,53% 47%;background-size:auto,auto,auto 114%}}@media(min-width:641px){.heroRedesign{animation-name:heroBreathWide;background-size:auto,auto,108% auto}@keyframes heroBreathWide{0%{background-position:0 0,0 0,50% 50%;background-size:auto,auto,108% auto}100%{background-position:0 0,0 0,53% 47%;background-size:auto,auto,114% auto}}}@keyframes heroTextReveal{from{opacity:0;transform:translateY(26px);filter:blur(7px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}@keyframes heroAccentReveal{from{color:#f1ece3;letter-spacing:.08em}to{color:var(--legends-terracotta,var(--copper));letter-spacing:inherit}}.heroCopy .kicker{opacity:0;animation:heroTextReveal .68s cubic-bezier(.16,1,.3,1) .1s forwards}.heroCopy h1{opacity:0;animation:heroTextReveal .82s cubic-bezier(.16,1,.3,1) .23s forwards}.heroCopy h1 .heroAccent{display:inline-block;animation:heroAccentReveal .7s cubic-bezier(.16,1,.3,1) .8s forwards}.heroCopy .heroIntro{opacity:0;animation:heroTextReveal .7s cubic-bezier(.16,1,.3,1) .43s forwards}.heroCopy .heroCtas{opacity:0;animation:heroTextReveal .7s cubic-bezier(.16,1,.3,1) .58s forwards}@media(prefers-reduced-motion:reduce){.heroRedesign{animation:none;background-size:auto,auto,cover}.heroCopy .kicker,.heroCopy h1,.heroCopy h1 .heroAccent,.heroCopy .heroIntro,.heroCopy .heroCtas{animation:none;opacity:1;transform:none;filter:none}}
         .heroRedesign .nav{border-bottom:1px solid rgba(241,236,227,.12)}
         .heroRedesign .navCta{display:inline-flex;align-items:center;justify-content:center;background:var(--copper);border:0;color:#fff;padding:11px 17px;font-size:13px;letter-spacing:.09em;white-space:nowrap}
         .heroRedesign .navCta:hover{background:#df8b45;color:#fff}
