@@ -200,16 +200,14 @@
   margin-bottom: 7px;
 }
 
-.legendsFooterColumn > a,
-.legendsFooterSocials a {
+.legendsFooterColumn > a {
   color: #c6cdca;
   font-size: 14px;
   line-height: 1.45;
   transition: color .2s ease;
 }
 
-.legendsFooterColumn > a:hover,
-.legendsFooterSocials a:hover {
+.legendsFooterColumn > a:hover {
   color: var(--footer-copper);
 }
 
@@ -220,11 +218,43 @@
 
 .legendsFooterSocials {
   display: flex;
-  flex-wrap: wrap;
-  gap: 9px 16px;
+  align-items: center;
+  gap: 12px;
   margin-top: 8px;
   padding-top: 12px;
   border-top: 1px solid rgba(242, 237, 223, .14);
+}
+
+.legendsFooterSocials a {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(242, 237, 223, .25);
+  color: #c6cdca;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.legendsFooterSocials a:hover {
+  border-color: var(--footer-copper);
+  background: rgba(198, 122, 59, .12);
+  color: var(--footer-copper);
+  transform: translateY(-2px);
+}
+
+.legendsFooterSocials svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.legendsFooterSocials .fillIcon {
+  fill: currentColor;
+  stroke: none;
 }
 
 .legendsFooterBottom {
@@ -382,8 +412,7 @@
     margin-top: 12px;
   }
 
-  .legendsFooterColumn > a,
-  .legendsFooterSocials a {
+  .legendsFooterColumn > a {
     font-size: 13px;
   }
 
