@@ -19,6 +19,9 @@ const athletes = [
   { name: "Pedro Turrini", image: `${media}Pedro%20Turrini%20-%20Legends%202027%20.jpg` },
   { name: "Lucas Becker", image: `${media}Lucas%20Becker%20-%20Legends%202027%20.jpg` },
   { name: "Silvio Ricardo Ferrari", image: `${media}Silvio%20Ferrari%20-%20Legends%202027%20.jpg` },
+  { name: "Armando Pires", image: "/images/athletes/armando-pires.jpg" },
+  { name: "Giovani Spengler", image: "/images/athletes/giovani-spengler.jpg" },
+  { name: "Marcio Grandini", image: "/images/athletes/marcio-grandini.jpg" },
 ];
 
 export default function LegendsAthleteCarousel() {
