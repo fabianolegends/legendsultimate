@@ -6,8 +6,8 @@ type DeliveryCarouselProps = {
   eyebrow: string;
   title: string;
   description: string;
-  products: string[];
-  services: string[];
+  products: readonly string[];
+  services: readonly string[];
   registerHref: string;
   registerLabel: string;
 };
