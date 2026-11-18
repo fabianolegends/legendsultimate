@@ -3,6 +3,7 @@ import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
 import HomeRegistrationInfo from "./HomeRegistrationInfo";
 import LegendsAthleteCarousel from "./LegendsAthleteCarousel";
+import LegendsDeliveryCarousel from "./LegendsDeliveryCarousel";
 import TotalElevationProfile from "./TotalElevationProfile";
 import { getHomeCopy } from "./i18n/home";
 import type { Locale } from "./i18n/config";
@@ -45,6 +46,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
   const homeHref = locale === "pt" ? "/" : `/${locale}`;
   const registrationHref = `${homeHref}#inscricoes`;
   const faqHref = locale === "pt" ? "/faq#perguntas" : `${homeHref}#faq`;
+  const deliveryTitle = locale === "pt" ? "O que entregamos por R$ 1.199?" : locale === "es" ? "¿Qué entregamos por R$ 1.199?" : "What do you receive for R$ 1,199?";
 
   return (
     <main className="redesign" lang={t.htmlLang}>
@@ -137,12 +139,15 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
 
       <LegendsAthleteCarousel />
 
-      <section className="launchIncluded" id="incluido"><div className="wide">
-        <div className="launchIncludedHead"><div><p className="kicker">{t.launch.includedEyebrow}</p><h2>{t.launch.includedTitleLead}<br /><em>{t.launch.includedTitleAccent}</em></h2></div><p>{t.launch.includedDescription}</p></div>
-        <div className="launchProducts">{t.launch.products.map((name, index) => <article className="launchProduct" key={name}><img src={["/images/kit/camiseta-casual.webp","/images/kit/bag-50-litros.webp","/images/kit/cap-ciclismo.webp","/images/kit/placa-gravel.webp"][index]} alt={name} /><h3>{name}</h3></article>)}</div>
-        <div className="launchServices">{t.launch.services.map((item) => <span key={item}>{item}</span>)}</div>
-        <div className="launchDocs"><a href={registrationHref}>{t.launch.includedCta} →</a><a href={locale === "pt" ? "/regulamento" : `/${locale}/regulamento`}>{t.launch.regulation}</a><a href={locale === "pt" ? "/documentos-medicos" : `/${locale}/documentos-medicos`}>{t.launch.medical}</a></div>
-      </div></section>
+      <LegendsDeliveryCarousel
+        eyebrow={t.launch.includedEyebrow}
+        title={deliveryTitle}
+        description={t.launch.includedDescription}
+        products={t.launch.products}
+        services={t.launch.services}
+        registerHref={registrationHref}
+        registerLabel={t.navigation.register}
+      />
 
       <section className="manifestoRedesign" id="conceito"><div className="wide manifestoFeature">
         <div className="manifestoContent">
